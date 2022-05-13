@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import webbrowser
-
 import click
 from globus_sdk import GlobusHTTPResponse
 from globus_sdk.config import get_webapp_url
@@ -278,6 +276,8 @@ def endpoint_activate(
 
     # web activation
     elif web:
+        import webbrowser
+
         url = f"{get_webapp_url()}file-manager?origin_id={endpoint_id}"
         if no_browser or is_remote_session():
             res = {"message": f"Web activation url: {url}", "url": url}
