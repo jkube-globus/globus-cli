@@ -1,5 +1,5 @@
 import click
-from globus_sdk import LocalGlobusConnectPersonal
+import globus_sdk
 
 from globus_cli.parsing import command, one_use_option
 
@@ -54,7 +54,7 @@ def local_id(personal: bool) -> None:
     """
     if personal:
         try:
-            ep_id = LocalGlobusConnectPersonal().endpoint_id
+            ep_id = globus_sdk.LocalGlobusConnectPersonal().endpoint_id
         except OSError as e:
             click.echo(e, err=True)
             click.get_current_context().exit(1)

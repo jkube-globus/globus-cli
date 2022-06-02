@@ -2,7 +2,7 @@ import json
 import textwrap
 
 import click
-from globus_sdk import GlobusHTTPResponse
+import globus_sdk
 
 from globus_cli.utils import CLIStubResponse
 
@@ -81,7 +81,7 @@ def _key_to_keyfunc(k):
 def _jmespath_preprocess(res):
     jmespath_expr = get_jmespath_expression()
 
-    if isinstance(res, (CLIStubResponse, GlobusHTTPResponse)):
+    if isinstance(res, (CLIStubResponse, globus_sdk.GlobusHTTPResponse)):
         res = res.data
 
     if not isinstance(res, str):

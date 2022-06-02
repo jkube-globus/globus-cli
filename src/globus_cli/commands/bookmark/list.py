@@ -1,11 +1,7 @@
-from globus_sdk import TransferAPIError
+import globus_sdk
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.services.transfer import (
-    display_name_or_cname,
-    iterable_response_to_dict,
-)
 from globus_cli.termio import formatted_print
 
 
@@ -37,6 +33,11 @@ $ globus bookmark list --jmespath='DATA[*].[name, endpoint_id]' --format=unix
 @LoginManager.requires_login(LoginManager.TRANSFER_RS)
 def bookmark_list(*, login_manager: LoginManager):
     """List all bookmarks for the current user"""
+    from globus_cli.services.transfer import (
+        display_name_or_cname,
+        iterable_response_to_dict,
+    )
+
     transfer_client = login_manager.get_transfer_client()
 
     bookmark_iterator = transfer_client.bookmark_list()
@@ -46,7 +47,7 @@ def bookmark_list(*, login_manager: LoginManager):
         try:
             ep_doc = transfer_client.get_endpoint(ep_id)
             return display_name_or_cname(ep_doc)
-        except TransferAPIError as err:
+        except globus_sdk.TransferAPIError as err:
             if err.code == "EndpointDeleted":
                 return "[DELETED ENDPOINT]"
             else:

@@ -1,6 +1,5 @@
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.services.transfer import assemble_generic_doc
 from globus_cli.termio import FORMAT_TEXT_RAW, formatted_print
 
 from ._common import server_add_and_update_opts, server_id_arg
@@ -40,6 +39,8 @@ def server_update(
 
     At least one field must be updated.
     """
+    from globus_cli.services.transfer import assemble_generic_doc
+
     transfer_client = login_manager.get_transfer_client()
 
     server_doc = assemble_generic_doc(

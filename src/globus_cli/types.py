@@ -5,12 +5,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable, List, Mapping, Tuple, Union
 
-from globus_sdk import GlobusHTTPResponse
-
 # all imports from globus_cli modules done here are done under TYPE_CHECKING
 # in order to ensure that the use of type annotations never introduces circular
 # imports at runtime
 if TYPE_CHECKING:
+    import globus_sdk
+
     from globus_cli.termio import FormatField
     from globus_cli.utils import CLIStubResponse
 
@@ -26,4 +26,8 @@ FIELD_T = Union[
 
 FIELD_LIST_T = List[FIELD_T]
 
-DATA_CONTAINER_T = Union[Mapping[str, Any], GlobusHTTPResponse, "CLIStubResponse"]
+DATA_CONTAINER_T = Union[
+    Mapping[str, Any],
+    "globus_sdk.GlobusHTTPResponse",
+    "CLIStubResponse",
+]

@@ -6,7 +6,6 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.services.transfer import activation_requirements_help_text
 from globus_cli.termio import formatted_print
 
 
@@ -98,6 +97,8 @@ def endpoint_is_activated(
     If the endpoint is not activated, this command will output a link for web
     activation, or you can use 'globus endpoint activate' to activate the endpoint.
     """
+    from globus_cli.services.transfer import activation_requirements_help_text
+
     transfer_client = login_manager.get_transfer_client()
     res = transfer_client.endpoint_get_activation_requirements(endpoint_id)
 

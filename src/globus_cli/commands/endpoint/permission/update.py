@@ -2,7 +2,6 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.services.transfer import assemble_generic_doc
 from globus_cli.termio import FORMAT_TEXT_RAW, formatted_print
 
 
@@ -35,6 +34,8 @@ def update_command(*, login_manager: LoginManager, permissions, rule_id, endpoin
     The --permissions option is required, as it is currently the only field
     that can be updated.
     """
+    from globus_cli.services.transfer import assemble_generic_doc
+
     transfer_client = login_manager.get_transfer_client()
 
     rule_data = assemble_generic_doc("access", permissions=permissions)

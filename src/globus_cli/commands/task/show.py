@@ -2,7 +2,6 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, mutex_option_group
-from globus_cli.services.transfer import iterable_response_to_dict
 from globus_cli.termio import FORMAT_TEXT_RECORD, formatted_print
 
 from ._common import task_id_arg
@@ -58,6 +57,8 @@ SKIPPED_PATHS_FIELDS = [
 
 
 def print_successful_transfers(client, task_id):
+    from globus_cli.services.transfer import iterable_response_to_dict
+
     res = client.paginated.task_successful_transfers(task_id).items()
     formatted_print(
         res,
@@ -67,6 +68,8 @@ def print_successful_transfers(client, task_id):
 
 
 def print_skipped_errors(client, task_id):
+    from globus_cli.services.transfer import iterable_response_to_dict
+
     res = client.paginated.task_skipped_errors(task_id).items()
     formatted_print(
         res,

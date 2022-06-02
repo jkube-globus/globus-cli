@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import click
-from globus_sdk import GuestCollectionDocument, MappedCollectionDocument
+import globus_sdk
 
 from globus_cli import utils
 from globus_cli.constants import EXPLICIT_NULL
@@ -213,10 +213,11 @@ def collection_update(
 
     if gcs_client.source_epish.ep_type == EndpointType.GUEST_COLLECTION:
         doc_class: (
-            type[GuestCollectionDocument] | type[MappedCollectionDocument]
-        ) = GuestCollectionDocument
+            type[globus_sdk.GuestCollectionDocument]
+            | type[globus_sdk.MappedCollectionDocument]
+        ) = globus_sdk.GuestCollectionDocument
     else:
-        doc_class = MappedCollectionDocument
+        doc_class = globus_sdk.MappedCollectionDocument
 
     # convert keyword args as follows:
     # - filter out Nones

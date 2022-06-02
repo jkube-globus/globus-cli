@@ -1,5 +1,5 @@
 import click
-from globus_sdk import DeleteData
+import globus_sdk
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import (
@@ -9,7 +9,6 @@ from globus_cli.parsing import (
     synchronous_task_wait_options,
     task_submission_options,
 )
-from globus_cli.services.transfer import autoactivate
 from globus_cli.termio import err_is_terminal, formatted_print, term_is_interactive
 
 from ._common import transfer_task_wait_with_io
@@ -71,6 +70,8 @@ def rm_command(
 
     {AUTOMATIC_ACTIVATION}
     """
+    from globus_cli.services.transfer import autoactivate
+
     endpoint_id, path = endpoint_plus_path
 
     transfer_client = login_manager.get_transfer_client()
@@ -79,7 +80,7 @@ def rm_command(
     if not skip_activation_check:
         autoactivate(transfer_client, endpoint_id, if_expires_in=60)
 
-    delete_data = DeleteData(
+    delete_data = globus_sdk.DeleteData(
         transfer_client,
         endpoint_id,
         label=label,

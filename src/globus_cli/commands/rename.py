@@ -2,7 +2,6 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.services.transfer import autoactivate
 from globus_cli.termio import FORMAT_TEXT_RAW, formatted_print
 
 
@@ -31,6 +30,8 @@ def rename_command(*, login_manager: LoginManager, endpoint_id, source, destinat
     The new path does not have to be in the same directory as the old path, but
     most endpoints will require it to stay on the same filesystem.
     """
+    from globus_cli.services.transfer import autoactivate
+
     transfer_client = login_manager.get_transfer_client()
     autoactivate(transfer_client, endpoint_id, if_expires_in=60)
 

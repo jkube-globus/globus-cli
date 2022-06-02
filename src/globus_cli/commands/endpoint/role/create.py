@@ -2,7 +2,6 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg, security_principal_opts
-from globus_cli.services.transfer import assemble_generic_doc
 from globus_cli.termio import formatted_print
 
 
@@ -46,6 +45,8 @@ def role_create(*, login_manager: LoginManager, role, principal, endpoint_id):
     The term "Principal" is used in the sense of "a security principal", an entity
     which has some privileges associated with it.
     """
+    from globus_cli.services.transfer import assemble_generic_doc
+
     principal_type, principal_val = principal
 
     transfer_client = login_manager.get_transfer_client()

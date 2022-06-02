@@ -109,7 +109,7 @@ _SERVICE_MAP = {
 
 def _get_client(
     login_manager: LoginManager, service_name: str
-) -> globus_sdk.BaseClient:
+) -> "globus_sdk.BaseClient":
     if service_name == "auth":
         return login_manager.get_auth_client()
     elif service_name == "groups":

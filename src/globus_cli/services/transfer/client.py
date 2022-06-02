@@ -6,7 +6,7 @@ import uuid
 from typing import Any
 
 import click
-from globus_sdk import GlobusHTTPResponse, TransferClient
+import globus_sdk
 from globus_sdk.transport import (
     RetryCheckFlags,
     RetryCheckResult,
@@ -43,7 +43,7 @@ def _retry_client_consent(ctx: RetryContext) -> RetryCheckResult:
     return RetryCheckResult.no_decision
 
 
-class CustomTransferClient(TransferClient):
+class CustomTransferClient(globus_sdk.TransferClient):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.transport.register_retry_check(_retry_client_consent)
@@ -79,7 +79,7 @@ class CustomTransferClient(TransferClient):
 
     def get_endpoint_w_server_list(
         self, endpoint_id
-    ) -> tuple[GlobusHTTPResponse, str | GlobusHTTPResponse]:
+    ) -> tuple[globus_sdk.GlobusHTTPResponse, str | globus_sdk.GlobusHTTPResponse]:
         """
         A helper for handling endpoint server list lookups correctly accounting
         for various endpoint types.

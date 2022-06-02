@@ -1,6 +1,5 @@
 import click
 import globus_sdk
-from globus_sdk import AuthAPIError
 
 from globus_cli.login_manager import (
     LoginManager,
@@ -79,7 +78,7 @@ def logout_command(*, login_manager: LoginManager, ignore_errors):
         username = login_manager.get_auth_client().oauth2_userinfo()[
             "preferred_username"
         ]
-    except AuthAPIError:
+    except globus_sdk.AuthAPIError:
         warnecho(
             "Unable to lookup username. You may not be logged in. "
             "Attempting logout anyway...\n"
@@ -98,7 +97,7 @@ def logout_command(*, login_manager: LoginManager, ignore_errors):
     if not is_client_login():
         try:
             delete_templated_client()
-        except AuthAPIError:
+        except globus_sdk.AuthAPIError:
             if not ignore_errors:
                 warnecho(
                     "Failure while deleting internal client. "

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import click
-from globus_sdk import TransferData
+import globus_sdk
 
 from globus_cli import utils
 from globus_cli.login_manager import LoginManager
@@ -12,7 +12,6 @@ from globus_cli.parsing import (
     mutex_option_group,
     task_submission_options,
 )
-from globus_cli.services.transfer import autoactivate
 from globus_cli.termio import FORMAT_TEXT_RECORD, formatted_print
 
 
@@ -315,6 +314,8 @@ def transfer_command(
 
     {AUTOMATIC_ACTIVATION}
     """
+    from globus_cli.services.transfer import autoactivate
+
     source_endpoint, cmd_source_path = source
     dest_endpoint, cmd_dest_path = destination
 
@@ -357,7 +358,7 @@ def transfer_command(
         filter_rules = None
 
     transfer_client = login_manager.get_transfer_client()
-    transfer_data = TransferData(
+    transfer_data = globus_sdk.TransferData(
         transfer_client,
         source_endpoint,
         dest_endpoint,

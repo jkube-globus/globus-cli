@@ -4,7 +4,6 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.services.transfer import ENDPOINT_LIST_FIELDS, iterable_response_to_dict
 from globus_cli.termio import formatted_print
 from globus_cli.utils import PagingWrapper
 
@@ -84,6 +83,11 @@ def endpoint_search(
     legacy name, description, organization, department, keywords) that match the
     search text will be returned. The result size limit is 100 endpoints.
     """
+    from globus_cli.services.transfer import (
+        ENDPOINT_LIST_FIELDS,
+        iterable_response_to_dict,
+    )
+
     if filter_scope == "all" and not filter_fulltext:
         raise click.UsageError(
             "When searching all endpoints (--filter-scope=all, the default), "

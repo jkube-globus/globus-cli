@@ -7,7 +7,7 @@ import time
 from collections import deque
 from typing import Any, Deque, Dict, Iterator, Optional, Tuple, cast
 
-from globus_sdk import TransferClient
+import globus_sdk
 
 log = logging.getLogger(__name__)
 
@@ -55,7 +55,7 @@ class RecursiveLsResponse:
 
     def __init__(
         self,
-        client: TransferClient,
+        client: globus_sdk.TransferClient,
         endpoint_id: str,
         ls_params: dict[str, Any],
         *,

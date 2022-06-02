@@ -1,8 +1,8 @@
 import uuid
 from unittest import mock
 
+import globus_sdk
 import pytest
-from globus_sdk import TransferAPIError
 
 from globus_cli.commands.bookmark._common import resolve_id_or_name
 
@@ -18,7 +18,7 @@ def test_resolve_bookmarkid_not_found_does_name_match():
     err_res.headers = {"Content-Type": "application/json"}
 
     client = mock.MagicMock()
-    client.get_bookmark.side_effect = TransferAPIError(err_res)
+    client.get_bookmark.side_effect = globus_sdk.TransferAPIError(err_res)
 
     bookmarkid = str(uuid.uuid1())
     magic_result = {"name": bookmarkid, "_sentinel": object()}
@@ -36,11 +36,11 @@ def test_resolve_bookmarkid_any_other_error_reraise(status, code):
     err_res.headers = {"Content-Type": "application/json"}
 
     client = mock.MagicMock()
-    client.get_bookmark.side_effect = TransferAPIError(err_res)
+    client.get_bookmark.side_effect = globus_sdk.TransferAPIError(err_res)
 
     bookmarkid = str(uuid.uuid1())
 
-    with pytest.raises(TransferAPIError):
+    with pytest.raises(globus_sdk.TransferAPIError):
         resolve_id_or_name(client, bookmarkid)
 
 

@@ -1,6 +1,5 @@
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.services.transfer import assemble_generic_doc
 from globus_cli.termio import FORMAT_TEXT_RAW, formatted_print
 
 from ._common import server_add_and_update_opts
@@ -37,6 +36,8 @@ def server_add(
 
     An endpoint must be a Globus Connect Server endpoint to have servers.
     """
+    from globus_cli.services.transfer import assemble_generic_doc
+
     transfer_client = login_manager.get_transfer_client()
 
     server_doc = assemble_generic_doc(

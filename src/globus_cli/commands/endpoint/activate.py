@@ -1,15 +1,10 @@
 from __future__ import annotations
 
 import click
-from globus_sdk import GlobusHTTPResponse
-from globus_sdk.config import get_webapp_url
+import globus_sdk
 
 from globus_cli.login_manager import LoginManager, is_remote_session
 from globus_cli.parsing import command, endpoint_id_arg, mutex_option_group
-from globus_cli.services.transfer import (
-    activation_requirements_help_text,
-    fill_delegate_proxy_activation_requirements,
-)
 from globus_cli.termio import FORMAT_TEXT_RAW, formatted_print
 
 
@@ -173,6 +168,11 @@ def endpoint_activate(
     user the error will not be detected until the user attempts to perform an
     operation on the endpoint.
     """
+    from globus_cli.services.transfer import (
+        activation_requirements_help_text,
+        fill_delegate_proxy_activation_requirements,
+    )
+
     transfer_client = login_manager.get_transfer_client()
 
     # validate options
@@ -197,7 +197,7 @@ def endpoint_activate(
     # check if endpoint is already activated unless --force
     if not force:
         res: (
-            dict[str, str] | GlobusHTTPResponse
+            dict[str, str] | globus_sdk.GlobusHTTPResponse
         ) = transfer_client.endpoint_autoactivate(endpoint_id, if_expires_in=60)
 
         if "AlreadyActivated" == res["code"]:
@@ -277,6 +277,8 @@ def endpoint_activate(
     # web activation
     elif web:
         import webbrowser
+
+        from globus_sdk.config import get_webapp_url
 
         url = f"{get_webapp_url()}file-manager?origin_id={endpoint_id}"
         if no_browser or is_remote_session():
