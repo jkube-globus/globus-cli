@@ -4,7 +4,7 @@ from distutils.version import LooseVersion
 
 # single source of truth for package version,
 # see https://packaging.python.org/en/latest/single_source_version/
-__version__ = "3.6.0"
+__version__ = "3.7.0"
 
 # app name to send as part of SDK requests
 app_name = f"Globus CLI v{__version__}"
