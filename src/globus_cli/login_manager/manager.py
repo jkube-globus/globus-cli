@@ -254,23 +254,23 @@ class LoginManager:
                 on_refresh=self._token_storage.on_refresh,
             )
 
-    def get_transfer_client(self) -> "CustomTransferClient":
+    def get_transfer_client(self) -> CustomTransferClient:
         from ..services.transfer import CustomTransferClient
 
         authorizer = self._get_client_authorizer(TransferScopes.resource_server)
         return CustomTransferClient(authorizer=authorizer, app_name=version.app_name)
 
-    def get_auth_client(self) -> "CustomAuthClient":
+    def get_auth_client(self) -> CustomAuthClient:
         from ..services.auth import CustomAuthClient
 
         authorizer = self._get_client_authorizer(AuthScopes.resource_server)
         return CustomAuthClient(authorizer=authorizer, app_name=version.app_name)
 
-    def get_groups_client(self) -> "globus_sdk.GroupsClient":
+    def get_groups_client(self) -> globus_sdk.GroupsClient:
         authorizer = self._get_client_authorizer(GroupsScopes.resource_server)
         return globus_sdk.GroupsClient(authorizer=authorizer, app_name=version.app_name)
 
-    def get_search_client(self) -> "globus_sdk.SearchClient":
+    def get_search_client(self) -> globus_sdk.SearchClient:
         authorizer = self._get_client_authorizer(SearchScopes.resource_server)
         return globus_sdk.SearchClient(authorizer=authorizer, app_name=version.app_name)
 
@@ -305,7 +305,7 @@ class LoginManager:
         *,
         collection_id: uuid.UUID | None = None,
         endpoint_id: uuid.UUID | None = None,
-    ) -> "CustomGCSClient":
+    ) -> CustomGCSClient:
         from ..services.gcs import CustomGCSClient
 
         gcs_id, epish = self._get_gcs_info(

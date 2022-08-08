@@ -62,7 +62,7 @@ class PrincipalResolver:
         self._idmap: globus_sdk.IdentityMap | None = None
 
     @property
-    def idmap(self) -> "globus_sdk.IdentityMap":
+    def idmap(self) -> globus_sdk.IdentityMap:
         if not self._idmap:
             self._idmap = globus_sdk.IdentityMap(LoginManager().get_auth_client())
         return self._idmap

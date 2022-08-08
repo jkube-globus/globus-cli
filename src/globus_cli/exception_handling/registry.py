@@ -51,7 +51,7 @@ def error_handler(
 def find_handler(exception: Exception) -> HOOK_TYPE | None:
     for handler, error_class, condition in _REGISTERED_HOOKS:
         if isinstance(error_class, str):
-            error_class_: Type[Exception] = getattr(globus_sdk, error_class)
+            error_class_: type[Exception] = getattr(globus_sdk, error_class)
             assert issubclass(error_class_, Exception)
         else:
             error_class_ = error_class

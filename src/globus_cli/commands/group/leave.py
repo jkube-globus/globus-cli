@@ -10,7 +10,7 @@ from globus_cli.parsing import IdentityType, ParsedIdentity, command
 from globus_cli.termio import formatted_print
 
 
-def group_leave_formatter(data: "globus_sdk.GlobusHTTPResponse") -> None:
+def group_leave_formatter(data: globus_sdk.GlobusHTTPResponse) -> None:
     if "errors" in data:
         click.echo("Encountered errors leaving group, partial success")
         for error_doc in data.get("errors", {}).get("leave", []):

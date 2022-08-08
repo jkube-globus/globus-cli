@@ -32,7 +32,7 @@ def is_client_login() -> bool:
         return bool(client_id) and bool(client_secret)
 
 
-def get_client_login() -> "globus_sdk.ConfidentialAppAuthClient":
+def get_client_login() -> globus_sdk.ConfidentialAppAuthClient:
     """
     Return the ConfidentialAppAuthClient for the client identity
     logged into the CLI

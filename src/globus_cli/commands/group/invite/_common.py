@@ -21,10 +21,10 @@ else:
 
 def get_invite_formatter(
     case: Literal["accept", "decline"]
-) -> Callable[["globus_sdk.GlobusHTTPResponse"], None]:
+) -> Callable[[globus_sdk.GlobusHTTPResponse], None]:
     action_word = "Accepted" if case == "accept" else "Declined"
 
-    def formatter(data: "globus_sdk.GlobusHTTPResponse") -> None:
+    def formatter(data: globus_sdk.GlobusHTTPResponse) -> None:
         values = [f"{x['identity_id']} ({x['username']})" for x in data[case]]
         if len(values) == 1:
             click.echo(f"{action_word} invitation as {values[0]}")
@@ -37,8 +37,8 @@ def get_invite_formatter(
 
 
 def build_invite_actions(
-    auth_client: "CustomAuthClient",
-    groups_client: "globus_sdk.GroupsClient",
+    auth_client: CustomAuthClient,
+    groups_client: globus_sdk.GroupsClient,
     action: Literal["accept", "decline"],
     group_id: uuid.UUID,
     identity: ParsedIdentity | None,
