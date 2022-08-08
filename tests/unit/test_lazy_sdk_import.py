@@ -34,21 +34,31 @@ its (almost entirely eager) imports.
 import subprocess
 import sys
 
-import globus_sdk
 import pytest
 
 
-@pytest.mark.skipif(
-    not hasattr(globus_sdk, "_force_eager_imports"),
-    reason="globus_sdk lazy imports not supported on this version",
+@pytest.mark.parametrize(
+    "forbidden_module",
+    [
+        # stdlib modules
+        # only test modules which we are confident won't be needed by `coverage`
+        # because that gets loaded by subprocess executions during the testsuite
+        "webbrowser",
+        "http.client",
+        "http.server",
+        # 3rd party modules
+        "jmespath",
+        "cryptography",
+        # 'requests' used as a proxy for "slow globus_sdk imports"
+        "requests",
+    ],
 )
-@pytest.mark.skipif(sys.version_info < (3, 7), reason="lazy imports require py3.7+")
-def test_importing_cli_doesnt_import_requests():
+def test_importing_cli_doesnt_import_forbidden_modules(forbidden_module):
     to_run = "; ".join(
         [
             "import sys",
             "from globus_cli import main",
-            "assert 'requests' not in sys.modules",
+            f"assert '{forbidden_module}' not in sys.modules",
         ]
     )
     proc = subprocess.Popen(
