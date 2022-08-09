@@ -3,15 +3,9 @@ from __future__ import annotations
 from typing import Any
 
 import click
-from globus_sdk.services.transfer.response import IterableTransferResponse
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import ENDPOINT_PLUS_OPTPATH, command
-from globus_cli.services.transfer import (
-    RecursiveLsResponse,
-    autoactivate,
-    iterable_response_to_dict,
-)
 from globus_cli.termio import formatted_print, is_verbose, outformat_is_text
 
 
@@ -160,6 +154,14 @@ def ls_command(
 
     {AUTOMATIC_ACTIVATION}
     """
+    from globus_sdk.services.transfer.response import IterableTransferResponse
+
+    from globus_cli.services.transfer import (
+        RecursiveLsResponse,
+        autoactivate,
+        iterable_response_to_dict,
+    )
+
     endpoint_id, path = endpoint_plus_path
 
     # do autoactivation before the `ls` call so that recursive invocations

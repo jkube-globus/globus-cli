@@ -1,4 +1,4 @@
-from globus_sdk import IdentityMap
+import globus_sdk
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
@@ -24,7 +24,7 @@ def list_command(*, login_manager: LoginManager, endpoint_id):
 
     rules = transfer_client.endpoint_acl_list(endpoint_id)
 
-    resolved_ids = IdentityMap(
+    resolved_ids = globus_sdk.IdentityMap(
         auth_client,
         (x["principal"] for x in rules if x["principal_type"] == "identity"),
     )

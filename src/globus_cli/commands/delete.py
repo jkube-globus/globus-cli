@@ -1,5 +1,5 @@
 import click
-from globus_sdk import DeleteData
+import globus_sdk
 
 from globus_cli import utils
 from globus_cli.login_manager import LoginManager
@@ -10,7 +10,6 @@ from globus_cli.parsing import (
     delete_and_rm_options,
     task_submission_options,
 )
-from globus_cli.services.transfer import autoactivate
 from globus_cli.termio import (
     FORMAT_TEXT_RECORD,
     err_is_terminal,
@@ -119,6 +118,8 @@ def delete_command(
 
     {AUTOMATIC_ACTIVATION}
     """
+    from globus_cli.services.transfer import autoactivate
+
     endpoint_id, path = endpoint_plus_path
     if path is None and (not batch):
         raise click.UsageError("delete requires either a PATH OR --batch")
@@ -129,7 +130,7 @@ def delete_command(
     if not skip_activation_check:
         autoactivate(transfer_client, endpoint_id, if_expires_in=60)
 
-    delete_data = DeleteData(
+    delete_data = globus_sdk.DeleteData(
         transfer_client,
         endpoint_id,
         label=label,

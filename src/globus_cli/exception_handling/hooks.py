@@ -20,7 +20,7 @@ def _pretty_json(data: dict, compact=False) -> str:
 
 
 @error_handler(
-    error_class=globus_sdk.GlobusAPIError,
+    error_class="GlobusAPIError",
     condition=lambda err: err.info.authorization_parameters,
     exit_status=4,
 )
@@ -57,7 +57,7 @@ def session_hook(exception: globus_sdk.GlobusAPIError) -> None:
 
 
 @error_handler(
-    error_class=globus_sdk.GlobusAPIError,
+    error_class="GlobusAPIError",
     condition=lambda err: err.info.consent_required,
     exit_status=4,
 )
@@ -121,7 +121,7 @@ def authentication_hook(
     )
 
 
-@error_handler(error_class=globus_sdk.TransferAPIError)
+@error_handler(error_class="TransferAPIError")
 def transferapi_hook(exception: globus_sdk.TransferAPIError) -> None:
     write_error_info(
         "Transfer API Error",
@@ -135,7 +135,7 @@ def transferapi_hook(exception: globus_sdk.TransferAPIError) -> None:
 
 
 @error_handler(
-    error_class=globus_sdk.SearchAPIError,
+    error_class="SearchAPIError",
     condition=lambda err: err.code == "BadRequest.ValidationError",
 )
 def searchapi_validationerror_hook(exception: globus_sdk.SearchAPIError) -> None:
@@ -165,7 +165,7 @@ def searchapi_validationerror_hook(exception: globus_sdk.SearchAPIError) -> None
     write_error_info("Search API Error", fields)
 
 
-@error_handler(error_class=globus_sdk.SearchAPIError)
+@error_handler(error_class="SearchAPIError")
 def searchapi_hook(exception: globus_sdk.SearchAPIError) -> None:
     fields = [
         PrintableErrorField("HTTP status", exception.http_status),
@@ -186,7 +186,7 @@ def searchapi_hook(exception: globus_sdk.SearchAPIError) -> None:
 
 
 @error_handler(
-    error_class=globus_sdk.AuthAPIError,
+    error_class="AuthAPIError",
     condition=lambda err: err.message == "invalid_grant",
 )
 def invalidrefresh_hook(exception: globus_sdk.AuthAPIError) -> None:
@@ -204,7 +204,7 @@ def invalidrefresh_hook(exception: globus_sdk.AuthAPIError) -> None:
     )
 
 
-@error_handler(error_class=globus_sdk.AuthAPIError)
+@error_handler(error_class="AuthAPIError")
 def authapi_hook(exception: globus_sdk.AuthAPIError) -> None:
     write_error_info(
         "Auth API Error",
@@ -216,7 +216,7 @@ def authapi_hook(exception: globus_sdk.AuthAPIError) -> None:
     )
 
 
-@error_handler(error_class=globus_sdk.GlobusAPIError)  # catch-all
+@error_handler(error_class="GlobusAPIError")  # catch-all
 def globusapi_hook(exception: globus_sdk.GlobusAPIError) -> None:
     write_error_info(
         "Globus API Error",
@@ -228,7 +228,7 @@ def globusapi_hook(exception: globus_sdk.GlobusAPIError) -> None:
     )
 
 
-@error_handler(error_class=globus_sdk.GlobusError)
+@error_handler(error_class="GlobusError")
 def globus_error_hook(exception: globus_sdk.GlobusError) -> None:
     write_error_info(
         "Globus Error",

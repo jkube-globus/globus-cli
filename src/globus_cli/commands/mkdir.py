@@ -2,7 +2,6 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import ENDPOINT_PLUS_REQPATH, command
-from globus_cli.services.transfer import autoactivate
 from globus_cli.termio import FORMAT_TEXT_RAW, formatted_print
 
 
@@ -25,6 +24,8 @@ def mkdir_command(*, login_manager: LoginManager, endpoint_plus_path):
 
     {AUTOMATIC_ACTIVATION}
     """
+    from globus_cli.services.transfer import autoactivate
+
     endpoint_id, path = endpoint_plus_path
 
     transfer_client = login_manager.get_transfer_client()

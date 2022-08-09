@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import functools
-from typing import Callable, List, NoReturn, Tuple, Type, TypeVar, cast
+from typing import Callable, List, NoReturn, Tuple, Type, TypeVar, Union, cast
 
 import click
 import globus_sdk
@@ -16,7 +16,7 @@ _HOOK_SRC_TYPE = Callable[[E], None]
 CONDITION_TYPE = Callable[[E], bool]
 
 # must cast the registry to avoid type errors around List[<nothing>]
-_HOOKLIST_TYPE = List[Tuple[HOOK_TYPE, Type[Exception], CONDITION_TYPE]]
+_HOOKLIST_TYPE = List[Tuple[HOOK_TYPE, Union[str, Type[Exception]], CONDITION_TYPE]]
 _REGISTERED_HOOKS: _HOOKLIST_TYPE = cast(_HOOKLIST_TYPE, [])
 
 
@@ -50,7 +50,13 @@ def error_handler(
 
 def find_handler(exception: Exception) -> HOOK_TYPE | None:
     for handler, error_class, condition in _REGISTERED_HOOKS:
-        if error_class is not None and not isinstance(exception, error_class):
+        if isinstance(error_class, str):
+            error_class_: type[Exception] = getattr(globus_sdk, error_class)
+            assert issubclass(error_class_, Exception)
+        else:
+            error_class_ = error_class
+
+        if error_class_ is not None and not isinstance(exception, error_class_):
             continue
         if condition is not None and not condition(exception):
             continue

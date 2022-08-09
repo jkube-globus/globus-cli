@@ -1,11 +1,12 @@
 import os
 import sys
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 import globus_sdk
-from globus_sdk.tokenstorage import SQLiteAdapter
 
-from ._old_config import invalidate_old_config
+if TYPE_CHECKING:
+    from globus_sdk.tokenstorage import SQLiteAdapter
+
 from .client_login import get_client_login, is_client_login
 
 # internal constants
@@ -17,7 +18,7 @@ GLOBUS_ENV = os.environ.get("GLOBUS_SDK_ENVIRONMENT")
 
 # stub to allow type casting of a function to an object with an attribute
 class _TokenStoreFuncProto:
-    _instance: SQLiteAdapter
+    _instance: "SQLiteAdapter"
 
 
 def _template_client_id():
@@ -104,13 +105,17 @@ def _resolve_namespace():
         return "userprofile/" + env + (f"/{profile}" if profile else "")
 
 
-def token_storage_adapter() -> SQLiteAdapter:
+def token_storage_adapter() -> "SQLiteAdapter":
+    from globus_sdk.tokenstorage import SQLiteAdapter
+
     as_proto = cast(_TokenStoreFuncProto, token_storage_adapter)
     if not hasattr(as_proto, "_instance"):
         # when initializing the token storage adapter, check if the storage file exists
         # if it does not, then use this as a flag to clean the old config
         fname = _get_storage_filename()
         if not os.path.exists(fname):
+            from ._old_config import invalidate_old_config
+
             invalidate_old_config(internal_native_client())
         # namespace is equal to the current environment
         as_proto._instance = SQLiteAdapter(fname, namespace=_resolve_namespace())

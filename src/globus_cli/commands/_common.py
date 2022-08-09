@@ -1,14 +1,16 @@
 import sys
+from typing import TYPE_CHECKING
 
 import click
 
 from globus_cli.termio import FORMAT_SILENT, formatted_print
 
-from ..services.transfer import CustomTransferClient
+if TYPE_CHECKING:
+    from ..services.transfer import CustomTransferClient
 
 
 def transfer_task_wait_with_io(
-    transfer_client: CustomTransferClient,
+    transfer_client: "CustomTransferClient",
     meow,
     heartbeat,
     polling_interval,

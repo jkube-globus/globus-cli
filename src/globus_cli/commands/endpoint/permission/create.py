@@ -2,7 +2,6 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import ENDPOINT_PLUS_REQPATH, command, security_principal_opts
-from globus_cli.services.transfer import assemble_generic_doc
 from globus_cli.termio import FORMAT_TEXT_RECORD, formatted_print
 
 
@@ -67,6 +66,8 @@ def create_command(
     '--anonymous', '--group', or '--identity' is required to know to whom permissions
     are being granted.
     """
+    from globus_cli.services.transfer import assemble_generic_doc
+
     endpoint_id, path = endpoint_plus_path
     principal_type, principal_val = principal
 

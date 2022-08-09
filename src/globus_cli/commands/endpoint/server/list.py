@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from globus_sdk import GlobusHTTPResponse
+import globus_sdk
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
@@ -28,7 +28,9 @@ def server_list(*, login_manager: LoginManager, endpoint_id):
     # raises usage error on shares for us
     endpoint_w_server_list = transfer_client.get_endpoint_w_server_list(endpoint_id)
     endpoint = endpoint_w_server_list[0]
-    server_list: (str | dict[str, Any] | GlobusHTTPResponse) = endpoint_w_server_list[1]
+    server_list: (
+        str | dict[str, Any] | globus_sdk.GlobusHTTPResponse
+    ) = endpoint_w_server_list[1]
 
     if server_list == "S3":  # not GCS -- this is an S3 endpoint
         server_list = {"s3_url": endpoint["s3_url"]}

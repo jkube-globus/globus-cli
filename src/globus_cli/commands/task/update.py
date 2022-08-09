@@ -2,7 +2,6 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.services.transfer import assemble_generic_doc
 from globus_cli.termio import formatted_print
 
 from ._common import task_id_arg
@@ -34,6 +33,8 @@ def update_task(*, login_manager: LoginManager, deadline, label, task_id):
 
     If a Task has completed, these attributes may no longer be updated.
     """
+    from globus_cli.services.transfer import assemble_generic_doc
+
     transfer_client = login_manager.get_transfer_client()
 
     task_doc = assemble_generic_doc("task", label=label, deadline=deadline)

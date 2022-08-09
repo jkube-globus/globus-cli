@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import sys
 import uuid
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 
 import click
-import globus_sdk
 
 from globus_cli.parsing import ParsedIdentity
-from globus_cli.services.auth import CustomAuthClient
+
+if TYPE_CHECKING:
+    import globus_sdk
+
+    from globus_cli.services.auth import CustomAuthClient
 
 if sys.version_info >= (3, 8):
     from typing import Literal

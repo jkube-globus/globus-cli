@@ -5,7 +5,6 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.services.transfer import iterable_response_to_dict
 from globus_cli.termio import formatted_print
 from globus_cli.utils import PagingWrapper
 
@@ -65,6 +64,8 @@ def task_event_list(
     NOTE: Tasks older than one month may no longer have event log history. In this
     case, no events will be shown.
     """
+    from globus_cli.services.transfer import iterable_response_to_dict
+
     transfer_client = login_manager.get_transfer_client()
 
     # cannot filter by both errors and non errors

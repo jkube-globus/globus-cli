@@ -1,6 +1,6 @@
 import uuid
 
-from globus_sdk import AuthClient
+import globus_sdk
 
 
 def _is_uuid(s):
@@ -11,7 +11,7 @@ def _is_uuid(s):
         return False
 
 
-class CustomAuthClient(AuthClient):
+class CustomAuthClient(globus_sdk.AuthClient):
     def _lookup_identity_field(
         self, id_name=None, id_id=None, field="id", provision=False
     ):

@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from distutils.version import LooseVersion
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from distutils.version import LooseVersion
 
 # single source of truth for package version,
 # see https://packaging.python.org/en/latest/single_source_version/
@@ -21,6 +24,8 @@ def get_versions() -> tuple[LooseVersion | None, LooseVersion]:
     # import in the func (rather than top-level scope) so that at setup time,
     # `requests` isn't required -- otherwise, setuptools will fail to run
     # because it isn't installed yet.
+    from distutils.version import LooseVersion
+
     import requests
 
     try:

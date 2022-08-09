@@ -23,7 +23,7 @@ from __future__ import annotations
 
 from typing import Iterable, cast
 
-from globus_sdk import IdentityMap
+import globus_sdk
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.types import DATA_CONTAINER_T
@@ -59,12 +59,12 @@ class PrincipalResolver:
     def __init__(self, key: str, use_urns: bool = True) -> None:
         self.key = key
         self.use_urns = use_urns
-        self._idmap: IdentityMap | None = None
+        self._idmap: globus_sdk.IdentityMap | None = None
 
     @property
-    def idmap(self) -> IdentityMap:
+    def idmap(self) -> globus_sdk.IdentityMap:
         if not self._idmap:
-            self._idmap = IdentityMap(LoginManager().get_auth_client())
+            self._idmap = globus_sdk.IdentityMap(LoginManager().get_auth_client())
         return self._idmap
 
     def _raw_id_from_object(self, obj: DATA_CONTAINER_T) -> tuple[str, str]:

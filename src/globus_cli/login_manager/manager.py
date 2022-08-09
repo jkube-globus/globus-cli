@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import functools
 import uuid
-from typing import Iterator
+from typing import TYPE_CHECKING, Iterator
 
 import click
 import globus_sdk
@@ -18,14 +18,16 @@ from globus_sdk.scopes import (
 from globus_cli.endpointish import Endpointish, EndpointType
 
 from .. import version
-from ..services.auth import CustomAuthClient
-from ..services.gcs import CustomGCSClient
-from ..services.transfer import CustomTransferClient
 from .auth_flows import do_link_auth_flow, do_local_server_auth_flow
 from .client_login import get_client_login, is_client_login
 from .errors import MissingLoginError
-from .local_server import is_remote_session
 from .tokenstore import internal_auth_client, token_storage_adapter
+from .utils import is_remote_session
+
+if TYPE_CHECKING:
+    from ..services.auth import CustomAuthClient
+    from ..services.gcs import CustomGCSClient
+    from ..services.transfer import CustomTransferClient
 
 
 class LoginManager:
@@ -253,10 +255,14 @@ class LoginManager:
             )
 
     def get_transfer_client(self) -> CustomTransferClient:
+        from ..services.transfer import CustomTransferClient
+
         authorizer = self._get_client_authorizer(TransferScopes.resource_server)
         return CustomTransferClient(authorizer=authorizer, app_name=version.app_name)
 
     def get_auth_client(self) -> CustomAuthClient:
+        from ..services.auth import CustomAuthClient
+
         authorizer = self._get_client_authorizer(AuthScopes.resource_server)
         return CustomAuthClient(authorizer=authorizer, app_name=version.app_name)
 
@@ -300,6 +306,8 @@ class LoginManager:
         collection_id: uuid.UUID | None = None,
         endpoint_id: uuid.UUID | None = None,
     ) -> CustomGCSClient:
+        from ..services.gcs import CustomGCSClient
+
         gcs_id, epish = self._get_gcs_info(
             collection_id=collection_id, endpoint_id=endpoint_id
         )

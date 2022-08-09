@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from globus_sdk import GCSClient
+import globus_sdk
 
 CONNECTOR_INFO: list[dict[str, str]] = [
     {
@@ -72,7 +72,7 @@ def connector_id_to_display_name(connector_id: str) -> str:
     return display_name
 
 
-class CustomGCSClient(GCSClient):
+class CustomGCSClient(globus_sdk.GCSClient):
     def __init__(self, *args, source_epish=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.source_epish = source_epish

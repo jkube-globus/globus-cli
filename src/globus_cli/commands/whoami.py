@@ -1,5 +1,5 @@
 import click
-from globus_sdk import AuthAPIError
+import globus_sdk
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
@@ -64,7 +64,7 @@ def whoami_command(*, login_manager, linked_identities):
     # if we get back an error the user likely needs to log in again
     try:
         res = auth_client.oauth2_userinfo()
-    except AuthAPIError:
+    except globus_sdk.AuthAPIError:
         click.echo(
             "Unable to get user information. Please try logging in again.", err=True
         )

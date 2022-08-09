@@ -9,7 +9,6 @@ from globus_cli.parsing import (
     mutex_option_group,
     one_use_option,
 )
-from globus_cli.services.transfer import assemble_generic_doc, autoactivate
 from globus_cli.termio import FORMAT_TEXT_RECORD, formatted_print
 
 from ._common import (
@@ -94,6 +93,8 @@ def endpoint_create(
     with the `--personal` flag, it returns a setup key which can be passed to
     Globus Connect Personal during setup.
     """
+    from globus_cli.services.transfer import assemble_generic_doc, autoactivate
+
     transfer_client = login_manager.get_transfer_client()
 
     endpoint_type = "personal" if personal else "server" if server else "shared"

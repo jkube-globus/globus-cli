@@ -2,7 +2,6 @@ import uuid
 from unittest import mock
 
 import globus_sdk
-from globus_sdk import NativeAppAuthClient
 from globus_sdk._testing import load_response_set
 
 from globus_cli.login_manager import LoginManager
@@ -64,7 +63,7 @@ def test_login_gcs_different_identity(
     test_token_storage.store_config(
         _STORE_CONFIG_USERINFO, {"sub": str(uuid.UUID(int=0))}
     )
-    mock_auth_client = mock.MagicMock(spec=NativeAppAuthClient)
+    mock_auth_client = mock.MagicMock(spec=globus_sdk.NativeAppAuthClient)
     mock_auth_client.oauth2_exchange_code_for_tokens = lambda _: MockToken()
     mock_local_server_flow.side_effect = (
         lambda *args, **kwargs: exchange_code_and_store(mock_auth_client, "bogus_code")

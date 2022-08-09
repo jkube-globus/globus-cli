@@ -4,9 +4,25 @@ import functools
 from typing import Callable
 
 import click
-import globus_sdk
 
-MEMBERSHIP_FIELDS = {x.value for x in globus_sdk.GroupRequiredSignupFields}
+# cannot do this because it causes immediate imports and ruins the lazy import
+# performance gain
+#
+# MEMBERSHIP_FIELDS = {x.value for x in globus_sdk.GroupRequiredSignupFields}
+MEMBERSHIP_FIELDS = {
+    "institution",
+    "current_project_name",
+    "address",
+    "city",
+    "state",
+    "country",
+    "address1",
+    "address2",
+    "zip",
+    "phone",
+    "department",
+    "field_of_science",
+}
 
 
 def group_id_arg(f: Callable | None = None):

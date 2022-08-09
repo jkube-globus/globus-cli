@@ -1,8 +1,8 @@
 import json
 import re
 
+import globus_sdk
 import pytest
-from globus_sdk import TimerClient
 from globus_sdk._testing import RegisteredResponse, load_response, load_response_set
 
 from globus_cli.commands.timer._common import JOB_FORMAT_FIELDS
@@ -63,7 +63,7 @@ DELETE_RESPONSE = RegisteredResponse(
 
 
 def test_show_job(run_line):
-    meta = load_response_set(TimerClient.get_job).metadata
+    meta = load_response_set(globus_sdk.TimerClient.get_job).metadata
     assert meta
     result = run_line(["globus", "timer", "show", meta["job_id"]])
     assert result.exit_code == 0
@@ -73,7 +73,7 @@ def test_show_job(run_line):
 
 
 def test_list_jobs(run_line):
-    meta = load_response_set(TimerClient.list_jobs).metadata
+    meta = load_response_set(globus_sdk.TimerClient.list_jobs).metadata
     assert meta
     result = run_line(["globus", "timer", "list"])
     assert result.exit_code == 0
