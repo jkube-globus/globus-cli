@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import functools
-from typing import Callable
+from typing import Callable, TypeVar, Union
 
 import click
 
@@ -11,6 +11,8 @@ from globus_cli.parsing.command_state import (
     map_http_status_option,
     verbose_option,
 )
+
+C = TypeVar("C", bound=Union[Callable, click.Command])
 
 
 def common_options(
@@ -85,11 +87,7 @@ def endpoint_id_arg(f: Callable | None = None, *, metavar: str = "ENDPOINT_ID"):
     return click.argument("endpoint_id", metavar=metavar, type=click.UUID)(f)
 
 
-def task_submission_options(f):
-    """
-    Options shared by both transfer and delete task submission
-    """
-
+def task_notify_option(f: C) -> C:
     def notify_opt_callback(ctx, param, value):
         """
         Parse --notify
@@ -149,6 +147,23 @@ def task_submission_options(f):
                 "notify_on_inactive": "inactive" in vals,
             }
 
+    return click.option(
+        "--notify",
+        callback=notify_opt_callback,
+        help=(
+            "Comma separated list of task events which notify by email. "
+            "'on' and 'off' may be used to enable or disable notifications "
+            "for all event types. Otherwise, use 'succeeded', 'failed', or "
+            "'inactive'"
+        ),
+    )(f)
+
+
+def task_submission_options(f):
+    """
+    Options shared by both transfer and delete task submission
+    """
+
     def format_deadline_callback(ctx, param, value):
         if not value:
             return None
@@ -159,16 +174,7 @@ def task_submission_options(f):
         is_flag=True,
         help="Don't actually submit the task, print submission data instead",
     )(f)
-    f = click.option(
-        "--notify",
-        callback=notify_opt_callback,
-        help=(
-            "Comma separated list of task events which notify by email. "
-            "'on' and 'off' may be used to enable or disable notifications "
-            "for all event types. Otherwise, use 'succeeded', 'failed', or "
-            "'inactive'"
-        ),
-    )(f)
+    f = task_notify_option(f)
     f = click.option(
         "--submission-id",
         help=(
