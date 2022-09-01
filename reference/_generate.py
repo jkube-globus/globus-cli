@@ -105,21 +105,12 @@ def _format_option(optstr):
     return f"{optnames}{' ' if optparams else ''}{optparams}::\n"
 
 
-def _format_synopsis(usage_pieces):
-    as_str = " ".join(usage_pieces)
-    if as_str.endswith("..."):
-        as_str = as_str[:-3]
-    return as_str
-
-
 class AdocPage:
     def __init__(self, ctx):
         self.commandname = ctx.command_path
         self.short_help = ctx.command.get_short_help_str()
         self.description = textwrap.dedent(ctx.command.help).replace("\b\n", "")
-        self.synopsis = ctx.command.adoc_synopsis or _format_synopsis(
-            ctx.command.collect_usage_pieces(ctx)
-        )
+        self.synopsis = ctx.command.adoc_synopsis or self._format_synopsis(ctx)
         self.options = "\n\n".join(
             _format_option(y[0]) + "\n" + y[1].replace("\n\n", "\n+\n")
             for y in [
@@ -136,11 +127,18 @@ class AdocPage:
             EXIT_STATUS_TEXT if uses_http else EXIT_STATUS_NOHTTP_TEXT
         )
 
+    def _format_synopsis(self, ctx):
+        usage_pieces = ctx.command.collect_usage_pieces(ctx)
+        as_str = " ".join(usage_pieces)
+        if as_str.endswith("..."):
+            as_str = as_str[:-3]
+        return f"`{self.commandname} {as_str}`"
+
     def __str__(self):
         sections = []
         sections.append(f"= {self.commandname.upper()}\n")
         sections.append(f"== NAME\n\n{self.commandname} - {self.short_help}\n")
-        sections.append(f"== SYNOPSIS\n\n`{self.commandname}`\n{self.synopsis}\n")
+        sections.append(f"== SYNOPSIS\n\n{self.synopsis}\n")
         if self.description:
             sections.append(f"== DESCRIPTION\n\n{self.description}\n")
         if self.options:
