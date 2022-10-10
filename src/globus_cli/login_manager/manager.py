@@ -8,6 +8,7 @@ import click
 import globus_sdk
 from globus_sdk.scopes import (
     AuthScopes,
+    FlowsScopes,
     GCSEndpointScopeBuilder,
     GroupsScopes,
     SearchScopes,
@@ -35,10 +36,11 @@ class LoginManager:
     _TEST_MODE: bool = False
 
     AUTH_RS = AuthScopes.resource_server
-    TRANSFER_RS = TransferScopes.resource_server
+    FLOWS_RS = FlowsScopes.resource_server
     GROUPS_RS = GroupsScopes.resource_server
     SEARCH_RS = SearchScopes.resource_server
     TIMER_RS = TimerScopes.resource_server
+    TRANSFER_RS = TransferScopes.resource_server
 
     STATIC_SCOPES: dict[str, list[str]] = {
         AUTH_RS: [
@@ -58,6 +60,13 @@ class LoginManager:
         ],
         TIMER_RS: [
             TimerScopes.timer,
+        ],
+        FLOWS_RS: [
+            FlowsScopes.manage_flows,
+            FlowsScopes.view_flows,
+            FlowsScopes.run,
+            FlowsScopes.run_status,
+            FlowsScopes.run_manage,
         ],
     }
 
@@ -175,18 +184,18 @@ class LoginManager:
         Simple usage for commands that have static resource needs: simply list all
         needed resource servers as args:
 
-        @LoginManager.requries_login("auth.globus.org")
+        @LoginManager.requires_login("auth.globus.org")
 
-        @LoginManager.requries_login(LoginManager.AUTH_RS)
+        @LoginManager.requires_login(LoginManager.AUTH_RS)
 
         @LoginManager.requires_login("auth.globus.org", "transfer.api.globus.org")
 
-        @LoginManager.requries_login(LoginManager.AUTH_RS, LoginManager.TRANSFER_RS)
+        @LoginManager.requires_login(LoginManager.AUTH_RS, LoginManager.TRANSFER_RS)
 
         Usage for commands which have dynamic resource servers depending
         on the arguments passed to the command (e.g. commands for the GCS API)
 
-        @LoginManager.requies_login()
+        @LoginManager.requires_login()
         def command(login_manager, endpoint_id)
 
             login_manager.<do the thing>(endpoint_id)
@@ -269,6 +278,10 @@ class LoginManager:
     def get_groups_client(self) -> globus_sdk.GroupsClient:
         authorizer = self._get_client_authorizer(GroupsScopes.resource_server)
         return globus_sdk.GroupsClient(authorizer=authorizer, app_name=version.app_name)
+
+    def get_flows_client(self) -> globus_sdk.FlowsClient:
+        authorizer = self._get_client_authorizer(FlowsScopes.resource_server)
+        return globus_sdk.FlowsClient(authorizer=authorizer, app_name=version.app_name)
 
     def get_search_client(self) -> globus_sdk.SearchClient:
         authorizer = self._get_client_authorizer(SearchScopes.resource_server)
