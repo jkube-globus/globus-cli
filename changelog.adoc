@@ -2,9 +2,42 @@
 
 // scriv-insert-here
 
+== 3.9.0 (2022-10-13)
+
+Bugfixes:
+
+* Fix a bug in text output for `globus transfer --dry-run` which crashed with a
+  `KeyError` if `--external-checksum` was omitted
+
+Enhancements:
+
+* A new command, `globus flows list`, allows users to list Flow objects in
+  Globus Flows
+
+* New commands for creating Globus Connect Personal endpoints and collections
+** `globus gcp create mapped` creates a GCP Mapped Collection
+** `globus gcp create guest` creates a GCP Guest Collection
+
+In GCP, the Mapped Collection and Endpoint are synonymous. Therefore,
+`globus gcp create mapped` replaces the functionality previously only available
+via `globus endpoint create --personal`.
+
+NOTE: Neither of the `globus gcp create` commands automatically installs Globus
+Connect Personal on the local machine. These commands complement and interact with
+an existing installation.
+
+Other:
+
+* `globus endpoint create` is now documented as deprecated. Users are
+  encouraged to use `globus gcp create` for Globus Connect Personal,
+  and the Globus Connect Server CLI for Globus Connect Server
+
+* `globus endpoint create` no longer accepts `--no-default-directory` as an
+  option. It previously did nothing when used.
+
 == 3.8.0 (2022-08-31)
 
-## Enhancements
+Enhancements:
 
 * The globus CLI is now faster to start in many cases. Tab completions are most
   significantly improved, but other commands may demonstrate an improvement as
@@ -18,11 +51,11 @@
 
 == 3.7.0 (2022-08-05)
 
-## Bugfixes
+Bugfixes:
 
 * Fix `globus session update` help text not handling missing domain errors from Transfer
 
-## Enhancements
+Enhancements:
 
 * `globus group member invite` now supports provisioning new identities in
   Globus Auth in order to support inviting new users who have not created
