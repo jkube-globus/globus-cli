@@ -1,17 +1,10 @@
+import uuid
+
 import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.principal_resolver import default_identity_id_resolver
-from globus_cli.termio import FORMAT_TEXT_TABLE, formatted_print
-
-STANDARD_FIELDS = [
-    ("ID", "id"),
-    ("Display Name", "display_name"),
-    ("Globus Identity", default_identity_id_resolver.field),
-    ("Local Username", "username"),
-    ("Invalid", "invalid"),
-]
+from globus_cli.termio import Field, TextMode, display, formatters
 
 
 @command("list", short_help="List all User Credentials on an Endpoint")
@@ -32,12 +25,24 @@ STANDARD_FIELDS = [
 def user_credential_list(
     *,
     login_manager: LoginManager,
-    endpoint_id,
-    storage_gateway,
+    endpoint_id: uuid.UUID,
+    storage_gateway: uuid.UUID,
 ):
     """
     List the User Credentials on a given Globus Connect Server v5 Endpoint
     """
     gcs_client = login_manager.get_gcs_client(endpoint_id=endpoint_id)
+    auth_client = login_manager.get_auth_client()
     res = gcs_client.get_user_credential_list(storage_gateway=storage_gateway)
-    formatted_print(res, text_format=FORMAT_TEXT_TABLE, fields=STANDARD_FIELDS)
+    fields = [
+        Field("ID", "id"),
+        Field("Display Name", "display_name"),
+        Field(
+            "Globus Identity",
+            "identity_id",
+            formatter=formatters.auth.IdentityIDFormatter(auth_client),
+        ),
+        Field("Local Username", "username"),
+        Field("Invalid", "invalid"),
+    ]
+    display(res, text_mode=TextMode.text_table, fields=fields)

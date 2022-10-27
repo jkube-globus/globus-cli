@@ -4,16 +4,13 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import CommaDelimitedList, command
-from globus_cli.termio import FORMAT_TEXT_TABLE, formatted_print
+from globus_cli.termio import Field, TextMode, display
 
 from .._common import MEMBERSHIP_FIELDS, group_id_arg
 
 
-def _str2field(fieldname: str):
-    def get_field(data):
-        return data["membership_fields"].get(fieldname, "")
-
-    return (fieldname.title(), get_field)
+def _str2field(fieldname: str) -> Field:
+    return Field(fieldname.title(), f"membership_fields.{fieldname}")
 
 
 @group_id_arg
@@ -40,13 +37,13 @@ def member_list(
     if fields:
         add_fields = [_str2field(x) for x in fields]
 
-    formatted_print(
+    display(
         group,
-        text_format=FORMAT_TEXT_TABLE,
+        text_mode=TextMode.text_table,
         fields=[
-            ("Username", "username"),
-            ("Role", "role"),
-            ("Status", "status"),
+            Field("Username", "username"),
+            Field("Role", "role"),
+            Field("Status", "status"),
         ]
         + add_fields,
         response_key="memberships",

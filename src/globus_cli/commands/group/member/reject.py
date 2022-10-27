@@ -2,13 +2,12 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import IdentityType, ParsedIdentity, command
-from globus_cli.termio import FORMAT_TEXT_RECORD, formatted_print
-from globus_cli.types import FIELD_LIST_T
+from globus_cli.termio import Field, TextMode, display
 
-REJECTED_USER_FIELDS: FIELD_LIST_T = [
-    ("Group ID", "group_id"),
-    ("Rejected User ID", "identity_id"),
-    ("Rejected User Username", "username"),
+REJECTED_USER_FIELDS = [
+    Field("Group ID", "group_id"),
+    Field("Rejected User ID", "identity_id"),
+    Field("Rejected User Username", "username"),
 ]
 
 
@@ -35,9 +34,9 @@ def member_reject(*, group_id: str, user: ParsedIdentity, login_manager: LoginMa
             raise ValueError(response["errors"]["reject"][0]["detail"])
         except (IndexError, KeyError):
             raise ValueError("Could not reject the user from the group")
-    formatted_print(
+    display(
         response,
-        text_format=FORMAT_TEXT_RECORD,
+        text_mode=TextMode.text_record,
         fields=REJECTED_USER_FIELDS,
         response_key=lambda data: data["reject"][0],
     )

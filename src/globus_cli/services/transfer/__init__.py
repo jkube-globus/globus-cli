@@ -1,3 +1,7 @@
+import typing as t
+
+from globus_cli.termio import Field, formatters
+
 from .activation import (
     activation_requirements_help_text,
     autoactivate,
@@ -13,11 +17,19 @@ from .data import (
 from .delegate_proxy import fill_delegate_proxy_activation_requirements
 from .recursive_ls import RecursiveLsResponse
 
-ENDPOINT_LIST_FIELDS = (
-    ("ID", "id"),
-    ("Owner", "owner_string"),
-    ("Display Name", display_name_or_cname),
-)
+
+class _NameFormatter(formatters.StrFormatter):
+    def parse(self, value: t.Any) -> str:
+        if not isinstance(value, list) or len(value) != 2:
+            raise ValueError("cannot parse display_name from malformed data")
+        return str(value[0] or value[1])
+
+
+ENDPOINT_LIST_FIELDS = [
+    Field("ID", "id"),
+    Field("Owner", "owner_string"),
+    Field("Display Name", "[display_name, canonical_name]", formatter=_NameFormatter()),
+]
 
 
 __all__ = (

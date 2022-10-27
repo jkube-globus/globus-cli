@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import typing as t
+
 import globus_sdk
+
+from globus_cli.termio import formatters
 
 CONNECTOR_INFO: list[dict[str, str]] = [
     {
@@ -70,6 +74,13 @@ def connector_id_to_display_name(connector_id: str) -> str:
         display_name = f"UNKNOWN ({connector_id})"
 
     return display_name
+
+
+class ConnectorIdFormatter(formatters.StrFormatter):
+    def parse(self, value: t.Any) -> str:
+        if not isinstance(value, str):
+            raise ValueError("bad connector ID")
+        return connector_id_to_display_name(value)
 
 
 class CustomGCSClient(globus_sdk.GCSClient):

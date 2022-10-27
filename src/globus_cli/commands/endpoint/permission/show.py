@@ -1,8 +1,14 @@
+from __future__ import annotations
+
+import uuid
+
 import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import FORMAT_TEXT_RECORD, formatted_print
+from globus_cli.termio import Field, TextMode, display
+
+from ._common import AclPrincipalFormatter
 
 
 @command(
@@ -19,29 +25,25 @@ $ globus endpoint permission show $ep_id $rule_id
 @endpoint_id_arg
 @click.argument("rule_id")
 @LoginManager.requires_login(LoginManager.AUTH_RS, LoginManager.TRANSFER_RS)
-def show_command(*, login_manager: LoginManager, endpoint_id, rule_id):
+def show_command(*, login_manager: LoginManager, endpoint_id: uuid.UUID, rule_id: str):
     """
     Show detailed information about a single access control rule on an endpoint.
     """
     transfer_client = login_manager.get_transfer_client()
     auth_client = login_manager.get_auth_client()
 
-    def _shared_with_keyfunc(rule):
-        if rule["principal_type"] == "identity":
-            return auth_client.lookup_identity_name(rule["principal"])
-        elif rule["principal_type"] == "group":
-            return "https://app.globus.org/groups/{}".format(rule["principal"])
-        else:
-            return rule["principal_type"]
-
     rule = transfer_client.get_endpoint_acl_rule(endpoint_id, rule_id)
-    formatted_print(
+    display(
         rule,
-        text_format=FORMAT_TEXT_RECORD,
-        fields=(
-            ("Rule ID", "id"),
-            ("Permissions", "permissions"),
-            ("Shared With", _shared_with_keyfunc),
-            ("Path", "path"),
-        ),
+        text_mode=TextMode.text_record,
+        fields=[
+            Field("Rule ID", "id"),
+            Field("Permissions", "permissions"),
+            Field(
+                "Shared With",
+                "@",
+                formatter=AclPrincipalFormatter(auth_client=auth_client),
+            ),
+            Field("Path", "path"),
+        ],
     )

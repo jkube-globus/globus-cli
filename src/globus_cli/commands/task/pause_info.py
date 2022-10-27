@@ -1,37 +1,55 @@
+from __future__ import annotations
+
+import typing as t
+
 import click
+import globus_sdk
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.termio import FORMAT_TEXT_RECORD, formatted_print
+from globus_cli.termio import Field, TextMode, display, formatters
 
 from ._common import task_id_arg
 
 EXPLICIT_PAUSE_MSG_FIELDS = [
-    ("Source Endpoint", "source_pause_message"),
-    ("Source Shared Endpoint", "source_pause_message_share"),
-    ("Destination Endpoint", "destination_pause_message"),
-    ("Destination Shared Endpoint", "destination_pause_message_share"),
+    Field("Source Endpoint", "source_pause_message"),
+    Field("Source Shared Endpoint", "source_pause_message_share"),
+    Field("Destination Endpoint", "destination_pause_message"),
+    Field("Destination Shared Endpoint", "destination_pause_message_share"),
 ]
 
-PAUSE_RULE_OPERATION_FIELDS = [
-    ("write", "pause_task_transfer_write"),
-    ("read", "pause_task_transfer_read"),
-    ("delete", "pause_task_delete"),
-    ("rename", "pause_rename"),
-    ("mkdir", "pause_mkdir"),
-    ("ls", "pause_ls"),
-]
+
+class RuleOperationsFormatter(formatters.FieldFormatter[t.List[str]]):
+    def parse(self, value: t.Any) -> list[str]:
+        if not isinstance(value, dict):
+            raise ValueError("cannot format rule operations from non-dict value")
+
+        ret: list[str] = []
+        for (label, key) in [
+            ("write", "pause_task_transfer_write"),
+            ("read", "pause_task_transfer_read"),
+            ("delete", "pause_task_delete"),
+            ("rename", "pause_rename"),
+            ("mkdir", "pause_mkdir"),
+            ("ls", "pause_ls"),
+        ]:
+            if value.get(key):
+                ret.append(label)
+        return ret
+
+    def render(self, value: list[str]) -> str:
+        return "/".join(value)
+
 
 PAUSE_RULE_DISPLAY_FIELDS = [
-    (
-        "Operations",
-        lambda rule: "/".join(
-            label for label, key in PAUSE_RULE_OPERATION_FIELDS if rule[key]
-        ),
+    Field("Operations", "@", formatter=RuleOperationsFormatter()),
+    Field("On Endpoint", "endpoint_display_name"),
+    Field(
+        "All Users",
+        "identity_id",
+        formatter=formatters.BoolFormatter(true_str="No", false_str="Yes"),
     ),
-    ("On Endpoint", "endpoint_display_name"),
-    ("All Users", lambda rule: "No" if rule["identity_id"] else "Yes"),
-    ("Message", "message"),
+    Field("Message", "message"),
 ]
 
 
@@ -79,12 +97,12 @@ def task_pause_info(*, login_manager: LoginManager, task_id):
     transfer_client = login_manager.get_transfer_client()
     res = transfer_client.task_pause_info(task_id)
 
-    def _custom_text_format(res):
+    def _custom_text_format(res: globus_sdk.GlobusHTTPResponse) -> None:
         explicit_pauses = [
             field
             for field in EXPLICIT_PAUSE_MSG_FIELDS
             # n.b. some keys are absent for completed tasks
-            if res.get(field[1])
+            if field.get_value(res)
         ]
         effective_pause_rules = res["pause_rules"]
 
@@ -93,16 +111,16 @@ def task_pause_info(*, login_manager: LoginManager, task_id):
             click.get_current_context().exit(0)
 
         if explicit_pauses:
-            formatted_print(
+            display(
                 res,
                 fields=explicit_pauses,
-                text_format=FORMAT_TEXT_RECORD,
+                text_mode=TextMode.text_record,
                 text_preamble="This task has been explicitly paused.\n",
                 text_epilog="\n" if effective_pause_rules else None,
             )
 
         if effective_pause_rules:
-            formatted_print(
+            display(
                 effective_pause_rules,
                 fields=PAUSE_RULE_DISPLAY_FIELDS,
                 text_preamble=(
@@ -110,4 +128,4 @@ def task_pause_info(*, login_manager: LoginManager, task_id):
                 ),
             )
 
-    formatted_print(res, text_format=_custom_text_format)
+    display(res, text_mode=_custom_text_format)

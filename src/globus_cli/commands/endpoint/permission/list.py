@@ -1,8 +1,12 @@
-import globus_sdk
+from __future__ import annotations
+
+import uuid
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import formatted_print
+from globus_cli.termio import Field, display
+
+from ._common import AclPrincipalFormatter
 
 
 @command(
@@ -17,35 +21,23 @@ $ globus endpoint permission list $ep_id
 )
 @endpoint_id_arg
 @LoginManager.requires_login(LoginManager.AUTH_RS, LoginManager.TRANSFER_RS)
-def list_command(*, login_manager: LoginManager, endpoint_id):
+def list_command(*, login_manager: LoginManager, endpoint_id: uuid.UUID):
     """List all rules in an endpoint's access control list."""
     transfer_client = login_manager.get_transfer_client()
     auth_client = login_manager.get_auth_client()
 
     rules = transfer_client.endpoint_acl_list(endpoint_id)
 
-    resolved_ids = globus_sdk.IdentityMap(
-        auth_client,
-        (x["principal"] for x in rules if x["principal_type"] == "identity"),
-    )
+    formatter = AclPrincipalFormatter(auth_client)
+    for r in rules:
+        formatter.add_item(r)
 
-    def principal_str(rule):
-        principal = rule["principal"]
-        if rule["principal_type"] == "identity":
-            try:
-                return resolved_ids[principal]["username"]
-            except KeyError:
-                return principal
-        if rule["principal_type"] == "group":
-            return ("https://app.globus.org/groups/{}").format(principal)
-        return rule["principal_type"]
-
-    formatted_print(
+    display(
         rules,
         fields=[
-            ("Rule ID", "id"),
-            ("Permissions", "permissions"),
-            ("Shared With", principal_str),
-            ("Path", "path"),
+            Field("Rule ID", "id"),
+            Field("Permissions", "permissions"),
+            Field("Shared With", "@", formatter=formatter),
+            Field("Path", "path"),
         ],
     )

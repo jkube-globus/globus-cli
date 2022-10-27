@@ -3,35 +3,35 @@ import click
 from globus_cli.endpointish import Endpointish
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import FORMAT_TEXT_RECORD, FormatField, formatted_print
+from globus_cli.termio import Field, TextMode, display, formatters
 
-STANDARD_FIELDS = (
-    ("Display Name", "display_name"),
-    ("ID", "id"),
-    ("Owner", "owner_string"),
-    FormatField("Description", "description", wrap_enabled=True),
-    ("Activated", "activated"),
-    ("Shareable", "shareable"),
-    ("Department", "department"),
-    ("Keywords", "keywords"),
-    ("Endpoint Info Link", "info_link"),
-    ("Contact E-mail", "contact_email"),
-    ("Organization", "organization"),
-    ("Department", "department"),
-    ("Other Contact Info", "contact_info"),
-    ("Visibility", "public"),
-    ("Default Directory", "default_directory"),
-    ("Force Encryption", "force_encryption"),
-    ("Managed Endpoint", lambda res: bool(res["subscription_id"])),
-    ("Subscription ID", "subscription_id"),
-    ("Legacy Name", "canonical_name"),
-    ("Local User Info Available", "local_user_info_available"),
-)
+STANDARD_FIELDS = [
+    Field("Display Name", "display_name"),
+    Field("ID", "id"),
+    Field("Owner", "owner_string"),
+    Field("Description", "description", wrap_enabled=True),
+    Field("Activated", "activated"),
+    Field("Shareable", "shareable"),
+    Field("Department", "department"),
+    Field("Keywords", "keywords"),
+    Field("Endpoint Info Link", "info_link"),
+    Field("Contact E-mail", "contact_email"),
+    Field("Organization", "organization"),
+    Field("Department", "department"),
+    Field("Other Contact Info", "contact_info"),
+    Field("Visibility", "public"),
+    Field("Default Directory", "default_directory"),
+    Field("Force Encryption", "force_encryption"),
+    Field("Managed Endpoint", "subscription_id", formatter=formatters.FuzzyBool),
+    Field("Subscription ID", "subscription_id"),
+    Field("Legacy Name", "canonical_name"),
+    Field("Local User Info Available", "local_user_info_available"),
+]
 
-GCP_FIELDS = STANDARD_FIELDS + (
-    ("GCP Connected", "gcp_connected"),
-    ("GCP Paused (macOS only)", "gcp_paused"),
-)
+GCP_FIELDS = STANDARD_FIELDS + [
+    Field("GCP Connected", "gcp_connected"),
+    Field("GCP Paused (macOS only)", "gcp_paused"),
+]
 
 
 @command("show")
@@ -50,8 +50,8 @@ def endpoint_show(
 
     res = transfer_client.get_endpoint(endpoint_id)
 
-    formatted_print(
+    display(
         res,
-        text_format=FORMAT_TEXT_RECORD,
+        text_mode=TextMode.text_record,
         fields=GCP_FIELDS if res["is_globus_connect"] else STANDARD_FIELDS,
     )

@@ -4,11 +4,7 @@ import re
 import click
 import pytest
 
-from globus_cli.termio import (
-    FORMAT_TEXT_RECORD_LIST,
-    formatted_print,
-    term_is_interactive,
-)
+from globus_cli.termio import Field, TextMode, display, term_is_interactive
 
 
 @pytest.mark.parametrize(
@@ -43,9 +39,9 @@ def test_format_record_list(capsys):
         {"bird": "Killdeer", "wingspan": 46},
         {"bird": "Franklin's Gull", "wingspan": 91},
     ]
-    fields = [("Bird", "bird"), ("Wingspan", "wingspan")]
+    fields = [Field("Bird", "bird"), Field("Wingspan", "wingspan")]
     with click.Context(click.Command("fake-command")) as _:
-        formatted_print(data, text_format=FORMAT_TEXT_RECORD_LIST, fields=fields)
+        display(data, text_mode=TextMode.text_record_list, fields=fields)
     output = capsys.readouterr().out
     # Should have:
     # 5 lines in total,

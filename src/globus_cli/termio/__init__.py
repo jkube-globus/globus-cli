@@ -13,16 +13,8 @@ from .context import (
     verbosity,
 )
 from .errors import PrintableErrorField, write_error_info
-from .output_formatter import (
-    FORMAT_JSON,
-    FORMAT_SILENT,
-    FORMAT_TEXT_RAW,
-    FORMAT_TEXT_RECORD,
-    FORMAT_TEXT_RECORD_LIST,
-    FORMAT_TEXT_TABLE,
-    FormatField,
-    formatted_print,
-)
+from .field import Field
+from .printer import TextMode, display
 
 
 def print_command_hint(message):
@@ -38,14 +30,9 @@ __all__ = [
     "print_command_hint",
     "PrintableErrorField",
     "write_error_info",
-    "formatted_print",
-    "FormatField",
-    "FORMAT_SILENT",
-    "FORMAT_JSON",
-    "FORMAT_TEXT_TABLE",
-    "FORMAT_TEXT_RECORD",
-    "FORMAT_TEXT_RECORD_LIST",
-    "FORMAT_TEXT_RAW",
+    "Field",
+    "TextMode",
+    "display",
     "out_is_terminal",
     "env_interactive",
     "err_is_terminal",

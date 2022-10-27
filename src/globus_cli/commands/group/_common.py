@@ -5,6 +5,8 @@ import typing as t
 
 import click
 
+from globus_cli.termio import Field, formatters
+
 # cannot do this because it causes immediate imports and ruins the lazy import
 # performance gain
 #
@@ -31,33 +33,6 @@ def group_id_arg(f: t.Callable | None = None):
     return click.argument("GROUP_ID")(f)
 
 
-def parse_roles(res):
-    return ",".join(sorted({m["role"] for m in res["my_memberships"]}))
-
-
-def format_session_enforcement(res):
-    if res.get("enforce_session"):
-        return "strict"
-    else:
-        return "not strict"
-
-
-def parse_visibility(res):
-    return res["policies"]["group_visibility"]
-
-
-def parse_members_visibility(res):
-    return res["policies"]["group_members_visibility"]
-
-
-def parse_join_requests(res):
-    return res["policies"]["join_requests"]
-
-
-def parse_signup_fields(res):
-    return ",".join(sorted(f for f in res["policies"]["signup_fields"]))
-
-
 def group_create_and_update_params(
     f: t.Callable | None = None, *, create: bool = False
 ) -> t.Callable:
@@ -78,3 +53,10 @@ def group_create_and_update_params(
     f = click.option("--description", help="Description for the group.")(f)
 
     return f
+
+
+SESSION_ENFORCEMENT_FIELD = Field(
+    "Session Enforcement",
+    "enforce_session",
+    formatter=formatters.FuzzyBoolFormatter(true_str="strict", false_str="not strict"),
+)

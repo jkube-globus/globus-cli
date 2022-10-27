@@ -1,13 +1,54 @@
 from __future__ import annotations
 
+import typing as t
 from textwrap import dedent
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import FORMAT_TEXT_RECORD, formatted_print
-from globus_cli.types import FIELD_LIST_T
+from globus_cli.termio import Field, TextMode, display, formatters
 
 from ._common import server_id_arg
+
+PORT_RANGE_T = t.Optional[t.Tuple[int, int]]
+
+
+class PortRangeFormatter(
+    formatters.FieldFormatter[t.Tuple[PORT_RANGE_T, PORT_RANGE_T]]
+):
+    def _parse_range(self, start: t.Any, end: t.Any) -> PORT_RANGE_T:
+        if start is None or end is None:
+            if start != end:
+                raise ValueError("invalid port range, only one end is null")
+            return None
+        if not (isinstance(start, int) and isinstance(end, int)):
+            raise ValueError("invalid port range, non-int values")
+        return (start, end)
+
+    def parse(self, value: t.Any) -> tuple[PORT_RANGE_T, PORT_RANGE_T]:
+        if not isinstance(value, dict):
+            raise ValueError("cannot parse port range from non-dict data")
+        incoming_start, incoming_end = (
+            value.get("incoming_data_port_start"),
+            value.get("incoming_data_port_end"),
+        )
+        outgoing_start, outgoing_end = (
+            value.get("outgoing_data_port_start"),
+            value.get("outgoing_data_port_end"),
+        )
+        incoming_range = self._parse_range(incoming_start, incoming_end)
+        outgoing_range = self._parse_range(outgoing_start, outgoing_end)
+        return (incoming_range, outgoing_range)
+
+    def _range_summary(self, prange: PORT_RANGE_T) -> str:
+        if prange is None:
+            return "unspecified"
+        start, end = prange
+        return "unrestricted" if start == 1024 and end == 65535 else f"{start}-{end}"
+
+    def render(self, value: tuple[PORT_RANGE_T, PORT_RANGE_T]) -> str:
+        incoming = self._range_summary(value[0])
+        outgoing = self._range_summary(value[1])
+        return f"incoming {incoming}, outgoing {outgoing}"
 
 
 @command(
@@ -31,7 +72,7 @@ def server_show(*, login_manager: LoginManager, endpoint_id, server_id):
     transfer_client = login_manager.get_transfer_client()
 
     server_doc = transfer_client.get_endpoint_server(endpoint_id, server_id)
-    fields: FIELD_LIST_T = [("ID", "id")]
+    fields = [Field("ID", "id")]
     if not server_doc["uri"]:  # GCP endpoint server
         text_epilog: str | None = dedent(
             """
@@ -44,38 +85,18 @@ def server_show(*, login_manager: LoginManager, endpoint_id, server_id):
             )
         )
     else:
-
-        def advertised_port_summary(server):
-            def get_range_summary(start, end):
-                return (
-                    "unspecified"
-                    if not start and not end
-                    else "unrestricted"
-                    if start == 1024 and end == 65535
-                    else f"{start}-{end}"
-                )
-
-            return "incoming {}, outgoing {}".format(
-                get_range_summary(
-                    server["incoming_data_port_start"], server["incoming_data_port_end"]
-                ),
-                get_range_summary(
-                    server["outgoing_data_port_start"], server["outgoing_data_port_end"]
-                ),
-            )
-
         fields.extend(
             [
-                ("URI", "uri"),
-                ("Subject", "subject"),
-                ("Data Ports", advertised_port_summary),
+                Field("URI", "uri"),
+                Field("Subject", "subject"),
+                Field("Data Ports", "@", formatter=PortRangeFormatter()),
             ]
         )
         text_epilog = None
 
-    formatted_print(
+    display(
         server_doc,
-        text_format=FORMAT_TEXT_RECORD,
+        text_mode=TextMode.text_record,
         fields=fields,
         text_epilog=text_epilog,
     )

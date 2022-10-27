@@ -5,7 +5,7 @@ import typing as t
 import click
 import globus_sdk
 
-from globus_cli.types import FIELD_LIST_T
+from globus_cli.termio import Field, formatters
 
 
 def index_id_arg(f: t.Callable) -> t.Callable:
@@ -19,36 +19,17 @@ def task_id_arg(f: t.Callable) -> t.Callable:
 def resolved_principals_field(
     auth_client: globus_sdk.AuthClient,
     items: t.Iterable[dict[str, t.Any]] | None = None,
-    *,
-    name: str = "Principal",
-    type_key: str = "principal_type",
-    value_key: str = "principal",
-) -> tuple[str, t.Callable[[dict], str]]:
-    resolved_ids = globus_sdk.IdentityMap(
-        auth_client,
-        (x[value_key].split(":")[-1] for x in items if x[type_key] == "identity")
-        if items
-        else [],
-    )
+) -> Field:
+    formatter = formatters.auth.PrincipalURNFormatter(auth_client)
+    if items is not None:
+        for item in items:
+            formatter.add_item(item)
 
-    def render_principal(item: dict[str, t.Any]) -> str:
-        value = item[value_key].split(":")[-1]
-        if item[type_key] == "identity":
-            try:
-                ret = resolved_ids[value]["username"]
-            except LookupError:
-                ret = value
-        elif item[type_key] == "group":
-            ret = f"Globus Group ({value})"
-        else:
-            ret = item[value_key]
-        return str(ret)
-
-    return (name, render_principal)
+    return Field("Principal", "principal", formatter=formatter)
 
 
-INDEX_FIELDS: FIELD_LIST_T = [
-    ("Index ID", "id"),
-    ("Display Name", "display_name"),
-    ("Status", "status"),
+INDEX_FIELDS = [
+    Field("Index ID", "id"),
+    Field("Display Name", "display_name"),
+    Field("Status", "status"),
 ]

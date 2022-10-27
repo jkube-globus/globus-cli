@@ -1,14 +1,42 @@
+from __future__ import annotations
+
 import json
+import typing as t
 import uuid
 
 import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.termio import formatted_print
+from globus_cli.termio import Field, display, formatters
 from globus_cli.utils import PagingWrapper
 
 from ._common import task_id_arg
+
+
+class SquashedJsonFormatter(formatters.FieldFormatter[t.Tuple[t.Any, bool]]):
+    def parse(self, value: t.Any) -> tuple[t.Any, bool]:
+        if not isinstance(value, str):
+            raise ValueError("bad input data")
+
+        is_json = False
+        try:
+            loaded = json.loads(value)
+            is_json = True
+        except ValueError:
+            loaded = value
+
+        return (loaded, is_json)
+
+    # TODO: reassess this rendering method
+    # the JSON side of it is okay, but the newline munging is questionable and doesn't
+    # handle other control characters
+    def render(self, value: tuple[t.Any, bool]) -> str:
+        data, is_json = value
+        if is_json:
+            return json.dumps(data, separators=(",", ":"), sort_keys=True)
+        else:
+            return str(data.replace("\n", "\\n"))
 
 
 @command(
@@ -49,7 +77,7 @@ def task_event_list(
     task_id: uuid.UUID,
     limit: int,
     filter_errors: bool,
-    filter_non_errors: bool
+    filter_non_errors: bool,
 ):
     """
     This command shows the recent events for a running task.
@@ -90,26 +118,13 @@ def task_event_list(
         limit=limit,
     )
 
-    def squashed_json_details(x):
-        is_json = False
-        try:
-            loaded = json.loads(x["details"])
-            is_json = True
-        except ValueError:
-            loaded = x["details"]
-
-        if is_json:
-            return json.dumps(loaded, separators=(",", ":"), sort_keys=True)
-        else:
-            return loaded.replace("\n", "\\n")
-
-    formatted_print(
+    display(
         event_iterator,
-        fields=(
-            ("Time", "time"),
-            ("Code", "code"),
-            ("Is Error", "is_error"),
-            ("Details", squashed_json_details),
-        ),
+        fields=[
+            Field("Time", "time"),
+            Field("Code", "code"),
+            Field("Is Error", "is_error"),
+            Field("Details", "details", formatter=SquashedJsonFormatter()),
+        ],
         json_converter=iterable_response_to_dict,
     )

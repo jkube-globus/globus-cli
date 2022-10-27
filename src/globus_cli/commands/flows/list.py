@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import click
 
-from globus_cli.commands.flows._common import FLOW_SUMMARY_FORMAT_FIELDS
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.termio import formatted_print
+from globus_cli.termio import Field, display, formatters
 from globus_cli.utils import PagingWrapper
 
 ROLE_TYPES = ("flow_viewer", "flow_starter", "flow_administrator", "flow_owner")
@@ -52,8 +51,22 @@ def list_command(
         limit=limit,
     )
 
-    formatted_print(
+    fields = [
+        Field("Flow ID", "id"),
+        Field("Title", "title"),
+        Field(
+            "Owner",
+            "flow_owner",
+            formatter=formatters.auth.PrincipalURNFormatter(
+                login_manager.get_auth_client()
+            ),
+        ),
+        Field("Created At", "created_at", formatter=formatters.Date),
+        Field("Updated At", "updated_at", formatter=formatters.Date),
+    ]
+
+    display(
         flow_iterator,
-        fields=FLOW_SUMMARY_FORMAT_FIELDS,
+        fields=fields,
         json_converter=flow_iterator.json_converter,
     )

@@ -2,16 +2,7 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.principal_resolver import default_identity_id_resolver
-from globus_cli.termio import FORMAT_TEXT_TABLE, formatted_print
-
-STANDARD_FIELDS = [
-    ("ID", "id"),
-    ("Display Name", "display_name"),
-    ("Owner", default_identity_id_resolver.field),
-    ("Collection Type", "collection_type"),
-    ("Storage Gateway ID", "storage_gateway_id"),
-]
+from globus_cli.termio import Field, TextMode, display, formatters
 
 
 class ChoiceSlugified(click.Choice):
@@ -94,6 +85,7 @@ def collection_list(
     List the Collections on a given Globus Connect Server v5 Endpoint
     """
     gcs_client = login_manager.get_gcs_client(endpoint_id=endpoint_id)
+    auth_client = login_manager.get_auth_client()
     params = {}
     if mapped_collection_id:
         params["mapped_collection_id"] = mapped_collection_id
@@ -103,4 +95,18 @@ def collection_list(
     if include_private_policies:
         params["include"] = "private_policies"
     res = gcs_client.get_collection_list(**params)
-    formatted_print(res, text_format=FORMAT_TEXT_TABLE, fields=STANDARD_FIELDS)
+    display(
+        res,
+        text_mode=TextMode.text_table,
+        fields=[
+            Field("ID", "id"),
+            Field("Display Name", "display_name"),
+            Field(
+                "Owner",
+                "identity_id",
+                formatter=formatters.auth.IdentityIDFormatter(auth_client),
+            ),
+            Field("Collection Type", "collection_type"),
+            Field("Storage Gateway ID", "storage_gateway_id"),
+        ],
+    )

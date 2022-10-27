@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import FORMAT_TEXT_RECORD, formatted_print
+from globus_cli.termio import Field, TextMode, display
 
-from ._common import role_id_arg
+from ._common import RolePrincipalFormatter, role_id_arg
 
 
 @command(
@@ -40,17 +42,15 @@ def role_show(*, login_manager: LoginManager, endpoint_id, role_id):
     """
     transfer_client = login_manager.get_transfer_client()
     auth_client = login_manager.get_auth_client()
-
-    def lookup_principal(role):
-        return auth_client.lookup_identity_name(role["principal"])
+    formatter = RolePrincipalFormatter(auth_client)
 
     role = transfer_client.get_endpoint_role(endpoint_id, role_id)
-    formatted_print(
+    display(
         role,
-        text_format=FORMAT_TEXT_RECORD,
-        fields=(
-            ("Principal Type", "principal_type"),
-            ("Principal", lookup_principal),
-            ("Role", "role"),
-        ),
+        text_mode=TextMode.text_record,
+        fields=[
+            Field("Principal Type", "principal_type"),
+            Field("Principal", "@", formatter=formatter),
+            Field("Role", "role"),
+        ],
     )

@@ -2,13 +2,12 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import IdentityType, ParsedIdentity, command
-from globus_cli.termio import FORMAT_TEXT_RECORD, formatted_print
-from globus_cli.types import FIELD_LIST_T
+from globus_cli.termio import Field, TextMode, display
 
-ADD_USER_FIELDS: FIELD_LIST_T = [
-    ("Group ID", "group_id"),
-    ("Added User ID", "identity_id"),
-    ("Added User Username", "username"),
+ADD_USER_FIELDS = [
+    Field("Group ID", "group_id"),
+    Field("Added User ID", "identity_id"),
+    Field("Added User Username", "username"),
 ]
 
 
@@ -45,9 +44,9 @@ def member_add(
             raise ValueError(response["errors"]["add"][0]["detail"])
         except (IndexError, KeyError):
             raise ValueError("Could not add user to group")
-    formatted_print(
+    display(
         response,
-        text_format=FORMAT_TEXT_RECORD,
+        text_mode=TextMode.text_record,
         fields=ADD_USER_FIELDS,
         response_key=lambda data: data["add"][0],
     )

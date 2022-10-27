@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import enum
 import json
 import textwrap
 
@@ -6,76 +9,19 @@ import globus_sdk
 
 from globus_cli.utils import CLIStubResponse
 
-from .awscli_text import unix_formatted_print
+from .awscli_text import unix_display
 from .context import get_jmespath_expression, outformat_is_json, outformat_is_unix
-
-FORMAT_SILENT = "silent"
-FORMAT_JSON = "json"
-FORMAT_TEXT_TABLE = "text_table"
-FORMAT_TEXT_RECORD = "text_record"
-FORMAT_TEXT_RECORD_LIST = "text_record_list"
-FORMAT_TEXT_RAW = "text_raw"
-FORMAT_TEXT_CUSTOM = "text_custom"
+from .field import Field
 
 
-class FormatField:
-    """A field which will be shown in record or table output.
-    When fields are provided as tuples, they are converted into this.
-
-    :param name: the displayed name for the record field or the column
-        name for table output
-    :param key: a str for indexing into print data or a callable which
-        produces a string given the print data
-    :param wrap_enabled: in record output, is this field allowed to wrap
-    """
-
-    def __init__(self, name, key, wrap_enabled=False):
-        self.name = name
-        self.keyfunc = _key_to_keyfunc(key)
-        self.wrap_enabled = wrap_enabled
-
-    @classmethod
-    def coerce(cls, rawfield):
-        """given a (FormatField|tuple), convert to a FormatField"""
-        if isinstance(rawfield, cls):
-            return rawfield
-        elif isinstance(rawfield, tuple):
-            if len(rawfield) == 2:
-                return cls(rawfield[0], rawfield[1])
-            raise ValueError("cannot coerce tuple of bad length")
-        raise TypeError(
-            "FormatField.coerce must be given a field or tuple, "
-            "got {}".format(type(rawfield))
-        )
-
-    def __call__(self, data):
-        """extract the field's value from the print data"""
-        return self.keyfunc(data)
-
-
-def _key_to_keyfunc(k):
-    """
-    We allow for 'keys' which are functions that map columns onto value
-    types -- they may do formatting or inspect multiple values on the
-    object. In order to support this, wrap string keys in a simple function
-    that does the natural lookup operation, but return any functions we
-    receive as they are.
-    """
-    # if the key is a string, then the "keyfunc" is just a basic lookup
-    # operation -- return that
-    if isinstance(k, str):
-        subkeys = k.split(".")
-
-        def lookup(x):
-            current = x
-            for sub in subkeys:
-                current = x[sub]
-            return current
-
-        return lookup
-    # otherwise, the key must be a function which is executed on the item
-    # to produce a value -- return it verbatim
-    return k
+class TextMode(enum.Enum):
+    silent = enum.auto()
+    json = enum.auto()
+    text_table = enum.auto()
+    text_record = enum.auto()
+    text_record_list = enum.auto()
+    text_raw = enum.auto()
+    text_custom = enum.auto()
 
 
 def _jmespath_preprocess(res):
@@ -100,7 +46,7 @@ def print_json_response(res):
 def print_unix_response(res):
     res = _jmespath_preprocess(res)
     try:
-        unix_formatted_print(res)
+        unix_display(res)
     # Attr errors indicate that we got data which cannot be unix formatted
     # likely a scalar + non-scalar in an array, though there may be other cases
     # print good error and exit(2) (Count this as UsageError!)
@@ -118,7 +64,7 @@ def print_unix_response(res):
         click.get_current_context().exit(2)
 
 
-def colon_formatted_print(data, fields):
+def _colon_display(data, fields):
     maxlen = max(len(f.name) for f in fields) + 2
     indent = " " * maxlen
     wrapper = textwrap.TextWrapper(initial_indent=indent, subsequent_indent=indent)
@@ -201,22 +147,23 @@ def print_table(iterable, fields, print_headers=True):
         click.echo(format_line([none_to_null(f(i)) for f in fields]))
 
 
-def formatted_print(
+def display(
     response_data,
+    *,
     simple_text=None,
     text_preamble=None,
     text_epilog=None,
-    text_format=FORMAT_TEXT_TABLE,
+    text_mode=TextMode.text_table,
     json_converter=None,
-    fields=None,
+    fields: list[Field] | None = None,
     response_key=None,
 ):
     """
-    A generic output formatter. Consumes the following pieces of data:
+    A generic output printer. Consumes the following pieces of data:
 
-    ``response_data`` is a dict, list (if the ``text_format`` is
-    ``FORMAT_TEXT_RECORD_LIST``), or GlobusResponse object. It contains either an API
-    response or synthesized data for printing.
+    ``response_data`` is a dict, list (if the ``text_mode`` is
+    ``TextMode.text_record_list``), or GlobusHTTPResponse object.
+    It contains either an API response or synthesized data for printing.
 
     ``simple_text`` is a text override -- normal printing is skipped and this
     string is printed instead (text output only)
@@ -224,15 +171,14 @@ def formatted_print(
     only)
     ``text_epilog`` is text which prints after normal printing (text output
     only)
-    ``text_format`` is one of the FORMAT_TEXT_* constants OR a callable which
-    takes ``response_data`` and prints output. Note that when a callable is
-    given, it does the actual printing
+    ``text_mode`` is a TextMode OR a callable which takes ``response_data`` and prints
+    output. Note that when a callable is given, it does the actual printing
 
     ``json_converter`` is a callable that does preprocessing of JSON output. It
     must take ``response_data`` and produce another dict or dict-like object
     (json/unix output only)
 
-    ``fields`` is an iterable of fields. They may be expressed as FormatField
+    ``fields`` is an iterable of fields. They may be expressed as Field
     objects, (fieldname, key_string) tuples, or (fieldname, key_func) tuples.
 
     ``response_key`` is a key into the data to print. When used with table
@@ -278,13 +224,13 @@ def formatted_print(
             data = response_data[response_key]
 
         #  do the various kinds of printing
-        if text_format == FORMAT_TEXT_TABLE:
+        if text_mode == TextMode.text_table:
             _assert_fields()
             print_table(data, fields)
-        elif text_format == FORMAT_TEXT_RECORD:
+        elif text_mode == TextMode.text_record:
             _assert_fields()
-            colon_formatted_print(data, fields)
-        elif text_format == FORMAT_TEXT_RECORD_LIST:
+            _colon_display(data, fields)
+        elif text_mode == TextMode.text_record_list:
             _assert_fields()
             if not isinstance(data, list):
                 raise ValueError("only lists can be output in text record list format")
@@ -294,10 +240,10 @@ def formatted_print(
                 if not first:
                     click.echo()
                 first = False
-                colon_formatted_print(record, fields)
-        elif text_format == FORMAT_TEXT_RAW:
+                _colon_display(record, fields)
+        elif text_mode == TextMode.text_raw:
             click.echo(data)
-        elif text_format == FORMAT_TEXT_CUSTOM:
+        elif text_mode == TextMode.text_custom:
             # _custom_text_formatter is set along with FORMAT_TEXT_CUSTOM
             assert _custom_text_formatter
             _custom_text_formatter(data)
@@ -306,16 +252,11 @@ def formatted_print(
         if text_epilog is not None:
             click.echo(text_epilog)
 
-    # ensure fields are FormatField instances
-    if fields:
-        fields = [FormatField.coerce(f) for f in fields]
-
-    if isinstance(text_format, str):
-        text_format = text_format
+    if isinstance(text_mode, TextMode):
         _custom_text_formatter = None
     else:
-        _custom_text_formatter = text_format
-        text_format = FORMAT_TEXT_CUSTOM
+        _custom_text_formatter = text_mode
+        text_mode = TextMode.text_custom
 
     if outformat_is_json():
         _print_as_json()
@@ -323,6 +264,6 @@ def formatted_print(
         _print_as_unix()
     else:
         # silent does nothing
-        if text_format == FORMAT_SILENT:
+        if text_mode == TextMode.silent:
             return
         _print_as_text()

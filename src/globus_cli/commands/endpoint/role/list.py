@@ -1,8 +1,10 @@
-import globus_sdk
+import uuid
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import formatted_print
+from globus_cli.termio import Field, display
+
+from ._common import RolePrincipalFormatter
 
 
 @command(
@@ -29,7 +31,7 @@ $ globus endpoint role list 'ddb59aef-6d04-11e5-ba46-22000b92c6ec'
 )
 @endpoint_id_arg
 @LoginManager.requires_login(LoginManager.AUTH_RS, LoginManager.TRANSFER_RS)
-def role_list(*, login_manager: LoginManager, endpoint_id):
+def role_list(*, login_manager: LoginManager, endpoint_id: uuid.UUID):
     """
     List the assigned roles on an endpoint.
 
@@ -38,28 +40,16 @@ def role_list(*, login_manager: LoginManager, endpoint_id):
     transfer_client = login_manager.get_transfer_client()
     roles = transfer_client.endpoint_role_list(endpoint_id)
 
-    resolved_ids = globus_sdk.IdentityMap(
-        login_manager.get_auth_client(),
-        (x["principal"] for x in roles if x["principal_type"] == "identity"),
-    )
+    formatter = RolePrincipalFormatter(login_manager.get_auth_client())
+    for r in roles:
+        formatter.add_item(r)
 
-    def principal_str(role):
-        principal = role["principal"]
-        if role["principal_type"] == "identity":
-            try:
-                return resolved_ids[principal]["username"]
-            except KeyError:
-                return principal
-        if role["principal_type"] == "group":
-            return f"https://app.globus.org/groups/{principal}"
-        return principal
-
-    formatted_print(
+    display(
         roles,
         fields=[
-            ("Principal Type", "principal_type"),
-            ("Role ID", "id"),
-            ("Principal", principal_str),
-            ("Role", "role"),
+            Field("Principal Type", "principal_type"),
+            Field("Role ID", "id"),
+            Field("Principal", "@", formatter=formatter),
+            Field("Role", "role"),
         ],
     )
