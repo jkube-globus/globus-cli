@@ -39,6 +39,20 @@ def collection_create_params(f):
 
     f = click.argument("DISPLAY_NAME")(f)
     f = click.option(
+        "--storage-gateway",
+        help=(
+            "The storage gateway ID to host this collection. "
+            "If no value is provided but the endpoint has exactly one gateway, "
+            "that gateway will be used by default."
+        ),
+    )(f)
+    f = click.option(
+        "--base-path",
+        default="/",
+        show_default=True,
+        help="The location within the storage gateway where the collection is rooted.",
+    )(f)
+    f = click.option(
         "--public/--private",
         "public",
         default=True,
@@ -250,8 +264,6 @@ def collection_create_params(f):
 
 @command("create", short_help="Create a new Mapped Collection")
 @endpoint_id_arg
-@click.argument("STORAGE_GATEWAY_ID")
-@click.argument("BASE_PATH")
 @collection_create_params
 @click.option(
     "--identity-id",
@@ -266,7 +278,7 @@ def collection_create_mapped(
     login_manager: LoginManager,
     # positional args
     endpoint_id: uuid.UUID,
-    storage_gateway_id: uuid.UUID,
+    storage_gateway: str,
     base_path: str,
     display_name: str,
     # options
@@ -302,10 +314,27 @@ def collection_create_mapped(
     Create a new Mapped Collection, rooted on some given path within an
     existing Storage Gateway.
 
-    The ENDPOINT_ID and STORAGE_GATEWAY_ID are both required in order to specify where
-    and how the collection is hosted.
+    If the '--storage-gateway' option is not used to specify a storage gateway to use
+    and there is only one storage gateway on the endpoint, that gateway will be used.
+    Otherwise, '--storage-gateway' is required.
     """
     gcs_client = login_manager.get_gcs_client(endpoint_id=endpoint_id)
+    if storage_gateway is not None:
+        storage_gateway_id = storage_gateway
+    else:
+        all_gateways = list(gcs_client.get_storage_gateway_list())
+        if len(all_gateways) == 0:
+            raise click.UsageError(
+                "This endpoint does not have any storage gateways. "
+                "You must create one before you can create a collection."
+            )
+        elif len(all_gateways) == 1:
+            storage_gateway_id = all_gateways[0]["id"]
+        else:
+            raise click.UsageError(
+                "This endpoint has multiple storage gateways. "
+                "You must specify which one to use with the --storage-gateway option."
+            )
 
     policies: t.Optional[globus_sdk.CollectionPolicies] = None
     if google_project_id is not None:
