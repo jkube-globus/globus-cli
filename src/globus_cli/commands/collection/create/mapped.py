@@ -6,38 +6,28 @@ import uuid
 import click
 import globus_sdk
 
-from globus_cli.constants import EXPLICIT_NULL, ExplicitNullType
+from globus_cli.constants import ExplicitNullType
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import (
-    CommaDelimitedList,
     JSONStringOrFile,
     StringOrNull,
     UrlOrNull,
     command,
     endpoint_id_arg,
+    endpointish_params,
     mutex_option_group,
     nullable_multi_callback,
 )
 from globus_cli.termio import Field, TextMode, display
 
 
-def _mkhelp(txt):
-    return f"{txt} the collection"
-
-
 def collection_create_params(f):
     """
-    Collection of options consumed by GCS Collection update
-
-    Usage:
-
-    >>> @collection_create_and_update_params(create=False)
-    >>> def command_func(**kwargs):
-    >>>     ...
+    Collection of options consumed by GCS Collection create.
     """
     multi_use_option_str = "Give this option multiple times in a single command"
+    f = click.argument("BASE_PATH")(f)
 
-    f = click.argument("DISPLAY_NAME")(f)
     f = click.option(
         "--storage-gateway",
         help=(
@@ -47,50 +37,10 @@ def collection_create_params(f):
         ),
     )(f)
     f = click.option(
-        "--base-path",
-        default="/",
-        show_default=True,
-        help="The location within the storage gateway where the collection is rooted.",
-    )(f)
-    f = click.option(
         "--public/--private",
         "public",
         default=True,
         help="Set the collection to be public or private",
-    )(f)
-    f = click.option(
-        "--description", type=StringOrNull(), help=_mkhelp("Description for")
-    )(f)
-    f = click.option(
-        "--info-link", type=StringOrNull(), help=_mkhelp("Link for info about")
-    )(f)
-    f = click.option(
-        "--contact-info", type=StringOrNull(), help=_mkhelp("Contact Info for")
-    )(f)
-    f = click.option(
-        "--contact-email",
-        type=StringOrNull(),
-        help=_mkhelp("Contact email for"),
-    )(f)
-    f = click.option(
-        "--organization", type=StringOrNull(), help=_mkhelp("Organization for")
-    )(f)
-    f = click.option(
-        "--department", type=StringOrNull(), help=_mkhelp("Department which operates")
-    )(f)
-    f = click.option(
-        "--keywords",
-        type=CommaDelimitedList(),
-        help=_mkhelp("Comma separated list of keywords to help searches for"),
-    )(f)
-    f = click.option(
-        "--force-encryption/--no-force-encryption",
-        "force_encryption",
-        default=None,
-        help=(
-            "When set, all transfers to and from this collection are "
-            "always encrypted"
-        ),
     )(f)
     f = click.option(
         "--sharing-restrict-paths",
@@ -128,11 +78,6 @@ def collection_create_params(f):
             "or a fully-qualified domain name, but if it is the latter "
             "it must be a subdomain of the endpoint's domain"
         ),
-    )(f)
-    f = click.option(
-        "--default-directory",
-        default=None,
-        help="Default directory when browsing the collection",
     )(f)
 
     f = click.option(
@@ -246,24 +191,12 @@ def collection_create_params(f):
             'Set a value of "" to clear this'
         ),
     )(f)
-
-    f = click.option(
-        "--verify",
-        type=click.Choice(["force", "disable", "default"], case_sensitive=False),
-        help=(
-            "Set the policy for this collection for file integrity verification "
-            "after transfer. 'force' requires all transfers to perform "
-            "verfication. 'disable' disables all verification checks. 'default' "
-            "allows the user to decide on verification at Transfer task submit  "
-            "time. When set on mapped collections, this policy is inherited by any "
-            "guest collections"
-        ),
-    )(f)
     return f
 
 
 @command("create", short_help="Create a new Mapped Collection")
 @endpoint_id_arg
+@endpointish_params.create(name="collection")
 @collection_create_params
 @click.option(
     "--identity-id",
@@ -278,10 +211,10 @@ def collection_create_mapped(
     login_manager: LoginManager,
     # positional args
     endpoint_id: uuid.UUID,
-    storage_gateway: str,
     base_path: str,
     display_name: str,
     # options
+    storage_gateway: str | None,
     public: bool,
     description: str | None,
     info_link: str | None,
@@ -289,7 +222,7 @@ def collection_create_mapped(
     contact_email: str | None,
     organization: str | None,
     department: str | None,
-    keywords: str | None,
+    keywords: list[str] | None,
     default_directory: str | None,
     force_encryption: bool | None,
     domain_name: str | None,
@@ -347,8 +280,8 @@ def collection_create_mapped(
             raise click.UsageError("Incompatible policy options detected")
         # Added in 5.4.8 for POSIX connector
         policies = globus_sdk.POSIXCollectionPolicies(
-            posix_sharing_group_allow=posix_sharing_group_allow,
-            posix_sharing_group_deny=posix_sharing_group_deny,
+            sharing_groups_allow=posix_sharing_group_allow,
+            sharing_groups_deny=posix_sharing_group_deny,
         )
 
     if (
@@ -358,17 +291,10 @@ def collection_create_mapped(
         if policies is not None:
             raise click.UsageError("Incompatible policy options detected")
         # Added in 5.4.10 for POSIX staging connector
-        policies = globus_sdk.POSIXStagingStoragePolicies(
+        policies = globus_sdk.POSIXStagingCollectionPolicies(
             sharing_groups_allow=posix_staging_sharing_group_allow,
             sharing_groups_deny=posix_staging_sharing_group_deny,
         )
-
-    if sharing_restrict_paths == EXPLICIT_NULL:
-        sharing_restrict_paths = None
-    if user_message == EXPLICIT_NULL:
-        user_message = None
-    if user_message_link == EXPLICIT_NULL:
-        user_message_link = None
 
     # These are added in GCS 5.4.4, so if neither --enable-https or
     # --disable-https are set, then we'll not try to set the value for
@@ -409,9 +335,9 @@ def collection_create_mapped(
         allow_guest_collections=allow_guest_collections,
         sharing_users_allow=sharing_users_allow,
         sharing_users_deny=sharing_users_deny,
-        sharing_restrict_paths=sharing_restrict_paths,
-        user_message=user_message,
-        user_message_link=user_message_link,
+        sharing_restrict_paths=ExplicitNullType.nullify(sharing_restrict_paths),
+        user_message=ExplicitNullType.nullify(user_message),
+        user_message_link=ExplicitNullType.nullify(user_message_link),
         enable_https=enable_https,
         disable_verify=disable_verify,
         force_verify=force_verify,
