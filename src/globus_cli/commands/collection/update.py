@@ -5,7 +5,7 @@ import globus_sdk
 
 from globus_cli import utils
 from globus_cli.constants import EXPLICIT_NULL
-from globus_cli.endpointish import EndpointType
+from globus_cli.endpointish import EntityType
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import (
     CommaDelimitedList,
@@ -216,7 +216,7 @@ def collection_update(
     """
     gcs_client = login_manager.get_gcs_client(collection_id=collection_id)
 
-    if gcs_client.source_epish.ep_type == EndpointType.GUEST_COLLECTION:
+    if gcs_client.source_epish.entity_type == EntityType.GCSV5_GUEST:
         doc_class: (
             type[globus_sdk.GuestCollectionDocument]
             | type[globus_sdk.MappedCollectionDocument]
