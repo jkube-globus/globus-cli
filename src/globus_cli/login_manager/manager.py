@@ -166,14 +166,16 @@ class LoginManager:
         if epilog is not None:
             click.echo(epilog)
 
-    def assert_logins(self, *resource_servers, assume_gcs=False):
+    def assert_logins(self, *resource_servers, assume_gcs=False, assume_flow=False):
         # determine the set of resource servers missing logins
         missing_servers = {s for s in resource_servers if not self.has_login(s)}
 
         # if we are missing logins, assemble error text
         # text is slightly different for 1, 2, or 3+ missing servers
         if missing_servers:
-            raise MissingLoginError(missing_servers, assume_gcs=assume_gcs)
+            raise MissingLoginError(
+                missing_servers, assume_gcs=assume_gcs, assume_flow=assume_flow
+            )
 
     @classmethod
     def requires_login(cls, *resource_servers: str):
@@ -312,6 +314,27 @@ class LoginManager:
         else:  # pragma: no cover
             raise ValueError("Internal Error! collection_id or endpoint_id is required")
         return (resolved_ep_id, epish)
+
+    def get_specific_flow_client(
+        self,
+        flow_id: uuid.UUID,
+    ) -> globus_sdk.SpecificFlowClient:
+        # Create a SpecificFlowClient without an authorizer
+        # to take advantage of its scope creation code.
+        client = globus_sdk.SpecificFlowClient(flow_id, app_name=version.app_name)
+        assert client.scopes is not None
+        self.add_requirement(client.scopes.resource_server, [client.scopes.user])
+        self.assert_logins(client.scopes.resource_server, assume_flow=True)
+
+        # Create and assign an authorizer now that scope requirements are registered.
+        client.authorizer = self._get_client_authorizer(
+            client.scopes.resource_server,
+            no_tokens_msg=(
+                f"Could not get login data for flow {flow_id}. "
+                f"Try login with '--flow {flow_id}' to fix."
+            ),
+        )
+        return client
 
     def get_gcs_client(
         self,
