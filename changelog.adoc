@@ -2,6 +2,61 @@
 
 // scriv-insert-here
 
+== 3.10.0 (2022-12-05)
+
+## Bugfixes
+
+* Fix a bug which caused `globus list-commands` not to show proper information
+
+## Enhancements
+
+* Add the `globus api flows` command for direct interactions with the Globus
+  Flows service
+
+* Added commands for interacting with GCSv5 user credentials
+    * `globus endpoint user-credential list`
+    * `globus endpoint user-credential show`
+    * `globus endpoint user-credential delete`
+    * `globus endpoint user-credential create`
+        * `globus endpoint user-credential create from-json`
+        * `globus endpoint user-credential create posix`
+        * `globus endpoint user-credential create s3`
+
+* Added `globus endpoint storage-gateway list`
+
+* Add `globus flows delete` to delete a flow by ID
+
+* Add a new command, `globus flows show` which displays information about a
+  single flow
+
+* Add `globus flows start` as a new command for starting a flow.
+
+* Add `globus login --flow <flow_id>` to trigger a login that asks for consent to start a flow.
+
+* `globus ls` has improved behavior when the `--filter` and `--recursive` options
+   are used in combination
+
+  * directory names are not matched against the filter, allowing the operation to
+    traverse directories regardless of their names
+
+  * the `--filter` is still applied to filenames in all directories traversed by
+    the `ls` operation
+
+  * directory names can be filtered out of the text output by eliminating
+    lines which end in `/`
+
+  * the behaviors of `globus ls` commands with `--recursive` or `--filter`, but not
+    both, are unchanged
+
+## Other
+
+* `globus endpoint create` is now hidden and displays a deprecation warning
+  when used
+
+* Support Python 3.11.
+
+* Endpointish now uses `entity_type` for determining EntityType
+
 == 3.9.0 (2022-10-13)
 
 Bugfixes:
