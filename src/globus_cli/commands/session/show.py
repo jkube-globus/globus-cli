@@ -1,4 +1,4 @@
-import time
+import datetime
 
 import globus_sdk
 
@@ -10,7 +10,13 @@ from globus_cli.login_manager import (
     token_storage_adapter,
 )
 from globus_cli.parsing import command
-from globus_cli.termio import display, print_command_hint
+from globus_cli.termio import Field, display, print_command_hint
+
+SESSION_FIELDS = [
+    Field("Username", "username"),
+    Field("ID", "id"),
+    Field("Auth Time", "auth_time"),
+]
 
 
 @command(
@@ -82,8 +88,10 @@ def session_show(*, login_manager):
         {
             "id": key,
             "username": resolved_ids.get(key, {}).get("username"),
-            "auth_time": time.strftime(
-                "%Y-%m-%d %H:%M %Z", time.localtime(vals["auth_time"])
+            "auth_time": (
+                datetime.datetime.fromtimestamp(vals["auth_time"])
+                .astimezone()
+                .strftime("%Y-%m-%d %H:%M %Z")
             ),
         }
         for key, vals in authentications.items()
@@ -97,5 +105,5 @@ def session_show(*, login_manager):
     display(
         list_data,
         json_converter=lambda x: session_info,
-        fields=[("Username", "username"), ("ID", "id"), ("Auth Time", "auth_time")],
+        fields=SESSION_FIELDS,
     )
