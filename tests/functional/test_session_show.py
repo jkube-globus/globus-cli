@@ -1,5 +1,4 @@
 import datetime
-import time
 import uuid
 
 import pytest
@@ -85,11 +84,11 @@ def create_introspect_data(user_attrs):
                     "acr": None,
                     "amr": None,
                     "idp": user_attrs["idp_id"],
-                    "auth_time": int(
-                        time.mktime(
-                            time.strptime(user_attrs["auth_time"], "%Y-%m-%d %H:%M %Z")
-                        )
-                    ),
+                    "auth_time": datetime.datetime.strptime(
+                        user_attrs["auth_time"], "%Y-%m-%d %H:%M %Z"
+                    )
+                    .replace(tzinfo=datetime.timezone.utc)
+                    .timestamp(),
                     "custom_claims": {},
                 }
             },
