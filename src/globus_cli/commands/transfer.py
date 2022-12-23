@@ -163,7 +163,6 @@ fi
 @click.option(
     "--exclude",
     multiple=True,
-    default=None,
     show_default=True,
     help=(
         "Exclude files and directories found with names that match the given "
@@ -181,7 +180,7 @@ fi
 def transfer_command(
     *,
     login_manager: LoginManager,
-    batch: t.TextIO,
+    batch: t.TextIO | None,
     sync_level: Literal["exists", "size", "mtime", "checksum"] | None,
     recursive: bool,
     source: tuple[uuid.UUID, str | None],
@@ -190,7 +189,7 @@ def transfer_command(
     external_checksum: str | None,
     skip_source_errors: bool,
     fail_on_quota_errors: bool,
-    exclude: list[str] | None,
+    exclude: tuple[str, ...],
     label: str | None,
     preserve_timestamp: bool,
     verify_checksum: bool,
@@ -322,7 +321,7 @@ def transfer_command(
         additional_fields={**perf_opts, **notify},
     )
 
-    for exclude_name in exclude or ():
+    for exclude_name in exclude:
         transfer_data.add_filter_rule(exclude_name)
 
     if batch:
