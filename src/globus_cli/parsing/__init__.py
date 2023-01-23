@@ -1,6 +1,6 @@
 from .commands import command, group, main_group
 from .mutex_group import MutexInfo, mutex_option_group
-from .one_use_option import one_use_option
+from .param_classes import AnnotatedOption, one_use_option
 from .param_types import (
     ENDPOINT_PLUS_OPTPATH,
     ENDPOINT_PLUS_REQPATH,
@@ -23,9 +23,7 @@ from .shared_options import (
     task_notify_option,
     task_submission_options,
 )
-from .shared_options.endpoint_create_and_update import (
-    endpointish_create_and_update_params,
-)
+from .shared_options.endpointish import endpointish_params
 from .shared_options.id_args import collection_id_arg, endpoint_id_arg, flow_id_arg
 from .shared_options.transfer_task_options import (
     encrypt_data_option,
@@ -44,6 +42,8 @@ __all__ = [
     "group",
     "main_group",
     "one_use_option",
+    # param classes
+    "AnnotatedOption",
     # param types
     "ENDPOINT_PLUS_OPTPATH",
     "ENDPOINT_PLUS_REQPATH",
@@ -78,5 +78,5 @@ __all__ = [
     "preserve_timestamp_option",
     "skip_source_errors_option",
     "verify_checksum_option",
-    "endpointish_create_and_update_params",
+    "endpointish_params",
 ]

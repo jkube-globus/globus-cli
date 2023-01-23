@@ -13,6 +13,16 @@ if sys.version_info >= (3, 10):
 else:
     from typing_extensions import TypeAlias
 
+# runtime usable types (see AnnotatedOption for a use-case)
+if sys.version_info < (3, 9):
+    DictType = t.Dict
+    ListType = t.List
+    TupleType = t.Tuple
+else:
+    DictType = dict
+    ListType = list
+    TupleType = tuple
+
 # all imports from globus_cli modules done here are done under TYPE_CHECKING
 # in order to ensure that the use of type annotations never introduces circular
 # imports at runtime

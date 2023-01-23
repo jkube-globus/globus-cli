@@ -1,13 +1,17 @@
 from __future__ import annotations
 
 import json
+import typing as t
 
 import click
 
 from globus_cli.constants import EXPLICIT_NULL
+from globus_cli.types import JsonValue
+
+from .annotated_param import AnnotatedParamType
 
 
-class StringPrefixMapper(click.ParamType):
+class StringPrefixMapper(AnnotatedParamType):
     """
     This is the base class for mapping types which try to split up inputs and parse them
     based on identifying prefixes
@@ -62,6 +66,9 @@ class JSONStringOrFile(StringPrefixMapper):
 
     __prefix_mapping__ = {"file:": "prefix_mapper_parse_json_file"}
     __prefix_metavars__ = ["JSON", "file:JSON_FILE"]
+
+    def get_type_annotation(self, param: click.Parameter) -> type:
+        return t.cast(type, JsonValue)
 
     def prefix_mapper_parse_json_file(self, value):
         try:

@@ -1,7 +1,11 @@
+import uuid
+
 import click
 
+from .annotated_param import AnnotatedParamType
 
-class EndpointPlusPath(click.ParamType):
+
+class EndpointPlusPath(AnnotatedParamType):
     """
     Custom type for "<endpoint_id>:<path>"
     Supports path being required and path being optional.
@@ -16,6 +20,12 @@ class EndpointPlusPath(click.ParamType):
         self.path_required = kwargs.pop("path_required", True)
 
         super().__init__(*args, **kwargs)
+
+    def get_type_annotation(self, param: click.Parameter) -> type:
+        if self.path_required:
+            return tuple[uuid.UUID, str]  # type: ignore[no-any-return,misc]
+        else:
+            return tuple[uuid.UUID, str | None]  # type: ignore[no-any-return,misc]
 
     def get_metavar(self, param):
         """
