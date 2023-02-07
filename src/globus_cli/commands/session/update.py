@@ -1,17 +1,33 @@
+from __future__ import annotations
+
+import typing as t
+
 import click
 
 from globus_cli.login_manager import LoginManager
-from globus_cli.parsing import IdentityType, command, no_local_server_option
+from globus_cli.parsing import (
+    CommaDelimitedList,
+    IdentityType,
+    ParsedIdentity,
+    command,
+    no_local_server_option,
+)
 
 
-def _update_session_params_all_case(identity_set, session_params):
+def _update_session_params_all_case(
+    identity_set: list[dict[str, t.Any]], session_params: dict[str, t.Any]
+) -> None:
     """if --all use every identity id in the user's identity set"""
     identity_ids = [x["sub"] for x in identity_set]
     # set session params once we have all identity ids
     session_params["session_required_identities"] = ",".join(identity_ids)
 
 
-def _update_session_params_identities_case(identity_set, session_params, identities):
+def _update_session_params_identities_case(
+    identity_set: list[dict[str, t.Any]],
+    session_params: dict[str, t.Any],
+    identities: tuple[ParsedIdentity, ...],
+) -> None:
     """
     given a set of identities (which must be either a mix of usernames and IDs or a list
     of domains), use that to update the session as appropriate
@@ -71,7 +87,9 @@ def _update_session_params_identities_case(identity_set, session_params, identit
 )
 @click.option(
     "--policy",
+    "policies",
     help="Comma separated list of authentication policy UUIDs",
+    type=CommaDelimitedList(),
 )
 @click.option(
     "--all",
@@ -79,7 +97,14 @@ def _update_session_params_identities_case(identity_set, session_params, identit
     help="Add every identity in your identity set to your session",
 )
 @LoginManager.requires_login(LoginManager.AUTH_RS)
-def session_update(*, login_manager, identities, no_local_server, policy, all):
+def session_update(
+    *,
+    login_manager: LoginManager,
+    identities: tuple[ParsedIdentity, ...],
+    no_local_server: bool,
+    policies: list[str] | None,
+    all: bool,
+) -> None:
     """
     Update your current CLI auth session by authenticating
     with specific identities.
@@ -96,7 +121,7 @@ def session_update(*, login_manager, identities, no_local_server, policy, all):
     mutually exclusive with IDs and usernames.
     When usernames or IDs are used, they must be in your identity set.
     """
-    modes = bool(identities) + bool(policy) + bool(all)
+    modes = bool(identities) + bool(policies) + all
     if modes > 1:
         raise click.UsageError(
             "IDENTITY values, --all, and --policy are all mutually exclusive"
@@ -112,8 +137,8 @@ def session_update(*, login_manager, identities, no_local_server, policy, all):
 
     if all:
         _update_session_params_all_case(identity_set, session_params)
-    elif policy:
-        session_params["session_required_policies"] = policy
+    elif policies:
+        session_params["session_required_policies"] = ",".join(policies)
     else:
         _update_session_params_identities_case(identity_set, session_params, identities)
 
