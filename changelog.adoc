@@ -4,7 +4,7 @@
 
 == 3.11.0 (2023-02-08)
 
-## Enhancements
+Enhancements:
 
 * Add `--policy` option to `globus session update` which takes a comma
   delimited list of Globus Auth policy IDs and starts an auth flow to
@@ -16,7 +16,7 @@
 * Support `--user-message` and `--user-message-link` for
   `globus endpoint update` and `globus gcp create mapped`
 
-## Other
+Other:
 
 * Improve the uniformity of endpoint and collection option parsing.
 ** The `--sharing-restrict-paths` option to `globus collection update` now
