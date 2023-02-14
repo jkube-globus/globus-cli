@@ -4,6 +4,7 @@ import logging
 import os
 import re
 import shlex
+import textwrap
 import time
 import uuid
 from unittest import mock
@@ -239,29 +240,26 @@ def run_line(cli_runner, request, patch_tokenstorage):
             main, args[1:], input=stdin, catch_exceptions=bool(assert_exit_code)
         )
         if result.exit_code != assert_exit_code:
-            raise (
-                Exception(
-                    (
-                        "CliTest run_line exit_code assertion failed!\n"
-                        "Line:\n{}\nexited with {} when expecting {}\n"
-                        "stdout:\n{}\nstderr:\n{}\nnetwork calls recorded:"
-                        "\n  {}"
-                    ).format(
-                        line,
-                        result.exit_code,
-                        assert_exit_code,
-                        result.stdout,
-                        result.stderr,
-                        (
-                            "\n  ".join(
-                                f"{r.request.method} {r.request.url}"
-                                for r in responses.calls
-                            )
-                            or "  <none>"
-                        ),
-                    )
+            formatted_network_calls = textwrap.indent(
+                "\n".join(
+                    f"{r.request.method} {r.request.url}" for r in responses.calls
                 )
+                or "<none>",
+                "  ",
             )
+            message = f"""
+CliTest run_line exit_code assertion failed!
+Line:
+  {line}
+exited with {result.exit_code} when expecting {assert_exit_code}
+
+stdout:
+{textwrap.indent(result.stdout, "  ")}
+stderr:
+{textwrap.indent(result.stderr, "  ")}
+network calls recorded:
+{formatted_network_calls}"""
+            raise Exception(message)
         if matcher:
             return result, OutputMatcher(result)
         return result
