@@ -11,18 +11,25 @@ from globus_sdk.scopes import (
     FlowsScopes,
     GCSEndpointScopeBuilder,
     GroupsScopes,
+    MutableScope,
     SearchScopes,
     TimerScopes,
     TransferScopes,
 )
 
 from globus_cli.endpointish import Endpointish, EntityType
+from globus_cli.types import ServiceNameLiteral
 
 from .. import version
 from .auth_flows import do_link_auth_flow, do_local_server_auth_flow
 from .client_login import get_client_login, is_client_login
 from .errors import MissingLoginError
-from .tokenstore import internal_auth_client, token_storage_adapter
+from .scopes import CLI_SCOPE_REQUIREMENTS
+from .tokenstore import (
+    internal_auth_client,
+    read_well_known_config,
+    token_storage_adapter,
+)
 from .utils import is_remote_session
 
 if t.TYPE_CHECKING:
@@ -32,55 +39,23 @@ if t.TYPE_CHECKING:
 
 
 class LoginManager:
-    AUTH_RS = AuthScopes.resource_server
-    FLOWS_RS = FlowsScopes.resource_server
-    GROUPS_RS = GroupsScopes.resource_server
-    SEARCH_RS = SearchScopes.resource_server
-    TIMER_RS = TimerScopes.resource_server
-    TRANSFER_RS = TransferScopes.resource_server
-
-    STATIC_SCOPES: dict[str, list[str]] = {
-        AUTH_RS: [
-            AuthScopes.openid,
-            AuthScopes.profile,
-            AuthScopes.email,
-            AuthScopes.view_identity_set,
-        ],
-        TRANSFER_RS: [
-            TransferScopes.all,
-        ],
-        GROUPS_RS: [
-            GroupsScopes.all,
-        ],
-        SEARCH_RS: [
-            SearchScopes.all,
-        ],
-        TIMER_RS: [
-            TimerScopes.timer,
-        ],
-        FLOWS_RS: [
-            FlowsScopes.manage_flows,
-            FlowsScopes.view_flows,
-            FlowsScopes.run,
-            FlowsScopes.run_status,
-            FlowsScopes.run_manage,
-        ],
-    }
-
     def __init__(self) -> None:
         self._token_storage = token_storage_adapter()
-        self._nonstatic_requirements: dict[str, list[str]] = {}
+        self._nonstatic_requirements: dict[str, list[str | MutableScope]] = {}
 
-    def add_requirement(self, rs_name: str, scopes: list[str]) -> None:
-        self._nonstatic_requirements[rs_name] = scopes
+    def add_requirement(
+        self, rs_name: str, scopes: t.Sequence[str | MutableScope]
+    ) -> None:
+        self._nonstatic_requirements[rs_name] = list(scopes)
 
     @property
-    def login_requirements(self) -> t.Iterator[tuple[str, list[str]]]:
-        yield from self.STATIC_SCOPES.items()
+    def login_requirements(self) -> t.Iterator[tuple[str, list[str | MutableScope]]]:
+        for req in CLI_SCOPE_REQUIREMENTS.values():
+            yield (req["resource_server"], req["scopes"])
         yield from self._nonstatic_requirements.items()
 
     @property
-    def always_required_scopes(self) -> t.Iterator[str]:
+    def always_required_scopes(self) -> t.Iterator[str | MutableScope]:
         """
         scopes which are required on all login flows, regardless of the specified
         scopes for that flow
@@ -90,7 +65,7 @@ class LoginManager:
         # all other Auth scopes are required the moment we add 'openid'
         # adding 'openid' without other scopes gives us back an Auth token which is not
         # valid for the other necessary scopes
-        yield from self.STATIC_SCOPES[self.AUTH_RS]
+        yield from CLI_SCOPE_REQUIREMENTS["auth"]["scopes"]
 
     def is_logged_in(self) -> bool:
         res = []
@@ -122,9 +97,30 @@ class LoginManager:
 
         # for resource servers in the static scope set, check that the scope
         # requirements are satisfied by the token data
-        if resource_server in self.STATIC_SCOPES:
+        if resource_server in CLI_SCOPE_REQUIREMENTS.resource_servers():
+            requirement_data = CLI_SCOPE_REQUIREMENTS.get_by_resource_server(
+                resource_server
+            )
+
+            # evaluate scope contract version requirements for this service
+
+            # first, fetch the version data and if it is missing, treat it as empty
+            contract_versions = read_well_known_config("scope_contract_versions") or {}
+            # determine which version we need, and compare against the version in
+            # storage with a default of 0
+            # if the comparison fails, reject the token as not a valid login for the
+            # service
+            version_required = requirement_data["min_contract_version"]
+            if contract_versions.get(resource_server, 0) < version_required:
+                return False
+
             token_scopes = set(tokens["scope"].split(" "))
-            required_scopes = set(self.STATIC_SCOPES[resource_server])
+            required_scopes: set[str] = set()
+            for scope in requirement_data["scopes"]:
+                if isinstance(scope, str):
+                    required_scopes.add(scope)
+                else:
+                    required_scopes.add(scope.scope_string)
             if required_scopes - token_scopes:
                 return False
 
@@ -138,7 +134,7 @@ class LoginManager:
         local_server_message: str | None = None,
         epilog: str | None = None,
         session_params: dict | None = None,
-        scopes: list[str] | None = None,
+        scopes: list[str | MutableScope] | None = None,
     ):
         if is_client_login():
             click.echo(
@@ -181,21 +177,17 @@ class LoginManager:
             )
 
     @classmethod
-    def requires_login(cls, *resource_servers: str):
+    def requires_login(cls, *services: ServiceNameLiteral):
         """
         Command decorator for specifying a resource server that the user must have
         tokens for in order to run the command.
 
         Simple usage for commands that have static resource needs: simply list all
-        needed resource servers as args:
+        needed services as args. Services should be referred to by "short names":
 
-        @LoginManager.requires_login("auth.globus.org")
+        @LoginManager.requires_login("auth")
 
-        @LoginManager.requires_login(LoginManager.AUTH_RS)
-
-        @LoginManager.requires_login("auth.globus.org", "transfer.api.globus.org")
-
-        @LoginManager.requires_login(LoginManager.AUTH_RS, LoginManager.TRANSFER_RS)
+        @LoginManager.requires_login("auth", "transfer")
 
         Usage for commands which have dynamic resource servers depending
         on the arguments passed to the command (e.g. commands for the GCS API)
@@ -204,8 +196,13 @@ class LoginManager:
         def command(login_manager, endpoint_id)
 
             login_manager.<do the thing>(endpoint_id)
-
         """
+        resource_servers = [
+            rs_name
+            if rs_name not in CLI_SCOPE_REQUIREMENTS
+            else CLI_SCOPE_REQUIREMENTS[rs_name]["resource_server"]
+            for rs_name in services
+        ]
 
         def inner(func):
             @functools.wraps(func)
