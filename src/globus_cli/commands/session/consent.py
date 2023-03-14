@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import click
+from globus_sdk.scopes import MutableScope
 
+from globus_cli import utils
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, no_local_server_option
 
@@ -21,7 +23,11 @@ def session_consent(scopes: tuple[str], no_local_server: bool) -> None:
     This command is necessary when the CLI needs access to resources which require the
     user to explicitly consent to access.
     """
+    scope_list: list[str | MutableScope] = [
+        utils.unquote_cmdprompt_single_quotes(s) for s in scopes
+    ]
     manager = LoginManager()
+
     manager.run_login_flow(
         no_local_server=no_local_server,
         local_server_message=(
@@ -33,5 +39,5 @@ def session_consent(scopes: tuple[str], no_local_server: bool) -> None:
             "\n---"
         ),
         epilog="\nYou have successfully updated your CLI session.\n",
-        scopes=list(scopes),
+        scopes=scope_list,
     )
