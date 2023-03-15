@@ -2,6 +2,55 @@
 
 // scriv-insert-here
 
+== 3.12.0 (2023-03-15)
+
+Bugfixes:
+
+* Fix the handling of multiple `-Q` parameters with the same name for
+  the `globus api` commands. Such usages were only sending the last value
+  used, but now correctly send all parameters.
+
+* Certain combinations of options for `globus task list` could, generate
+  invalid or useless filters. These behaviors are fixed.
+
+* Strip single quotes from scope strings passed to `globus session consent`,
+  fixing the behavior of this command when run from Windows Command Prompt
+
+Enhancements:
+
+* Add `globus timer create transfer` as a new command for creating new timers
+
+** The command prompts for login if data_access consents are detected as a
+   requirement
+
+* `globus session consent` now supports a `--timer-data-access` flag, specifically
+   to help support timer creation
+
+* The CLI now has stronger requirements around the scope used for the Timer
+  service, and will treat past Timer tokens as invalid. Users running
+  `globus timer` commands will find that they must login agian.
+
+* Add `globus timer delete` as a command for deleting timers
+
+* When showing login requirements for known Globus services, the error message
+  instructing users to run `globus login` will use recognizable nice names for
+  those services, e.g. `Globus Timers`
+
+Other:
+
+* The CLI's handling of changes to its scope requirements over time has been
+  improved. After CLI updates which change the required scopes, users will be
+  prompted to login again, ensuring that the most up-to-date set of scopes are
+  in use.
+
+  ** Changes to the CLI which adjust scopes, and therefore force this
+     re-login behavior, will note this in the changelog.
+
+  ** This change, in itself, will not force re-login for any users.
+
+* `globus-cli` now uses `packaging` for version parsing. This improves
+  compatibility with python 3.12
+
 == 3.11.0 (2023-02-08)
 
 Enhancements:
