@@ -4,11 +4,11 @@
 
 == 3.13.0 (2023-04-21)
 
-## Enhancements
+Enhancements:
 
 * Add `--include` option to `globus transfer` allowing ordered overrides of `--exclude` rules.
 
-## Breaking Changes
+Breaking Changes:
 
 * The `--exclude` option for `globus transfer` now only applies to files to better
   support excluding files within a directory structure
