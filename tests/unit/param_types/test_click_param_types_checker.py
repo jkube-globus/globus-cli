@@ -9,8 +9,11 @@ import click
 import pytest
 
 from globus_cli.constants import ExplicitNullType
-from globus_cli.parsing.param_types import JSONStringOrFile, StringOrNull
-from globus_cli.types import JsonValue
+from globus_cli.parsing.param_types import (
+    JSONStringOrFile,
+    ParsedJSONData,
+    StringOrNull,
+)
 from tests.click_types import (
     BadAnnotationError,
     check_has_correct_annotations_for_click_args,
@@ -55,7 +58,7 @@ def test_deduce_type_from_int_argument():
 
 def test_deduce_type_from_json_string_or_file():
     arg = click.Argument(["FOO"], type=JSONStringOrFile())
-    assert deduce_type_from_parameter(arg) == JsonValue
+    assert deduce_type_from_parameter(arg) == ParsedJSONData
 
 
 def test_deduce_type_from_nargs_many_argument():
