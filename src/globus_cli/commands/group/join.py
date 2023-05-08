@@ -8,6 +8,8 @@ from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import IdentityType, ParsedIdentity, command
 from globus_cli.termio import Field, TextMode, display
 
+from ._common import group_id_arg
+
 JOIN_USER_FIELDS = [
     Field("Group ID", "group_id"),
     Field("User ID", "identity_id"),
@@ -16,7 +18,7 @@ JOIN_USER_FIELDS = [
 
 
 @command("join", short_help="Join a group")
-@click.argument("group_id", type=click.UUID)
+@group_id_arg
 @click.option(
     "--identity",
     type=IdentityType(),
@@ -35,7 +37,7 @@ def group_join(
     identity: ParsedIdentity | None,
     request: bool,
     login_manager: LoginManager,
-):
+) -> None:
     """
     Join a group in which you are not a member.
     """

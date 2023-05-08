@@ -1,3 +1,5 @@
+import uuid
+
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
 from globus_cli.termio import display
@@ -11,8 +13,8 @@ from ._common import group_id_arg
 def group_delete(
     *,
     login_manager: LoginManager,
-    group_id: str,
-):
+    group_id: uuid.UUID,
+) -> None:
     """Delete a group"""
     groups_client = login_manager.get_groups_client()
 

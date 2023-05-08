@@ -1,8 +1,12 @@
+import uuid
+
 import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import IdentityType, ParsedIdentity, command
 from globus_cli.termio import Field, TextMode, display
+
+from .._common import group_id_arg
 
 APPROVED_USER_FIELDS = [
     Field("Group ID", "group_id"),
@@ -12,10 +16,12 @@ APPROVED_USER_FIELDS = [
 
 
 @command("approve", short_help="Approve a member to join a group")
-@click.argument("group_id", type=click.UUID)
+@group_id_arg
 @click.argument("user", type=IdentityType())
 @LoginManager.requires_login("groups")
-def member_approve(group_id: str, user: ParsedIdentity, login_manager):
+def member_approve(
+    *, group_id: uuid.UUID, user: ParsedIdentity, login_manager: LoginManager
+) -> None:
     """
     Approve a pending member to join a group, changing their status from 'invited'
     to 'active'.

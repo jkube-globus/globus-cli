@@ -1,17 +1,16 @@
+from __future__ import annotations
+
 import uuid
 
 import click
 
 from globus_cli.login_manager import LoginManager
-from globus_cli.parsing import command
+from globus_cli.parsing import command, endpoint_id_arg
 from globus_cli.termio import Field, TextMode, display, formatters
 
 
 @command("list", short_help="List all User Credentials on an Endpoint")
-@click.argument(
-    "endpoint_id",
-    metavar="ENDPOINT_ID",
-)
+@endpoint_id_arg
 @click.option(
     "--storage-gateway",
     default=None,
@@ -26,8 +25,8 @@ def user_credential_list(
     *,
     login_manager: LoginManager,
     endpoint_id: uuid.UUID,
-    storage_gateway: uuid.UUID,
-):
+    storage_gateway: uuid.UUID | None,
+) -> None:
     """
     List the User Credentials on a given Globus Connect Server v5 Endpoint
     """

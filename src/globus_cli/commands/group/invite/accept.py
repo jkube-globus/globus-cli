@@ -8,11 +8,12 @@ from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import IdentityType, ParsedIdentity, command
 from globus_cli.termio import display
 
+from .._common import group_id_arg
 from ._common import build_invite_actions, get_invite_formatter
 
 
 @command("accept", short_help="Accept an invitation")
-@click.argument("group_id", type=click.UUID)
+@group_id_arg
 @click.option(
     "--identity",
     type=IdentityType(),
@@ -21,7 +22,7 @@ from ._common import build_invite_actions, get_invite_formatter
 @LoginManager.requires_login("groups")
 def invite_accept(
     *, group_id: uuid.UUID, identity: ParsedIdentity | None, login_manager: LoginManager
-):
+) -> None:
     """
     Accept an invitation to a group
 

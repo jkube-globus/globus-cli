@@ -1,8 +1,18 @@
+import sys
+import uuid
+
 import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import IdentityType, ParsedIdentity, command
 from globus_cli.termio import Field, TextMode, display
+
+from .._common import group_id_arg
+
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
 
 INVITED_USER_FIELDS = [
     Field("Group ID", "group_id"),
@@ -12,7 +22,7 @@ INVITED_USER_FIELDS = [
 
 
 @command("invite", short_help="Invite a user to a group")
-@click.argument("group_id", type=click.UUID)
+@group_id_arg
 @click.argument("user", type=IdentityType())
 @click.option(
     "--provision-identity",
@@ -29,12 +39,12 @@ INVITED_USER_FIELDS = [
 @LoginManager.requires_login("groups")
 def member_invite(
     *,
-    group_id: str,
+    login_manager: LoginManager,
+    group_id: uuid.UUID,
     user: ParsedIdentity,
     provision_identity: bool,
-    role: str,
-    login_manager: LoginManager,
-):
+    role: Literal["member", "manager", "admin"],
+) -> None:
     """
     Invite a user to a group.
 
