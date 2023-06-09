@@ -13,7 +13,6 @@ _SKIP_MODULES = (
     "globus_cli.commands.collection.delete",
     "globus_cli.commands.collection.list",
     "globus_cli.commands.collection.show",
-    "globus_cli.commands.delete",
     "globus_cli.commands.endpoint.deactivate",
     "globus_cli.commands.endpoint.delete",
     "globus_cli.commands.endpoint.local_id",
@@ -30,19 +29,13 @@ _SKIP_MODULES = (
     "globus_cli.commands.endpoint.server.list",
     "globus_cli.commands.endpoint.server.show",
     "globus_cli.commands.endpoint.server.update",
-    "globus_cli.commands.endpoint.set_subscription_id",
     "globus_cli.commands.endpoint.show",
     "globus_cli.commands.endpoint.storage_gateway.list",
     "globus_cli.commands.flows.list",
     "globus_cli.commands.flows.start",
     "globus_cli.commands.get_identities",
-    "globus_cli.commands.list_commands",
     "globus_cli.commands.login",
     "globus_cli.commands.logout",
-    "globus_cli.commands.ls",
-    "globus_cli.commands.mkdir",
-    "globus_cli.commands.rename",
-    "globus_cli.commands.rm",
 )
 
 _ALL_NON_GROUP_COMMANDS: tuple[click.Command, ...] = (
