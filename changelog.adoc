@@ -2,6 +2,35 @@
 
 // scriv-insert-here
 
+== 3.14.0 (2023-06-15)
+
+## Bugfixes
+
+* A debug display of server timing info was always enabled when it should have
+  been disabled by default. This produced extraneous output to stderr for some
+  commands.
+
+* Fix bug causing `globus rm` to fail when using the `--dry-run` option.
+
+## Enhancements
+
+* Add `globus flows create` as a new command for creating flows.
+
+* JSON file parsing throughout the CLI has been made more uniform and robust.
+  Commands which required files to be specified with the `file:` prefix now
+  allow for filenames without the prefix, improving tab-completion. All
+  commands which accept JSON data as inputs now allow for files or
+  JSON-formatted arguments.
+
+* Add the `--local-user` option to the `globus ls`, `globus rename`, `globus mkdir`,
+  `globus delete`, and `globus rm` commands.
+
+* Add the `--source-local-user` and `--destination-local-user` options to the
+  `globus transfer` command.
+
+* Error reporting for parsing errors during `--batch` processing has been
+  improved to better indicate the source of the error
+
 == 3.13.0 (2023-04-21)
 
 Enhancements:
