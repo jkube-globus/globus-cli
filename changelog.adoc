@@ -2,6 +2,21 @@
 
 // scriv-insert-here
 
+== 3.15.0 (2023-06-21)
+
+Enhancements:
+
+* Add a `globus flows run delete` command.
+
+* Add `globus gcp update mapped` and `globus gcp update guest`
+  to update GCP Mapped and Guest Collections.
+
+* `globus gcp create mapped` now has an option `--public` for creating public
+  GCP Mapped Collections.
+
+* `globus endpoint create` and `globus endpoint update` now allow the use of
+  `--public/--private` with GCP Mapped Collections.
+
 == 3.14.0 (2023-06-15)
 
 Bugfixes:
