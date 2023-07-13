@@ -25,10 +25,14 @@ yaml = YAML()
 log = logging.getLogger(__name__)
 
 _test_file_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), "files"))
+_PYTEST_VERBOSE = False
 
 
 def pytest_configure(config):
     _register_all_response_sets()
+    if config.getoption("verbose") > 0:
+        global _PYTEST_VERBOSE
+        _PYTEST_VERBOSE = True
 
 
 @pytest.fixture(autouse=True)
@@ -199,36 +203,6 @@ def cli_runner():
     return CliRunner(mix_stderr=False)
 
 
-class OutputMatcher:
-    r"""
-    A helper for running regex matches and optionally doing literal checking of match
-    groups against expected strings. This can be attached to run_line by passing
-    "matcher=True".
-
-    Runs regex matches in multiline mode, operating on the first match.
-    If no match is found, it will raise an error.
-
-    Usage:
-
-    >>> res, matcher = run_line(..., matcher=True)
-    >>> matcher.check(r"^Foo:\s+(\w+)$", groups=["FooValue"])
-    """
-
-    def __init__(self, result):
-        self._result = result
-
-    def check(self, regex, groups=None, err=False) -> None:
-        pattern = re.compile(regex, flags=re.MULTILINE)
-        groups = groups or []
-        data = self._result.stderr if err else self._result.output
-
-        m = pattern.search(data)
-        if not m:
-            raise ValueError(f"Did not find a match for '{regex}' in {data}")
-        for i, x in enumerate(groups, 1):
-            assert m.group(i) == x
-
-
 @pytest.fixture
 def run_line(cli_runner, request, patch_tokenstorage):
     """
@@ -239,7 +213,13 @@ def run_line(cli_runner, request, patch_tokenstorage):
     for easier debugging.
     """
 
-    def func(line, assert_exit_code=0, stdin=None, matcher=False):
+    def func(
+        line,
+        assert_exit_code=0,
+        stdin=None,
+        search_stdout=None,
+        search_stderr=None,
+    ):
         from globus_cli import main
 
         # split line into args and confirm line starts with "globus"
@@ -272,11 +252,54 @@ stderr:
 network calls recorded:
 {formatted_network_calls}"""
             raise Exception(message)
-        if matcher:
-            return result, OutputMatcher(result)
+        if search_stdout is not None:
+            _assert_matches(result.stdout, "stdout", search_stdout)
+        if search_stderr is not None:
+            _assert_matches(result.stderr, "stderr", search_stderr)
         return result
 
     return func
+
+
+def _assert_matches(text, text_name, search):
+    __tracebackhide__ = True
+
+    if isinstance(search, (str, re.Pattern, tuple)):
+        search = [search]
+    elif not isinstance(search, list):
+        raise NotImplementedError(
+            "search_{stdout,stderr} got unexpected arg type: {type(search)}"
+        )
+
+    search = [_convert_search_tuple(s) for s in search]
+
+    compiled_searches = [
+        s if isinstance(s, re.Pattern) else re.compile(s, re.MULTILINE) for s in search
+    ]
+    for pattern in compiled_searches:
+        if pattern.search(text) is None:
+            if _PYTEST_VERBOSE:
+                pytest.fail(
+                    f"Pattern('{pattern.pattern}') not found in {text_name}.\n"
+                    f"Full text:\n\n{text}"
+                )
+            else:
+                pytest.fail(
+                    f"Pattern('{pattern.pattern}') not found in {text_name}. "
+                    "Use 'pytest -v' to see full output."
+                )
+
+
+def _convert_search_tuple(search):
+    # tuple of ("Foo", "bar") converts to a regex for
+    #       "Foo:  bar"
+    if isinstance(search, tuple):
+        assert len(search) == 2
+        field_name, field_value = search
+        assert isinstance(field_name, str)
+        assert isinstance(field_value, str)
+        search = f"^{re.escape(field_name)}:\\s+{re.escape(field_value)}$"
+    return search
 
 
 @pytest.fixture(autouse=True)
