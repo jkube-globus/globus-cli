@@ -6,7 +6,7 @@ import click
 from globus_sdk.paging import Paginator
 
 from globus_cli.login_manager import LoginManager
-from globus_cli.parsing import command
+from globus_cli.parsing import ColonDelimitedChoiceTuple, command
 from globus_cli.termio import Field, display, formatters
 from globus_cli.utils import PagingWrapper
 
@@ -16,6 +16,15 @@ else:
     from typing_extensions import Literal
 
 ROLE_TYPES = ("flow_viewer", "flow_starter", "flow_administrator", "flow_owner")
+ORDER_BY_FIELDS = (
+    "id",
+    "scope_string",
+    "flow_owners",
+    "flow_administrators",
+    "title",
+    "created_at",
+    "updated_at",
+)
 
 
 @command("list", short_help="List flows")
@@ -32,25 +41,19 @@ ROLE_TYPES = ("flow_viewer", "flow_starter", "flow_administrator", "flow_owner")
 )
 @click.option(
     "--orderby",
-    default=("updated_at", "DESC"),
+    default="updated_at:DESC",
     show_default=True,
-    type=(
-        click.Choice(
-            (
-                "id",
-                "scope_string",
-                "flow_owners",
-                "flow_administrators",
-                "title",
-                "created_at",
-                "updated_at",
-            ),
-            case_sensitive=False,
+    type=ColonDelimitedChoiceTuple(
+        choices=tuple(
+            f"{field}:{order}" for field in ORDER_BY_FIELDS for order in ("ASC", "DESC")
         ),
-        click.Choice(("ASC", "DESC"), case_sensitive=False),
+        case_sensitive=False,
     ),
-    help="Sort results by the given field and ordering (ASC for ascending, DESC for "
-    "descending).",
+    metavar=f"[{'|'.join(ORDER_BY_FIELDS)}]:[ASC|DESC]",
+    help=(
+        "Sort results by the given field and ordering. "
+        "ASC for ascending, DESC for descending."
+    ),
 )
 @click.option(
     "--limit",
