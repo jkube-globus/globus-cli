@@ -31,6 +31,28 @@ ROLE_TYPES = ("flow_viewer", "flow_starter", "flow_administrator", "flow_owner")
     "[id, title, subtitle, description, flow_owner, flow_administrators]",
 )
 @click.option(
+    "--orderby",
+    default=("updated_at", "DESC"),
+    show_default=True,
+    type=(
+        click.Choice(
+            (
+                "id",
+                "scope_string",
+                "flow_owners",
+                "flow_administrators",
+                "title",
+                "created_at",
+                "updated_at",
+            ),
+            case_sensitive=False,
+        ),
+        click.Choice(("ASC", "DESC"), case_sensitive=False),
+    ),
+    help="Sort results by the given field and ordering (ASC for ascending, DESC for "
+    "descending).",
+)
+@click.option(
     "--limit",
     default=25,
     show_default=True,
@@ -46,6 +68,18 @@ def list_command(
         "flow_viewer", "flow_starter", "flow_administrator", "flow_owner"
     ]
     | None,
+    orderby: tuple[
+        Literal[
+            "id",
+            "scope_string",
+            "flow_owners",
+            "flow_administrators",
+            "title",
+            "created_at",
+            "updated_at",
+        ],
+        Literal["ASC", "DESC"],
+    ],
     filter_fulltext: str | None,
     limit: int,
 ) -> None:

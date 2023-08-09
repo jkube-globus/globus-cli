@@ -38,7 +38,9 @@ _CLICK_STATIC_TYPE_MAP: dict[type[click.ParamType], type] = {
 }
 
 
-def _type_from_param_type(param_obj: click.Parameter) -> type:
+def _type_from_param_type(
+    param_obj: click.Parameter, *, param_type: click.ParamType | None = None
+) -> type:
     """
     Given a Parameter instance, read the 'type' attribute and deduce the type or union
     of possible types which it describes
@@ -50,7 +52,8 @@ def _type_from_param_type(param_obj: click.Parameter) -> type:
         IntRange -> int
         StringOrNull -> str | ExplicitNullType
     """
-    param_type = param_obj.type
+    if param_type is None:
+        param_type = param_obj.type
 
     # globus-cli types
     if isinstance(param_type, AnnotatedParamType):
@@ -61,6 +64,12 @@ def _type_from_param_type(param_obj: click.Parameter) -> type:
         return _CLICK_STATIC_TYPE_MAP[type(param_type)]
     if isinstance(param_type, click.Choice):
         return t.Literal[tuple(param_type.choices)]
+    if isinstance(param_type, click.Tuple):
+        return tuple[
+            tuple(
+                _type_from_param_type(param_obj, param_type=p) for p in param_type.types
+            )
+        ]
     if isinstance(param_type, click.Path):
         if param_type.path_type is not None:
             if isinstance(param_obj.path_type, type):
