@@ -77,3 +77,23 @@ def test_list_flows_paginated_response(run_line):
         #    Hello, World (Example {10})  <-- no trailing space
         assert row[1].rstrip() == f"Hello, World (Example {i})"
         assert row[2] == meta["flow_owner"]
+
+
+def test_list_flows_sorted(run_line):
+    meta = load_response_set("flows_list_orderby_title_asc").metadata
+
+    result = run_line(
+        ["globus", "flows", "list", "--limit", "100", "--orderby", "title:asc"]
+    )
+    # trim the final newline/empty str and the header lines
+    output_lines = result.output.split("\n")[2:-1]
+    assert len(output_lines) == meta["total_items"]
+
+    titles_in_order = []
+    for i, line in enumerate(output_lines):
+        row = line.split(" | ")
+        assert row[0] == str(uuid.UUID(int=i))
+        titles_in_order.append(row[1].strip())
+        assert row[2] == meta["flow_owner"]
+
+    assert titles_in_order == sorted(titles_in_order)
