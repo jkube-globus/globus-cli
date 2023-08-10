@@ -19,8 +19,13 @@ ROLE_TYPES = ("flow_viewer", "flow_starter", "flow_administrator", "flow_owner")
 ORDER_BY_FIELDS = (
     "id",
     "scope_string",
-    "flow_owners",
-    "flow_administrators",
+    # These names are the legacy ones in the service:
+    #       "created_by",
+    #       "administered_by",
+    # These are the new names but are not supported at time of writing:
+    #       "flow_owners",
+    #       "flow_administrators",
+    "created_at",
     "title",
     "created_at",
     "updated_at",
@@ -79,8 +84,6 @@ def list_command(
             Literal[
                 "id",
                 "scope_string",
-                "flow_owners",
-                "flow_administrators",
                 "title",
                 "created_at",
                 "updated_at",
@@ -101,7 +104,7 @@ def list_command(
         paginator(
             filter_role=filter_role,
             filter_fulltext=filter_fulltext,
-            orderby="updated_at DESC",
+            orderby=",".join(f"{field} {order}" for field, order in orderby),
         ).items(),
         json_conversion_key="flows",
         limit=limit,
