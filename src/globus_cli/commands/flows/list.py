@@ -41,7 +41,7 @@ ORDER_BY_FIELDS = (
 )
 @click.option(
     "--orderby",
-    default="updated_at:DESC",
+    default=["updated_at:DESC"],
     show_default=True,
     type=ColonDelimitedChoiceTuple(
         choices=tuple(
@@ -49,11 +49,14 @@ ORDER_BY_FIELDS = (
         ),
         case_sensitive=False,
     ),
+    multiple=True,
     metavar=f"[{'|'.join(ORDER_BY_FIELDS)}]:[ASC|DESC]",
-    help=(
-        "Sort results by the given field and ordering. "
-        "ASC for ascending, DESC for descending."
-    ),
+    help="""
+        Sort results by the given field and ordering.
+        ASC for ascending, DESC for descending.
+
+        This option can be specified multiple times to sort by multiple fields.
+    """,
 )
 @click.option(
     "--limit",
@@ -72,16 +75,19 @@ def list_command(
     ]
     | None,
     orderby: tuple[
-        Literal[
-            "id",
-            "scope_string",
-            "flow_owners",
-            "flow_administrators",
-            "title",
-            "created_at",
-            "updated_at",
+        tuple[
+            Literal[
+                "id",
+                "scope_string",
+                "flow_owners",
+                "flow_administrators",
+                "title",
+                "created_at",
+                "updated_at",
+            ],
+            Literal["ASC", "DESC"],
         ],
-        Literal["ASC", "DESC"],
+        ...,
     ],
     filter_fulltext: str | None,
     limit: int,
