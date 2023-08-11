@@ -25,7 +25,6 @@ ORDER_BY_FIELDS = (
     # These are the new names but are not supported at time of writing:
     #       "flow_owners",
     #       "flow_administrators",
-    "created_at",
     "title",
     "created_at",
     "updated_at",
