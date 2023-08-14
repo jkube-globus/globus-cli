@@ -62,6 +62,7 @@ setup(
     # descriptive info, non-critical
     description="Globus CLI",
     long_description=read_readme(),
+    long_description_content_type="text/x-rst",
     author="Stephen Rosen",
     author_email="sirosen@globus.org",
     url="https://github.com/globus/globus-cli",
