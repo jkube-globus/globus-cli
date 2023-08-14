@@ -1,5 +1,5 @@
 from .annotated_param import AnnotatedParamType
-from .comma_delimited import CommaDelimitedList
+from .delimited import ColonDelimitedChoiceTuple, CommaDelimitedList
 from .endpoint_plus_path import (
     ENDPOINT_PLUS_OPTPATH,
     ENDPOINT_PLUS_REQPATH,
@@ -16,6 +16,7 @@ from .timedelta import TimedeltaType
 __all__ = (
     "AnnotatedParamType",
     "CommaDelimitedList",
+    "ColonDelimitedChoiceTuple",
     "ENDPOINT_PLUS_OPTPATH",
     "ENDPOINT_PLUS_REQPATH",
     "EndpointPlusPath",

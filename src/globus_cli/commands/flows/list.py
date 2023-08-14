@@ -6,7 +6,7 @@ import click
 from globus_sdk.paging import Paginator
 
 from globus_cli.login_manager import LoginManager
-from globus_cli.parsing import command
+from globus_cli.parsing import ColonDelimitedChoiceTuple, command
 from globus_cli.termio import Field, display, formatters
 from globus_cli.utils import PagingWrapper
 
@@ -16,6 +16,19 @@ else:
     from typing_extensions import Literal
 
 ROLE_TYPES = ("flow_viewer", "flow_starter", "flow_administrator", "flow_owner")
+ORDER_BY_FIELDS = (
+    "id",
+    "scope_string",
+    # These names are the legacy ones in the service:
+    #       "created_by",
+    #       "administered_by",
+    # These are the new names but are not supported at time of writing:
+    #       "flow_owners",
+    #       "flow_administrators",
+    "title",
+    "created_at",
+    "updated_at",
+)
 
 
 @command("list", short_help="List flows")
@@ -29,6 +42,25 @@ ROLE_TYPES = ("flow_viewer", "flow_starter", "flow_administrator", "flow_owner")
     type=str,
     help="Filter results based on pattern matching within a subset of fields: "
     "[id, title, subtitle, description, flow_owner, flow_administrators]",
+)
+@click.option(
+    "--orderby",
+    default=["updated_at:DESC"],
+    show_default=True,
+    type=ColonDelimitedChoiceTuple(
+        choices=tuple(
+            f"{field}:{order}" for field in ORDER_BY_FIELDS for order in ("ASC", "DESC")
+        ),
+        case_sensitive=False,
+    ),
+    multiple=True,
+    metavar=f"[{'|'.join(ORDER_BY_FIELDS)}]:[ASC|DESC]",
+    help="""
+        Sort results by the given field and ordering.
+        ASC for ascending, DESC for descending.
+
+        This option can be specified multiple times to sort by multiple fields.
+    """,
 )
 @click.option(
     "--limit",
@@ -46,6 +78,19 @@ def list_command(
         "flow_viewer", "flow_starter", "flow_administrator", "flow_owner"
     ]
     | None,
+    orderby: tuple[
+        tuple[
+            Literal[
+                "id",
+                "scope_string",
+                "title",
+                "created_at",
+                "updated_at",
+            ],
+            Literal["ASC", "DESC"],
+        ],
+        ...,
+    ],
     filter_fulltext: str | None,
     limit: int,
 ) -> None:
@@ -58,7 +103,7 @@ def list_command(
         paginator(
             filter_role=filter_role,
             filter_fulltext=filter_fulltext,
-            orderby="updated_at DESC",
+            orderby=",".join(f"{field} {order}" for field, order in orderby),
         ).items(),
         json_conversion_key="flows",
         limit=limit,

@@ -15,7 +15,9 @@ OWNER_ID = "e061df5a-b7b9-4578-a73b-6d4a4edfd66e"
 #
 # TODO: find a better way to share the paginated fixture data generation between these
 # two projects
-def generate_hello_world_example_flow(n: int) -> dict[str, t.Any]:
+def generate_hello_world_example_flow(
+    n: int, *, title: str | None = None
+) -> dict[str, t.Any]:
     flow_id = str(uuid.UUID(int=n))
     base_time = datetime.datetime.fromisoformat("2021-10-18T19:19:35.967289+00:00")
     updated_at = created_at = base_time + datetime.timedelta(days=n)
@@ -69,7 +71,7 @@ def generate_hello_world_example_flow(n: int) -> dict[str, t.Any]:
         "runnable_by": [],
         "subtitle": "",
         "synchronous": False,
-        "title": f"Hello, World (Example {n})",
+        "title": title or f"Hello, World (Example {n})",
         "types": ["Action"],
         "updated_at": updated_at.isoformat(),
         "user_role": "flow_viewer",
@@ -154,5 +156,55 @@ def setup_paginated_responses() -> None:
             "num_pages": 3,
             "expect_markers": ["fake_marker_0", "fake_marker_1", None],
             "total_items": 60,
+        },
+    )
+
+
+@pytest.fixture(autouse=True, scope="session")
+def setup_custom_orderby_response() -> None:
+    register_response_set(
+        "flows_list_orderby_title_asc",
+        {
+            "title_asc": dict(
+                service="flows",
+                path="/flows",
+                json={
+                    "flows": [
+                        # chr(65) = 'A', so this is A-Z
+                        generate_hello_world_example_flow(
+                            i, title=f"{chr(65 + i)}-Sorted-Flow"
+                        )
+                        for i in range(26)
+                    ],
+                    "limit": 100,
+                    "has_next_page": False,
+                },
+                match=[matchers.query_param_matcher({"orderby": "title ASC"})],
+            ),
+            "auth_get_identities": dict(
+                service="auth",
+                path="/v2/api/identities",
+                json={
+                    "identities": [
+                        {
+                            "username": "shrek@globus.org",
+                            "name": "Shrek by William Steig",
+                            "id": OWNER_ID,
+                            "identity_provider": "c8abac57-560c-46c8-b386-f116ed8793d5",
+                            "organization": (
+                                "Fairytales Whose Movie Adaptations Diverge "
+                                "Significantly From Their Source Material"
+                            ),
+                            "status": "used",
+                            "email": "shrek@globus.org",
+                        }
+                    ]
+                },
+            ),
+        },
+        metadata={
+            "owner_id": OWNER_ID,
+            "flow_owner": "shrek@globus.org",
+            "total_items": 26,
         },
     )
