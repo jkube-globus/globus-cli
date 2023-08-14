@@ -10,7 +10,12 @@ import globus_sdk
 from globus_cli.utils import CLIStubResponse
 
 from .awscli_text import unix_display
-from .context import get_jmespath_expression, outformat_is_json, outformat_is_unix
+from .context import (
+    get_jmespath_expression,
+    outformat_is_json,
+    outformat_is_text,
+    outformat_is_unix,
+)
 from .field import Field
 from .server_timing import maybe_show_server_timing
 
@@ -38,9 +43,9 @@ def _jmespath_preprocess(res):
     return res
 
 
-def print_json_response(res):
+def print_json_response(res, *, sort_keys=True):
     res = _jmespath_preprocess(res)
-    res = json.dumps(res, indent=2, separators=(",", ": "), sort_keys=True)
+    res = json.dumps(res, indent=2, separators=(",", ": "), sort_keys=sort_keys)
     click.echo(res)
 
 
@@ -158,6 +163,7 @@ def display(
     json_converter=None,
     fields: list[Field] | None = None,
     response_key=None,
+    sort_json_keys=True,
 ):
     """
     A generic output printer. Consumes the following pieces of data:
@@ -186,6 +192,9 @@ def display(
     printing, it must get an iterable out, and when used with raw printing, it
     gets a string. Necessary for certain formats like text table (text output
     only)
+
+    ``sort_json_keys`` is a flag that will cause JSON keys to be sorted or unsorted.
+    It is only used when the output format is JSON.
     """
 
     if isinstance(response_data, globus_sdk.GlobusHTTPResponse):
@@ -198,9 +207,10 @@ def display(
                 "You can workaround this error by using `--format JSON`"
             )
 
-    def _print_as_json():
+    def _print_as_json(*, sort_keys=True):
         print_json_response(
-            json_converter(response_data) if json_converter else response_data
+            json_converter(response_data) if json_converter else response_data,
+            sort_keys=sort_keys,
         )
 
     def _print_as_unix():
@@ -262,8 +272,8 @@ def display(
         _custom_text_formatter = text_mode
         text_mode = TextMode.text_custom
 
-    if outformat_is_json():
-        _print_as_json()
+    if outformat_is_json() or (outformat_is_text() and text_mode == TextMode.json):
+        _print_as_json(sort_keys=sort_json_keys)
     elif outformat_is_unix():
         _print_as_unix()
     else:
