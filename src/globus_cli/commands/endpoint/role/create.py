@@ -71,12 +71,13 @@ def role_create(
     auth_client = login_manager.get_auth_client()
 
     if principal_type == "identity":
-        principal_val = auth_client.maybe_lookup_identity_id(principal_val)
-        if not principal_val:
+        maybe_principal_val = auth_client.maybe_lookup_identity_id(principal_val)
+        if not maybe_principal_val:
             raise click.UsageError(
                 "Identity does not exist. "
                 "Use --provision-identity to auto-provision an identity."
             )
+        principal_val = maybe_principal_val
     elif principal_type == "provision-identity":
         principal_val = auth_client.maybe_lookup_identity_id(
             principal_val, provision=True
