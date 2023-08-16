@@ -1,10 +1,21 @@
+import collections
+
 import pytest
 
 from globus_cli.termio.server_timing import (
     Draft2017Parser,
     Metric,
     ServerTimingParseError,
+    render_metrics_onscreen,
 )
+
+terminal_dimensions = collections.namedtuple(
+    "terminal_dimensions", ("columns", "lines")
+)
+
+
+def fake_get_terminal_size(default_dimensions):
+    return terminal_dimensions(20, 10)
 
 
 @pytest.mark.parametrize(
@@ -103,3 +114,23 @@ def test_draft2017_parse_header_errors(metricstr, expect_on_success, skip_errors
     else:
         with pytest.raises(ServerTimingParseError):
             parser.parse_metric_header(metricstr, skip_errors=False)
+
+
+def test_render_server_timing(capsys, monkeypatch):
+    monkeypatch.setattr("shutil.get_terminal_size", fake_get_terminal_size)
+
+    data = 'a=1, b, c=2.2; "callout"'
+    parser = Draft2017Parser()
+    metrics = parser.parse_metric_header(data)
+
+    assert capsys.readouterr().err == ""
+    render_metrics_onscreen(metrics)
+    assert capsys.readouterr().err == (
+        """\
+Server Timing Info
++------------------+
+| a=1.0.......#    |
+| callout=2.2.#### |
++------------------+
+"""
+    )

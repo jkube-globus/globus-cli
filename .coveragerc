@@ -25,3 +25,5 @@ exclude_lines =
     if t.TYPE_CHECKING:
     # skip overloads
     @t.overload
+    # skip abstract methods
+    @abc.abstractmethod
