@@ -97,7 +97,7 @@ def format_option(f: F) -> F:
         type=click.Choice(
             [UNIX_FORMAT, JSON_FORMAT, TEXT_FORMAT], case_sensitive=False
         ),
-        help="Output format for stdout. Defaults to text",
+        help="Output format for stdout. Defaults to text.",
         expose_value=False,
         callback=callback,
     )(f)
@@ -106,7 +106,7 @@ def format_option(f: F) -> F:
         "--jq",
         help=(
             "A JMESPath expression to apply to json output. "
-            "Forces the format to be json processed by this expression"
+            "Forces the format to be json processed by this expression."
         ),
         expose_value=False,
         callback=jmespath_callback,
@@ -178,7 +178,7 @@ def verbose_option(f: F) -> F:
         expose_value=False,
         callback=callback,
         is_eager=True,
-        help="Control level of output",
+        help="Control level of output.",
     )(f)
 
 

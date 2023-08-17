@@ -71,7 +71,7 @@ def task_notify_option(f: C) -> C:
             "Comma separated list of task events which notify by email. "
             "'on' and 'off' may be used to enable or disable notifications "
             "for all event types. Otherwise, use 'succeeded', 'failed', or "
-            "'inactive'"
+            "'inactive'."
         ),
         cls=AnnotatedOption,
         type_annotation=DictType[str, bool],
