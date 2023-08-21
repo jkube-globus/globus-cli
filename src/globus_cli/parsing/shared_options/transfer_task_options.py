@@ -34,8 +34,8 @@ def sync_level_option(
             ("exists", "size", "mtime", "checksum"), case_sensitive=False
         ),
         help=(
-            "Specify that only new or modified files should be transferred, depending "
-            "on which setting is provided"
+            "Specify that only new or modified files should be transferred, "
+            "depending on which setting is provided."
         ),
     )(f)
 
@@ -47,9 +47,11 @@ def transfer_recursive_option(f: C) -> C:
         is_flag=True,
         default=None,
         help=(
-            "Specify these paths are for directories and should be transferred "
-            "recursively or for files that must not be transferred recursively. "
-            "Omit this option to use path type auto-detection."
+            "Use --recursive to flag that the paths are directories "
+            "and should be transferred recursively. "
+            "Use --no-recursive to flag that the paths are files "
+            "that must not be transferred recursively. "
+            "Omit these options to use path type auto-detection."
         ),
     )(f)
 

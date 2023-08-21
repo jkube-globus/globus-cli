@@ -76,28 +76,28 @@ def resolve_start_time(start: datetime.datetime | None) -> datetime.datetime:
 @click.option(
     "--start",
     type=click.DateTime(formats=DATETIME_FORMATS),
-    help="Start time for the job. Defaults to current time",
+    help="Start time for the job. Defaults to current time.",
 )
 @click.option(
     "--interval",
     type=TimedeltaType(),
     help=INTERVAL_HELP,
 )
-@click.option("--name", type=str, help="A name for the Timer job")
+@click.option("--name", type=str, help="A name for the Timer job.")
 @click.option(
     "--label",
     type=str,
-    help="A label for the Transfer tasks submitted by the Timer job",
+    help="A label for the Transfer tasks submitted by the Timer job.",
 )
 @click.option(
     "--stop-after-date",
     type=click.DateTime(formats=DATETIME_FORMATS),
-    help="Stop running the transfer after this date",
+    help="Stop running the transfer after this date.",
 )
 @click.option(
     "--stop-after-runs",
     type=click.IntRange(min=1),
-    help="Stop running the transfer after this number of runs have happened",
+    help="Stop running the transfer after this number of runs have happened.",
 )
 @LoginManager.requires_login("auth", "timer", "transfer")
 def transfer_command(
@@ -211,7 +211,7 @@ Please run
 
   globus session consent {scope_request_opts}
 
-to login with the required scopes"""
+to login with the required scopes."""
             )
             click.get_current_context().exit(4)
 
