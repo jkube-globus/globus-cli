@@ -313,9 +313,9 @@ def transfer_command(
 
     The `--include` and `--exclude` options are evaluated in order together
     to determine which files are transferred during recursive transfers.
-    Earlier `--include` and `exclude` options have priority over later such
+    Earlier `--include` and `--exclude` options have priority over later such
     options, with the first option that matches the name of a file being
-    applied. A file that does not match any `--include` or `exclude` options
+    applied. A file that does not match any `--include` or `--exclude` options
     is included by default, making the `--include` option only useful for
     overriding later `--exclude` options.
 
