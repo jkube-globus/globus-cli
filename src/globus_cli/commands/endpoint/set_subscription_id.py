@@ -12,7 +12,7 @@ from globus_cli.termio import TextMode, display
 
 class SubscriptionIdType(AnnotatedParamType):
     def get_type_annotation(self, param: click.Parameter) -> type:
-        return t.cast(type, t.Union[str, None])
+        return t.cast(type, str)
 
     def convert(
         self, value: str, param: click.Parameter | None, ctx: click.Context | None
@@ -20,7 +20,7 @@ class SubscriptionIdType(AnnotatedParamType):
         if value is None or (ctx and ctx.resilient_parsing):
             return None
         if value.lower() == "null":
-            return None
+            return "null"
         try:
             uuid.UUID(value)
             return value
@@ -33,7 +33,7 @@ class SubscriptionIdType(AnnotatedParamType):
 @click.argument("SUBSCRIPTION_ID", type=SubscriptionIdType())
 @LoginManager.requires_login("transfer")
 def set_endpoint_subscription_id(
-    login_manager: LoginManager, *, endpoint_id: uuid.UUID, subscription_id: str | None
+    login_manager: LoginManager, *, endpoint_id: uuid.UUID, subscription_id: str
 ) -> None:
     """
     Set an endpoint's subscription ID.
@@ -46,8 +46,11 @@ def set_endpoint_subscription_id(
     """
     transfer_client = login_manager.get_transfer_client()
 
+    optional_subscription_id: str | None = (
+        None if subscription_id == "null" else subscription_id
+    )
     res = transfer_client.put(
         f"/endpoint/{endpoint_id}/subscription",
-        data={"subscription_id": subscription_id},
+        data={"subscription_id": optional_subscription_id},
     )
     display(res, text_mode=TextMode.text_raw, response_key="message")
