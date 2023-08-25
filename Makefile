@@ -23,7 +23,6 @@ showvars:
 	@echo "CLI_VERSION=$(CLI_VERSION)"
 prepare-release:
 	tox -e prepare-release
-	$(EDITOR) changelog.adoc
 tag-release:
 	git tag -s "$(CLI_VERSION)" -m "v$(CLI_VERSION)"
 	-git push $(shell git rev-parse --abbrev-ref @{push} | cut -d '/' -f1) refs/tags/$(CLI_VERSION)

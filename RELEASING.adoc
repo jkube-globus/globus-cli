@@ -5,19 +5,47 @@
   - Make sure you have a gpg key setup for use with git.
       https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work[git-scm.com guide for detail]
 
+  - The github `gh` CLI is used for example commands. You can perform the same
+    steps with the web UI if you prefer.
+
 == Procedure
 
   - Make sure your repo is on `main` and up to date; `git checkout main; git pull`
+
   - Read `changelog.d/` and decide if the release is MINOR or PATCH
+
+  - (optional) Set the version in the `CLI_VERSION` env var, for use in the
+    following steps:
+
+        CLI_VERSION=...
+
+  - Create a release branch; `git checkout -b release-$CLI_VERSION`
+
   - Update the version in `src/globus_cli/version.py`
-  - Update version and changelog; `make prepare-release`
+
+  - Update changelog;
+
+        make prepare-release
+        $(EDITOR) changelog.adoc
+
   - Add changed files;
       `git add changelog.d/ changelog.adoc src/globus_cli/version.py`
+
   - Commit; `git commit -m 'Bump version and changelog for release'`
-  - Push to main; `git push origin main`
+
+  - Push the release branch; `git push -u origin release-$CLI_VERSION`
+
+  - Open a PR for review
+    `gh pr create --base main --title "Release v$CLI_VERSION"`
+
+  * After any changes and approval, merge the PR, checkout `main`, and pull;
+      `git checkout main; git pull`
+
   - Tag the release; `make tag-release`
       _This will run a workflow to publish to test-pypi_
+
   - Create a GitHub release with a copy of the changelog
       _This will run a workflow to publish to pypi_
+
   - Ensure that `docs.globus.org` gets updated with new docs/changelog
       Procedure is set in that repo.
