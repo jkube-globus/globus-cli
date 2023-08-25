@@ -72,7 +72,14 @@ class Endpointish:
 
     def get_gcs_address(self) -> str:
         self.assert_entity_type(EntityType.gcsv5_types())
-        return t.cast(str, self.data["DATA"][0]["hostname"])
+        gcs_manager_url = self.data.get("gcs_manager_url")
+        if not isinstance(gcs_manager_url, str) or not gcs_manager_url.startswith(
+            "https://"
+        ):
+            raise ValueError(
+                f"gcs_manager_url was missing or malformed: {gcs_manager_url}"
+            )
+        return f"{gcs_manager_url.rstrip('/')}/api"
 
     @property
     def requires_data_access_scope(self) -> bool:
