@@ -2,6 +2,44 @@
 
 // scriv-insert-here
 
+== 3.17.0 (2023-08-25)
+
+Bugfixes:
+
+* When the `--recursive` option is not given when using `globus transfer` the
+  `recursive` flag will be omitted from the transfer item rather than being sent as
+  `False`. If there is a need to explicitly use `False` to enforce the item is not a
+  directory, use the `--no-recursive` option.
+
+* Fix a bug that prevented running `globus endpoint set-subscription-id ... null`.
+
+* Fix handling of the URL for GCS Collections. In certain cases,
+  `globus collection` commands could fail to deduce the GCS Manager URL
+
+Enhancements:
+
+* Add `globus flows run resume` for resuming a *run* of a *flow*
+
+* Add `globus flows run list` for listing *runs* visible to the current user
+
+* Add `globus flows run cancel` for canceling a *run* of a *flow*
+
+* Improve `globus flows run resume` to be capable of detecting missing consents
+  and prompt for reauthentication via `globus session consent`. The consent
+  check can also be skipped with `--skip-inactive-reason-check`.
+
+* Add `globus flows run show-logs` for showing a **run**'s log entries
+
+* Add `globus flows run show-definition` for showing the *flow* definition and
+  input schema used to start a given *run*.
+
+* Add support for an `--orderby` option to `globus flows list`
+
+* More exhaustively check for interactive usage (detect sessions with
+  alternative prompts).
+
+* Display the `status` of Timers jobs when listed or shown.
+
 == 3.16.0 (2023-07-21)
 
 Enhancements:
