@@ -8,6 +8,7 @@ TEST_REQUIREMENTS = [
     "pytest<7",
     "pytest-xdist<3",
     "pytest-timeout<2",
+    "click-type-test==0.0.3;python_version>='3.10'",
     "responses==0.17.0",
     # loading test fixture data
     "ruamel.yaml==0.17.16",

@@ -5,8 +5,8 @@ import sys
 import click
 import pytest
 
+import globus_cli.parsing
 from globus_cli.reflect import iter_all_commands
-from tests.click_types import check_has_correct_annotations_for_click_args
 
 _SKIP_MODULES = (
     "globus_cli.commands.endpoint.deactivate",
@@ -44,7 +44,30 @@ def _command_id_fn(val):
     return val.callback.__module__
 
 
+_ALL_PARSING_ATTRS = {
+    attrname: getattr(globus_cli.parsing, attrname)
+    for attrname in globus_cli.parsing.__all__
+}
+_ALL_CUSTOM_PARAM_TYPES = (
+    getattr(globus_cli.parsing, attrname)
+    for attrname, attrval in _ALL_PARSING_ATTRS.items()
+    if isinstance(attrval, type) and issubclass(attrval, click.ParamType)
+)
+
+
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="test requires py3.10+")
+@pytest.mark.parametrize(
+    "param_type", _ALL_CUSTOM_PARAM_TYPES, ids=lambda x: x.__name__
+)
+def test_custom_param_types_are_annotated(param_type):
+    from click_type_test import AnnotatedParamType
+
+    assert isinstance(param_type, AnnotatedParamType)
+
+
 @pytest.mark.skipif(sys.version_info < (3, 10), reason="test requires py3.10+")
 @pytest.mark.parametrize("command", _ALL_COMMANDS_TO_TEST, ids=_command_id_fn)
 def test_annotations_match_click_params(command):
-    check_has_correct_annotations_for_click_args(command)
+    from click_type_test import check_param_annotations
+
+    check_param_annotations(command)

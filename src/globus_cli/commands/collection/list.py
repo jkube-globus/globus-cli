@@ -7,7 +7,7 @@ import uuid
 import click
 
 from globus_cli.login_manager import LoginManager
-from globus_cli.parsing import AnnotatedParamType, command, endpoint_id_arg
+from globus_cli.parsing import command, endpoint_id_arg
 from globus_cli.termio import Field, TextMode, display, formatters
 
 if sys.version_info >= (3, 8):
@@ -16,7 +16,7 @@ else:
     from typing_extensions import Literal
 
 
-class ChoiceSlugified(click.Choice, AnnotatedParamType):
+class ChoiceSlugified(click.Choice):
     """
     Allow either hyphens or underscores, e.g. both 'mapped-collections' or
     'mapped_collections'

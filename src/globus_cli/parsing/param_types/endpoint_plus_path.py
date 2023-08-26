@@ -2,10 +2,8 @@ import uuid
 
 import click
 
-from .annotated_param import AnnotatedParamType
 
-
-class EndpointPlusPath(AnnotatedParamType):
+class EndpointPlusPath(click.ParamType):
     """
     Custom type for "<endpoint_id>:<path>"
     Supports path being required and path being optional.

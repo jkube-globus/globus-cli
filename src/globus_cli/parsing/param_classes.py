@@ -7,18 +7,15 @@ import click
 C = t.TypeVar("C", bound=t.Union[click.BaseCommand, t.Callable])
 
 
-class _Sentinel:
+class _SENTINEL:
     pass
-
-
-_SENTINEL = _Sentinel()
 
 
 class AnnotatedOption(click.Option):
     def __init__(
         self,
         *args: t.Any,
-        type_annotation: type | _Sentinel = _SENTINEL,
+        type_annotation: type = _SENTINEL,
         **kwargs: t.Any,
     ) -> None:
         super().__init__(*args, **kwargs)
@@ -34,7 +31,7 @@ class AnnotatedOption(click.Option):
         if self._type_annotation == _SENTINEL:
             raise ValueError("cannot get annotation from option when it is not set")
 
-        return t.cast(type, self._type_annotation)
+        return self._type_annotation
 
 
 class OneUseOption(AnnotatedOption):

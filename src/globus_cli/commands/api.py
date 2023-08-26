@@ -11,7 +11,7 @@ import globus_sdk
 from globus_cli import termio, version
 from globus_cli.login_manager import LoginManager
 from globus_cli.login_manager.scopes import CLI_SCOPE_REQUIREMENTS
-from globus_cli.parsing import AnnotatedParamType, command, group, mutex_option_group
+from globus_cli.parsing import command, group, mutex_option_group
 from globus_cli.termio import display
 from globus_cli.types import ServiceNameLiteral
 
@@ -21,7 +21,7 @@ else:
     from typing_extensions import Literal
 
 
-class QueryParamType(AnnotatedParamType):
+class QueryParamType(click.ParamType):
     def get_metavar(self, param: click.Parameter) -> str:
         return "Key=Value"
 
@@ -43,7 +43,7 @@ class QueryParamType(AnnotatedParamType):
         return (left, right)
 
 
-class HeaderParamType(AnnotatedParamType):
+class HeaderParamType(click.ParamType):
     def get_metavar(self, param: click.Parameter) -> str:
         return "Key:Value"
 

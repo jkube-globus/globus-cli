@@ -5,8 +5,6 @@ import click
 
 from globus_cli.constants import EXPLICIT_NULL, ExplicitNullType
 
-from .annotated_param import AnnotatedParamType
-
 
 def nullable_multi_callback(null="null"):
     """
@@ -35,7 +33,7 @@ def nullable_multi_callback(null="null"):
     return callback
 
 
-class StringOrNull(AnnotatedParamType):
+class StringOrNull(click.ParamType):
     """
     Very similar to a basic string type, but one in which the empty string will
     be converted into an EXPLICIT_NULL

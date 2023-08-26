@@ -11,8 +11,6 @@ import click
 from globus_cli.constants import EXPLICIT_NULL, ExplicitNullType
 from globus_cli.types import JsonValue
 
-from .annotated_param import AnnotatedParamType
-
 
 @dataclasses.dataclass
 class ParsedJSONData:
@@ -24,7 +22,7 @@ class ParsedJSONData:
     data: JsonValue
 
 
-class JSONStringOrFile(AnnotatedParamType):
+class JSONStringOrFile(click.ParamType):
     """
     Parse an input which could be a filename or could be a JSON blob being
     supplied on the commandline.

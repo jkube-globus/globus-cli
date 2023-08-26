@@ -6,11 +6,11 @@ import uuid
 import click
 
 from globus_cli.login_manager import LoginManager
-from globus_cli.parsing import AnnotatedParamType, command, endpoint_id_arg
+from globus_cli.parsing import command, endpoint_id_arg
 from globus_cli.termio import TextMode, display
 
 
-class SubscriptionIdType(AnnotatedParamType):
+class SubscriptionIdType(click.ParamType):
     def get_type_annotation(self, param: click.Parameter) -> type:
         return t.cast(type, str)
 

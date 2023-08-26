@@ -10,10 +10,8 @@ if sys.version_info >= (3, 8):
 else:
     from typing_extensions import Literal
 
-from .annotated_param import AnnotatedParamType
 
-
-class CommaDelimitedList(AnnotatedParamType):
+class CommaDelimitedList(click.ParamType):
     def __init__(
         self,
         *,
@@ -63,7 +61,7 @@ class CommaDelimitedList(AnnotatedParamType):
         return resolved
 
 
-class ColonDelimitedChoiceTuple(AnnotatedParamType, click.Choice):
+class ColonDelimitedChoiceTuple(click.Choice):
     def __init__(
         self,
         *,
