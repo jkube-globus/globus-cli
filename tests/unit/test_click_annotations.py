@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-import sys
-
 import click
 import pytest
 
 import globus_cli.parsing
 from globus_cli.reflect import iter_all_commands
+
+click_type_test = pytest.importorskip(
+    "click_type_test", reason="tests require 'click-type-test'"
+)
 
 _SKIP_MODULES = (
     "globus_cli.commands.endpoint.deactivate",
@@ -55,19 +57,13 @@ _ALL_CUSTOM_PARAM_TYPES = (
 )
 
 
-@pytest.mark.skipif(sys.version_info < (3, 10), reason="test requires py3.10+")
 @pytest.mark.parametrize(
     "param_type", _ALL_CUSTOM_PARAM_TYPES, ids=lambda x: x.__name__
 )
 def test_custom_param_types_are_annotated(param_type):
-    from click_type_test import AnnotatedParamType
-
-    assert isinstance(param_type, AnnotatedParamType)
+    assert isinstance(param_type, click_type_test.AnnotatedParamType)
 
 
-@pytest.mark.skipif(sys.version_info < (3, 10), reason="test requires py3.10+")
 @pytest.mark.parametrize("command", _ALL_COMMANDS_TO_TEST, ids=_command_id_fn)
 def test_annotations_match_click_params(command):
-    from click_type_test import check_param_annotations
-
-    check_param_annotations(command)
+    click_type_test.check_param_annotations(command)
