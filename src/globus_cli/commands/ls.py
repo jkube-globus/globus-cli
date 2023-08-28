@@ -1,13 +1,39 @@
 from __future__ import annotations
 
+import sys
 import typing as t
 import uuid
 
 import click
 
 from globus_cli.login_manager import LoginManager
-from globus_cli.parsing import ENDPOINT_PLUS_OPTPATH, command, local_user_option
+from globus_cli.parsing import (
+    ENDPOINT_PLUS_OPTPATH,
+    ColonDelimitedChoiceTuple,
+    command,
+    local_user_option,
+    mutex_option_group,
+)
 from globus_cli.termio import Field, display, formatters, is_verbose, outformat_is_text
+
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
+
+# Transfer supports all file fields, so this list is missing 'link_target'
+#
+# however, full symlink support is still missing from Transfer, so this field
+# might be confusing to users if presented as co-equal with the others
+ORDER_BY_FIELDS = (
+    "group",
+    "last_modified",
+    "name",
+    "permissions",
+    "size",
+    "type",
+    "user",
+)
 
 
 class PathItemFormatter(formatters.StrFormatter):
@@ -99,6 +125,23 @@ $ globus ls $ep_id:/share/godata/ --filter '~*.txt'  # done with --filter, bette
     help="For text output only. Do long form output, kind of like `ls -l`",
 )
 @click.option(
+    "--orderby",
+    type=ColonDelimitedChoiceTuple(
+        choices=tuple(
+            f"{field}:{order}" for field in ORDER_BY_FIELDS for order in ("ASC", "DESC")
+        ),
+        case_sensitive=False,
+    ),
+    multiple=True,
+    metavar=f"[{'|'.join(ORDER_BY_FIELDS)}]:[ASC|DESC]",
+    help="""
+        Sort results by the given field and ordering.
+        ASC for ascending, DESC for descending.
+
+        This option can be specified multiple times to sort by multiple fields.
+    """,
+)
+@click.option(
     "--filter",
     "filter_val",
     metavar="FILTER_PATTERN",
@@ -124,6 +167,7 @@ $ globus ls $ep_id:/share/godata/ --filter '~*.txt'  # done with --filter, bette
     ),
 )
 @local_user_option
+@mutex_option_group("--recursive", "--orderby")
 @LoginManager.requires_login("transfer")
 def ls_command(
     login_manager: LoginManager,
@@ -133,6 +177,21 @@ def ls_command(
     recursive: bool,
     long_output: bool,
     show_hidden: bool,
+    orderby: tuple[
+        tuple[
+            Literal[
+                "group",
+                "last_modified",
+                "name",
+                "permissions",
+                "size",
+                "type",
+                "user",
+            ],
+            Literal["ASC", "DESC"],
+        ],
+        ...,
+    ],
     filter_val: str | None,
     local_user: str | None,
 ):
@@ -181,6 +240,8 @@ def ls_command(
 
     # create the query parameters to send to operation_ls
     ls_params: dict[str, t.Any] = {"show_hidden": int(show_hidden)}
+    if orderby:
+        ls_params["orderby"] = ",".join(f"{o[0]} {o[1]}" for o in orderby)
     if path:
         ls_params["path"] = path
     if local_user:
