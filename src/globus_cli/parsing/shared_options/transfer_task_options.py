@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import functools
+import textwrap
 import typing as t
 
 import click
@@ -60,12 +61,16 @@ def transfer_batch_option(f: C) -> C:
     return click.option(
         "--batch",
         type=click.File("r"),
-        help=(
-            "Accept a batch of source/dest path pairs from a file. Use the special `-` "
-            "value to read from stdin; otherwise opens the file from the argument and "
-            "passes through lines from that file. Uses SOURCE_ENDPOINT_ID and "
-            "DEST_ENDPOINT_ID as passed on the commandline. Commandline paths are "
-            "still allowed and are used as prefixes to the batchmode inputs."
+        help=textwrap.dedent(
+            """\
+            Accept a batch of source/dest path pairs from a file.
+            Use `-` to read from stdin.
+
+            Uses SOURCE_ENDPOINT_ID and DEST_ENDPOINT_ID as passed on the
+            commandline.
+
+            See documentation on "Batch Input" for more information.
+            """
         ),
     )(f)
 

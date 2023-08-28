@@ -264,16 +264,15 @@ def transfer_command(
     are ever created on the dest.
 
     \b
-    === Batched Input
+    === Batch Input
 
     If you use `SOURCE_PATH` and `DEST_PATH` without the `--batch` flag, you
     will submit a single-file or single-directory transfer task.
-    This has behavior similar to `cp` and `cp -r` across endpoints.
 
     Using `--batch`, `globus transfer` can submit a task which transfers multiple files
-    or directories. The value for `--batch` can be a file to read from, or the
-    character `-` which will read from stdin. From either the file or stdin, each line
-    is treated as a path to a file or directory to transfer, respecting quotes.
+    or directories.
+    Each line of `--batch` input is treated as a path to a file or directory to
+    transfer.
 
     \b
     Lines are of the form
@@ -283,7 +282,7 @@ def transfer_command(
 
     \b
     If you use `--batch` and a commandline SOURCE_PATH and/or DEST_PATH, these
-    paths will be used as dir prefixes to any paths read from the batch source.
+    paths will be used as dir prefixes to any paths read from the `--batch` input.
 
     \b
     === Sync Levels
