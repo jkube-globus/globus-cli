@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import click
 
-from .annotated_param import AnnotatedParamType
-
 
 def _normpath(path: str) -> str:
     """
@@ -61,7 +59,7 @@ def _pathjoin(a: str, b: str) -> str:
         return a + "/" + b
 
 
-class TaskPath(AnnotatedParamType):
+class TaskPath(click.ParamType):
     def __init__(
         self,
         base_dir: str | None = None,

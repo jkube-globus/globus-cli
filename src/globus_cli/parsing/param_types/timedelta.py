@@ -5,8 +5,6 @@ import re
 
 import click
 
-from .annotated_param import AnnotatedParamType
-
 _timedelta_regex = re.compile(
     r"""
     ^
@@ -27,7 +25,7 @@ _timedelta_regex = re.compile(
 )
 
 
-class TimedeltaType(AnnotatedParamType):
+class TimedeltaType(click.ParamType):
     """
     Parse a number of seconds, minutes, hours, days, and weeks from a string into a
     timedelta object

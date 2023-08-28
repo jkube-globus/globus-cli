@@ -4,8 +4,6 @@ from collections import namedtuple
 
 import click
 
-from .annotated_param import AnnotatedParamType
-
 ParsedIdentity = namedtuple("ParsedIdentity", ["value", "idtype"])
 
 
@@ -33,7 +31,7 @@ def _b32decode(v):
         raise _B32DecodeError("decode and load as UUID failed")
 
 
-class IdentityType(AnnotatedParamType):
+class IdentityType(click.ParamType):
     """
     Parameter type for handling identities. By default, just allows usernames or
     identity IDs. With options, it can be set to allow domain names as an "identity"

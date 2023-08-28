@@ -4,7 +4,6 @@ from .param_classes import AnnotatedOption, one_use_option
 from .param_types import (
     ENDPOINT_PLUS_OPTPATH,
     ENDPOINT_PLUS_REQPATH,
-    AnnotatedParamType,
     ColonDelimitedChoiceTuple,
     CommaDelimitedList,
     IdentityType,
@@ -56,7 +55,6 @@ __all__ = [
     # param types
     "ENDPOINT_PLUS_OPTPATH",
     "ENDPOINT_PLUS_REQPATH",
-    "AnnotatedParamType",
     "CommaDelimitedList",
     "ColonDelimitedChoiceTuple",
     "IdentityType",

@@ -14,7 +14,7 @@ terminal_dimensions = collections.namedtuple(
 )
 
 
-def fake_get_terminal_size(default_dimensions):
+def fake_get_terminal_size(fallback):
     return terminal_dimensions(20, 10)
 
 

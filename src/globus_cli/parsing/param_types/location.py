@@ -5,10 +5,8 @@ import typing as t
 
 import click
 
-from .annotated_param import AnnotatedParamType
 
-
-class LocationType(AnnotatedParamType):
+class LocationType(click.ParamType):
     """
     Validates that given location string is two comma separated floats
     """
