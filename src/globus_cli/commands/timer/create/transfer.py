@@ -141,11 +141,11 @@ def transfer_command(
     dest_endpoint, cmd_dest_path = destination
 
     # avoid 'mutex_option_group', emit a custom error message
-    if recursive and batch:
+    if recursive is not None and batch:
+        option_name = "--recursive" if recursive else "--no-recursive"
         raise click.UsageError(
-            "You cannot use --recursive in addition to --batch. "
-            "Instead, use --recursive on lines of --batch input "
-            "which need it"
+            f"You cannot use {option_name} in addition to --batch. "
+            f"Instead, use {option_name} on lines of --batch input which need it."
         )
     if (cmd_source_path is None or cmd_dest_path is None) and (not batch):
         raise click.UsageError(

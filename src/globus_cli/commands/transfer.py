@@ -332,18 +332,17 @@ def transfer_command(
     dest_endpoint, cmd_dest_path = destination
 
     # avoid 'mutex_option_group', emit a custom error message
-    if recursive and batch:
+    if recursive is not None and batch:
+        option_name = "--recursive" if recursive else "--no-recursive"
         raise click.UsageError(
-            "You cannot use --recursive in addition to --batch. "
-            "Instead, use --recursive on lines of --batch input "
-            "which need it"
+            f"You cannot use {option_name} in addition to --batch. "
+            f"Instead, use {option_name} on lines of --batch input which need it."
         )
 
     if external_checksum and batch:
         raise click.UsageError(
             "You cannot use --external-checksum in addition to --batch. "
-            "Instead, use --external-checksum on lines of --batch input "
-            "which need it"
+            "Instead, use --external-checksum on lines of --batch input which need it."
         )
 
     # the performance options (of which there are a few), have elements which should be

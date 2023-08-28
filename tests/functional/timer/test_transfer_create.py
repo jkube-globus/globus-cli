@@ -191,7 +191,8 @@ def test_create_job_batch_data(run_line, ep_for_timer):
     assert transfer_body["DATA"][1]["destination_path"] == "p/q/r"
 
 
-def test_recursive_and_batch_exclusive(run_line):
+@pytest.mark.parametrize("option", ("--recursive", "--no-recursive"))
+def test_recursive_and_batch_exclusive(run_line, option):
     ep_id = str(uuid.UUID(int=1))
 
     result = run_line(
@@ -204,13 +205,13 @@ def test_recursive_and_batch_exclusive(run_line):
             ep_id,
             "--interval",
             "1800s",
-            "--recursive",
+            option,
             "--batch",
             "-",
         ],
         assert_exit_code=2,
     )
-    assert "You cannot use --recursive in addition to --batch" in result.stderr
+    assert f"You cannot use {option} in addition to --batch" in result.stderr
 
 
 def test_create_job_requires_some_pathargs(run_line):
