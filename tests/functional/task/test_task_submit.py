@@ -50,7 +50,7 @@ def test_filter_rules(run_line, go_ep1_id, go_ep2_id):
     assert json_output["filter_rules"] == expected_filter_rules
 
 
-def test_exlude_recursive(run_line, go_ep1_id, go_ep2_id):
+def test_exclude_recursive(run_line, go_ep1_id, go_ep2_id):
     """
     Confirms using --exclude on non recursive transfers raises errors
     """
@@ -67,7 +67,7 @@ def test_exlude_recursive(run_line, go_ep1_id, go_ep2_id):
     )
 
 
-def test_exlude_recursive_batch_stdin(run_line, go_ep1_id, go_ep2_id):
+def test_exclude_recursive_batch_stdin(run_line, go_ep1_id, go_ep2_id):
     load_response_set("cli.get_submission_id")
     result = run_line(
         "globus transfer --exclude *.txt --batch - "
@@ -81,7 +81,7 @@ def test_exlude_recursive_batch_stdin(run_line, go_ep1_id, go_ep2_id):
     )
 
 
-def test_exlude_recursive_batch_file(run_line, go_ep1_id, go_ep2_id, tmp_path):
+def test_exclude_recursive_batch_file(run_line, go_ep1_id, go_ep2_id, tmp_path):
     load_response_set("cli.get_submission_id")
     temp = tmp_path / "batch"
     temp.write_text("abc /def\n")
