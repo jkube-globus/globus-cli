@@ -1,6 +1,8 @@
 import json
 
-from globus_sdk._testing import load_response_set
+import globus_sdk
+import pytest
+from globus_sdk._testing import get_last_request, load_response, load_response_set
 
 
 def test_filter_rules(run_line, go_ep1_id, go_ep2_id):
@@ -50,7 +52,7 @@ def test_filter_rules(run_line, go_ep1_id, go_ep2_id):
     assert json_output["filter_rules"] == expected_filter_rules
 
 
-def test_exlude_recursive(run_line, go_ep1_id, go_ep2_id):
+def test_exclude_recursive(run_line, go_ep1_id, go_ep2_id):
     """
     Confirms using --exclude on non recursive transfers raises errors
     """
@@ -67,7 +69,7 @@ def test_exlude_recursive(run_line, go_ep1_id, go_ep2_id):
     )
 
 
-def test_exlude_recursive_batch_stdin(run_line, go_ep1_id, go_ep2_id):
+def test_exclude_recursive_batch_stdin(run_line, go_ep1_id, go_ep2_id):
     load_response_set("cli.get_submission_id")
     result = run_line(
         "globus transfer --exclude *.txt --batch - "
@@ -81,7 +83,7 @@ def test_exlude_recursive_batch_stdin(run_line, go_ep1_id, go_ep2_id):
     )
 
 
-def test_exlude_recursive_batch_file(run_line, go_ep1_id, go_ep2_id, tmp_path):
+def test_exclude_recursive_batch_file(run_line, go_ep1_id, go_ep2_id, tmp_path):
     load_response_set("cli.get_submission_id")
     temp = tmp_path / "batch"
     temp.write_text("abc /def\n")
@@ -178,3 +180,35 @@ def test_transfer_recursive_options(run_line, go_ep1_id, go_ep2_id, tmp_path):
     json_output = json.loads(result.output)
     transfer_item = json_output["DATA"][0]
     assert "recursive" not in transfer_item
+
+
+@pytest.mark.parametrize("option", ("", "--recursive", "--no-recursive"))
+def test_recursion_options_in_batch_input(run_line, go_ep1_id, go_ep2_id, option):
+    load_response_set("cli.transfer_activate_success")
+    load_response(globus_sdk.TransferClient.submit_transfer)
+    load_response(globus_sdk.TransferClient.get_submission_id)
+
+    stdin = f"abc def {option}\n"
+    run_line(
+        [
+            "globus",
+            "transfer",
+            "--batch",
+            "-",
+            f"{go_ep1_id}:/",
+            f"{go_ep1_id}:/",
+        ],
+        stdin=stdin,
+    )
+
+    # Retrieve the first DATA item in the JSON request body.
+    request = get_last_request()
+    item = json.loads(request.body)["DATA"][0]
+
+    # Assert things.
+    if option == "--recursive":
+        assert item["recursive"] is True
+    elif option == "--no-recursive":
+        assert item["recursive"] is False
+    else:  # option == ""
+        assert "recursive" not in item

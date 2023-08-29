@@ -20,7 +20,7 @@ def add_batch_to_transfer_data(
 ) -> None:
     @click.command()
     @click.option("--external-checksum")
-    @click.option("--recursive", "-r", is_flag=True)
+    @click.option("--recursive/--no-recursive", "-r", default=None, is_flag=True)
     @click.argument("source_path", type=TaskPath(base_dir=source_base_path))
     @click.argument("dest_path", type=TaskPath(base_dir=dest_base_path))
     @mutex_option_group("--recursive", "--external-checksum")

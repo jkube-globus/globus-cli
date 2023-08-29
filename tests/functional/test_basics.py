@@ -1,5 +1,6 @@
 import os
 import re
+import uuid
 
 import pytest
 from globus_sdk._testing import RegisteredResponse, load_response, load_response_set
@@ -247,3 +248,22 @@ def test_env_checks(monkeypatch, run_line, cmd):
     monkeypatch.setitem(os.environ, "GLOBUS_CLI_INTERACTIVE", "Whoops")
     result = run_line(f"globus {cmd}", assert_exit_code=1)
     assert "GLOBUS_CLI_INTERACTIVE" in result.stderr
+
+
+@pytest.mark.parametrize("option", ("--recursive", "--no-recursive"))
+def test_recursive_and_batch_exclusive(run_line, option):
+    ep_id = str(uuid.UUID(int=1))
+
+    result = run_line(
+        [
+            "globus",
+            "transfer",
+            ep_id,
+            ep_id,
+            option,
+            "--batch",
+            "-",
+        ],
+        assert_exit_code=2,
+    )
+    assert f"You cannot use {option} in addition to --batch" in result.stderr
