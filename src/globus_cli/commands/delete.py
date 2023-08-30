@@ -122,8 +122,8 @@ def delete_command(
     Empty lines and comments beginning with '#' are ignored.
 
     \b
-    If you use `--batch` and a commandline PATH, the commandline PATH is treated as
-    a prefix to all of the paths read from the `--batch` input.
+    If you use `--batch` and supply a PATH via the commandline, the commandline PATH is
+    treated as a prefix to all of the paths read from the `--batch` input.
 
     {AUTOMATIC_ACTIVATION}
     """

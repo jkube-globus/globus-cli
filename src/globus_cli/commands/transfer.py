@@ -269,8 +269,8 @@ def transfer_command(
     If you use `SOURCE_PATH` and `DEST_PATH` without the `--batch` flag, you
     will submit a single-file or single-directory transfer task.
 
-    Using `--batch`, `globus transfer` can submit a task which transfers multiple files
-    or directories.
+    Using `--batch`, `globus transfer` can submit a task which transfers multiple
+    specified files or directories.
     Each line of `--batch` input is treated as a path to a file or directory to
     transfer.
 

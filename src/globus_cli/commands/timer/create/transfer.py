@@ -138,7 +138,7 @@ def transfer_command(
     will submit a single-file or single-directory timer.
 
     Using `--batch`, `globus timer create transfer` can create a timer which
-    transfers multiple files or directories.
+    transfers multiple specified files or directories.
     Each line of `--batch` input is treated as a separate file or directory
     transfer to include in the timer.
 
@@ -149,8 +149,8 @@ def transfer_command(
     Skips empty lines and allows comments beginning with "#".
 
     \b
-    If you use `--batch` and a commandline SOURCE_PATH and/or DEST_PATH, these
-    paths will be used as dir prefixes to any paths read from the `--batch` input.
+    If you use `--batch` and supply a SOURCE_PATH and/or DEST_PATH via the commandline,
+    these paths will be used as dir prefixes to any paths read from the `--batch` input.
     """
     from globus_cli.services.transfer import add_batch_to_transfer_data, autoactivate
 
