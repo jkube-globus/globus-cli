@@ -43,19 +43,18 @@ def bump_pkg_version_on_file(
     print("ok")
 
 
-def bump_sdk_version() -> None:
-    sdk_version = get_pkg_latest("globus-sdk")
-    bump_pkg_version_on_file(REPO_ROOT / "setup.py", "globus-sdk", sdk_version)
-
-
-def bump_mypy_version() -> None:
-    mypy_version = get_pkg_latest("mypy")
-    bump_pkg_version_on_file(REPO_ROOT / "tox.ini", "mypy", mypy_version)
+_all_pkgs = {
+    "jmespath": "setup.py",
+    "scriv": "setup.py",
+    "responses": "setup.py",
+    "ruamel.yaml": "setup.py",
+    "globus-sdk": "setup.py",
+    "mypy": "tox.ini",
+}
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    _all_pkgs = ("sdk", "mypy")
     parser.add_argument(
         "--pkg",
         choices=_all_pkgs,
@@ -66,10 +65,9 @@ def main() -> None:
 
     pkgs = args.pkg or _all_pkgs
 
-    if "sdk" in pkgs:
-        bump_sdk_version()
-    if "mypy" in pkgs:
-        bump_mypy_version()
+    for pkg in pkgs:
+        version = get_pkg_latest(pkg)
+        bump_pkg_version_on_file(REPO_ROOT / _all_pkgs[pkg], pkg, version)
 
 
 if __name__ == "__main__":
