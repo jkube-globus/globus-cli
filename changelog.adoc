@@ -2,6 +2,21 @@
 
 // scriv-insert-here
 
+== 3.18.0 (2023-08-30)
+
+Bugfixes:
+
+* Make `--no-recursive` and `--batch` mutually exclusive options.
+  This affects the `globus transfer` and the `globus timer create transfer` commands.
+
+* Fix a bug that caused `--batch` input files to default to non-recursive transfers.
+  This affects the `globus transfer` and `globus timer create transfer` commands.
+
+Enhancements:
+
+* `globus ls` now supports an `--orderby` flag for sorting results. It is
+  mutually exclusive with `--recursive`.
+
 == 3.17.0 (2023-08-25)
 
 Bugfixes:
