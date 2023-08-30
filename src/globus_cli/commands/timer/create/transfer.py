@@ -130,6 +130,27 @@ def transfer_command(
 
     \b
         globus timer create transfer --interval 1d --recursive $ep1:/foo/ $ep2:/bar/
+
+    \b
+    === Batch Input
+
+    If you use `SOURCE_PATH` and `DEST_PATH` without the `--batch` flag, you
+    will submit a single-file or single-directory timer.
+
+    Using `--batch`, `globus timer create transfer` can create a timer which
+    transfers multiple specified files or directories.
+    Each line of `--batch` input is treated as a separate file or directory
+    transfer to include in the timer.
+
+    \b
+    Lines are of the form
+    [--recursive] [--external-checksum TEXT] SOURCE_PATH DEST_PATH\n
+
+    Skips empty lines and allows comments beginning with "#".
+
+    \b
+    If you use `--batch` and supply a SOURCE_PATH and/or DEST_PATH via the commandline,
+    these paths will be used as dir prefixes to any paths read from the `--batch` input.
     """
     from globus_cli.services.transfer import add_batch_to_transfer_data, autoactivate
 

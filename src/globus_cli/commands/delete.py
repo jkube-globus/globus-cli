@@ -104,27 +104,26 @@ def delete_command(
 
     === Batch Input
 
-    If you give a SOURCE_PATH without the --batch flag, you will submit a
-    single-file or single-directory delete task. This has
-    behavior similar to `rm` and `rm -r`, across endpoints.
+    If you give a PATH without the `--batch` flag, you will submit a
+    single-file or single-directory delete task.
 
-    Using `--batch`, *globus delete* can submit a task which deletes multiple files or
-    directories. The value for `--batch` can be a file to read from, or the character
-    `-` which will read from stdin. From either the file or stdin, each line is treated
-    as a path to a file or directory to delete, respecting quotes.
+    Using `--batch`, `globus delete` can submit a task which deletes multiple files or
+    directories.
+    Each line of `--batch` input is treated as a path to a file or directory to delete.
 
     \b
     Lines are of the form
       PATH
 
-    Note that unlike 'globus transfer' --recursive is not an option at the per line
+    Note that unlike `globus transfer` --recursive is not an option at the per line
     level, instead, if given with the original command, all paths that point to
     directories will be recursively deleted.
 
     Empty lines and comments beginning with '#' are ignored.
 
-    Batch only requires an ENDPOINT on the "base" command, but you may pass an
-    ENPDOINT:PATH to prefix all the paths read in the batch with that path.
+    \b
+    If you use `--batch` and supply a PATH via the commandline, the commandline PATH is
+    treated as a prefix to all of the paths read from the `--batch` input.
 
     {AUTOMATIC_ACTIVATION}
     """
