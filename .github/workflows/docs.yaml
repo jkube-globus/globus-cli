@@ -12,7 +12,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.8
+          python-version: 3.11
       - name: Install CLI
         run: |
           python -m pip install -e .
@@ -24,12 +24,7 @@ jobs:
           tar --exclude "*.py" --exclude '.gitignore' -czf cli-reference.tar.gz -h reference/
       # upload as a release asset
       - name: Upload Autodoc
-        uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          # upload URL is pulled from the release event
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./cli-reference.tar.gz
-          asset_name: cli-reference.tar.gz
-          asset_content_type: application/gzip
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh release upload "${{ github.ref_name }}" cli-reference.tar.gz
