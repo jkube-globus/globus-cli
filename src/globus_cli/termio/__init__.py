@@ -17,13 +17,13 @@ from .field import Field
 from .printer import TextMode, display
 
 
-def print_command_hint(message):
+def print_command_hint(message: str, *, color: str = "yellow"):
     """
     Wrapper around echo that checks terminal state
     before printing a given command hint message
     """
     if term_is_interactive() and err_is_terminal() and out_is_terminal():
-        click.echo(click.style(message, fg="yellow"), err=True)
+        click.echo(click.style(message, fg=color), err=True)
 
 
 __all__ = [

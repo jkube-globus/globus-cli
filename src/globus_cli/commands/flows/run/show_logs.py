@@ -49,6 +49,9 @@ def show_logs_command(
 
     flows_client = login_manager.get_flows_client()
 
+    # get the Flow, to check INACTIVE status below
+    run_doc = flows_client.get_run(run_id)
+
     paginator = Paginator.wrap(flows_client.get_run_logs)
     entry_iterator = PagingWrapper(
         paginator(run_id=run_id, reverse_order=reverse).items(),
@@ -82,6 +85,13 @@ def show_logs_command(
         # Display the log entries in a table.
         display(
             entry_iterator, fields=fields, json_converter=entry_iterator.json_converter
+        )
+
+    if run_doc["status"] == "INACTIVE":
+        print_command_hint(
+            "\nNOTE: This run is INACTIVE. "
+            "No further logs will be added until it is resumed.",
+            color="bright_blue",
         )
 
     # Check if there are more results

@@ -2,7 +2,12 @@ import datetime
 import json
 
 import pytest
-from globus_sdk._testing import load_response, load_response_set, register_response_set
+from globus_sdk._testing import (
+    RegisteredResponse,
+    load_response,
+    load_response_set,
+    register_response_set,
+)
 from globus_sdk._testing.data.flows.get_run_logs import (
     PAGINATED_RUN_LOG_RESPONSES,
     RUN_ID,
@@ -19,9 +24,23 @@ EXPECTED_EVENT_CODES = [
 ]
 
 
+# a minimal stub response meant to match the specific usage in
+# 'globus flows run show-logs'
+def _setup_get_response(run_id, *, status="ACTIVE"):
+    load_response(
+        RegisteredResponse(
+            service="flows",
+            method="GET",
+            path=f"/runs/{run_id}",
+            json={"status": status},
+        )
+    )
+
+
 def test_run_show_logs_table(run_line):
     meta = load_response("flows.get_run_logs").metadata
     run_id = meta["run_id"]
+    _setup_get_response(run_id)
 
     result = run_line(["globus", "flows", "run", "show-logs", run_id])
     output_lines = result.output.splitlines()
@@ -40,9 +59,29 @@ def test_run_show_logs_table(run_line):
     ]
 
 
+@pytest.mark.parametrize("run_inactive", (True, False))
+def test_run_show_logs_shows_hints(run_line, monkeypatch, run_inactive):
+    # force interactive and patch detection methods to get command hints to print
+    monkeypatch.setenv("GLOBUS_CLI_INTERACTIVE", "1")
+    monkeypatch.setattr("globus_cli.termio.err_is_terminal", lambda: True)
+    monkeypatch.setattr("globus_cli.termio.out_is_terminal", lambda: True)
+
+    meta = load_response("flows.get_run_logs").metadata
+    run_id = meta["run_id"]
+    _setup_get_response(run_id, status="INACTIVE" if run_inactive else "ACTIVE")
+
+    hint_regexes = [r"Displaying summary data\."]
+    if run_inactive:
+        hint_regexes.append(r"NOTE: This run is INACTIVE\.")
+    run_line(
+        ["globus", "flows", "run", "show-logs", run_id], search_stderr=hint_regexes
+    )
+
+
 def test_run_show_logs_text_records(run_line):
     meta = load_response("flows.get_run_logs").metadata
     run_id = meta["run_id"]
+    _setup_get_response(run_id)
 
     result = run_line(["globus", "flows", "run", "show-logs", run_id, "--details"])
     output_sections = [item.splitlines() for item in result.output.split("\n\n")]
@@ -91,6 +130,7 @@ def test_run_show_logs_paginated_response(run_line, limit):
     )
     load_response_set("get_run_logs_paginated")
     run_id = RUN_ID
+    _setup_get_response(run_id)
 
     result = run_line(
         ["globus", "flows", "run", "show-logs", run_id, "--limit", str(limit)]
