@@ -89,8 +89,10 @@ def show_logs_command(
 
     if run_doc["status"] == "INACTIVE":
         print_command_hint(
-            "\nNOTE: This run is INACTIVE. "
-            "No further logs will be added until it is resumed.",
+            (
+                "\nNOTE: This run is INACTIVE. "
+                "No further logs will be added until it is resumed."
+            ),
             color="bright_blue",
         )
 
