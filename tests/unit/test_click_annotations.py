@@ -21,7 +21,6 @@ _SKIP_MODULES = (
     "globus_cli.commands.endpoint.role.create",
     "globus_cli.commands.endpoint.search",
     "globus_cli.commands.endpoint.show",
-    "globus_cli.commands.endpoint.storage_gateway.list",
     "globus_cli.commands.get_identities",
     "globus_cli.commands.login",
     "globus_cli.commands.logout",
