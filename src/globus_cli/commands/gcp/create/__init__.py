@@ -8,5 +8,5 @@ from globus_cli.parsing import group
         "guest": (".guest", "guest_command"),
     },
 )
-def create_command():
+def create_command() -> None:
     """Create Globus Connect Personal collections"""

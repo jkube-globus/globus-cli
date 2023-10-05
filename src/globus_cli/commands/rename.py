@@ -33,7 +33,7 @@ def rename_command(
     source: str,
     destination: str,
     local_user: str | None,
-):
+) -> None:
     """Rename a file or directory on an endpoint.
 
     The old path must be an existing file or directory. The new path must not yet

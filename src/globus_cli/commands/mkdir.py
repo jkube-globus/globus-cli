@@ -29,7 +29,7 @@ def mkdir_command(
     *,
     endpoint_plus_path: tuple[uuid.UUID, str],
     local_user: str | None,
-):
+) -> None:
     """Make a directory on an endpoint at the given path.
 
     {AUTOMATIC_ACTIVATION}

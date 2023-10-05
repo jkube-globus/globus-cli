@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import typing as t
 from urllib.parse import urlparse
 
@@ -6,7 +8,7 @@ import click
 from globus_cli.constants import EXPLICIT_NULL, ExplicitNullType
 
 
-def nullable_multi_callback(null="null"):
+def nullable_multi_callback(null: t.Any = "null") -> t.Callable[..., t.Any]:
     """
     A callback which converts multiple=True options as follows:
     - empty results, [] => None
@@ -23,7 +25,9 @@ def nullable_multi_callback(null="null"):
     Note that this will see values after the type conversion has happened.
     """
 
-    def callback(ctx, param, value):
+    def callback(
+        ctx: click.Context, param: click.Parameter, value: t.Sequence[t.Any] | None
+    ) -> t.Any:
         if value is None or len(value) == 0:
             return None
         if len(value) == 1 and value[0] == null:
@@ -42,10 +46,12 @@ class StringOrNull(click.ParamType):
     def get_type_annotation(self, param: click.Parameter) -> type:
         return t.cast(type, str | ExplicitNullType)
 
-    def get_metavar(self, param):
+    def get_metavar(self, param: click.Parameter) -> str:
         return "TEXT"
 
-    def convert(self, value, param, ctx):
+    def convert(
+        self, value: t.Any, param: click.Parameter | None, ctx: click.Context | None
+    ) -> t.Any:
         if value == "":
             return EXPLICIT_NULL
         else:
@@ -58,10 +64,12 @@ class UrlOrNull(StringOrNull):
     http or https URL.
     """
 
-    def get_metavar(self, param):
+    def get_metavar(self, param: click.Parameter) -> str:
         return "TEXT"
 
-    def convert(self, value, param, ctx):
+    def convert(
+        self, value: t.Any, param: click.Parameter | None, ctx: click.Context | None
+    ) -> t.Any:
         if value == "":
             return EXPLICIT_NULL
         else:
