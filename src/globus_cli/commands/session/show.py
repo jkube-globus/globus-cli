@@ -47,7 +47,7 @@ $ globus session show --format json
 """,
 )
 @LoginManager.requires_login("auth")
-def session_show(login_manager: LoginManager):
+def session_show(login_manager: LoginManager) -> None:
     """List all identities in your current CLI auth session.
 
     Lists identities that are in the session tied to the CLI's access tokens along with
