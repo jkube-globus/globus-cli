@@ -8,5 +8,5 @@ from globus_cli.parsing import group
         "update": (".update", "update_command"),
     },
 )
-def gcp_command():
+def gcp_command() -> None:
     """Manage Globus Connect Personal endpoints"""
