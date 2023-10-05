@@ -17,7 +17,6 @@ _SKIP_MODULES = (
     "globus_cli.commands.endpoint.local_id",
     "globus_cli.commands.endpoint.my_shared_endpoint_list",
     "globus_cli.commands.endpoint.permission.create",
-    "globus_cli.commands.endpoint.permission.delete",
     "globus_cli.commands.endpoint.permission.list",
     "globus_cli.commands.endpoint.permission.show",
     "globus_cli.commands.endpoint.permission.update",
