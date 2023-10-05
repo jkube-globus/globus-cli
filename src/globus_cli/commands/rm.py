@@ -66,7 +66,7 @@ def rm_command(
     polling_interval: int,
     timeout: int | None,
     timeout_exit_code: int,
-):
+) -> None:
     """
     Submit a Delete Task to delete a single path, and then block and wait for it to
     complete.
