@@ -91,7 +91,7 @@ def delete_command(
     skip_activation_check: bool,
     notify: dict[str, bool],
     local_user: str | None,
-):
+) -> None:
     """
     Submits an asynchronous task that deletes files and/or directories on the target
     endpoint.
@@ -154,7 +154,7 @@ def delete_command(
         # the future to these lines with trivial modifications
         @click.command()
         @click.argument("path", type=TaskPath(base_dir=path))
-        def process_batch_line(path):
+        def process_batch_line(path: TaskPath) -> None:
             """
             Parse a line of batch input and add it to the delete submission
             item.
