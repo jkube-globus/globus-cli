@@ -1,3 +1,5 @@
+import uuid
+
 from globus_cli.endpointish import Endpointish
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
@@ -16,7 +18,7 @@ $ globus endpoint delete $ep_id
 )
 @endpoint_id_arg
 @LoginManager.requires_login("transfer")
-def endpoint_delete(login_manager: LoginManager, *, endpoint_id: str) -> None:
+def endpoint_delete(login_manager: LoginManager, *, endpoint_id: uuid.UUID) -> None:
     """Delete a given endpoint.
 
     WARNING: Deleting an endpoint will permanently disable any existing shared
