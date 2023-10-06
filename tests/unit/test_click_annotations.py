@@ -14,7 +14,6 @@ click_type_test = pytest.importorskip(
 _SKIP_MODULES = (
     "globus_cli.commands.endpoint.permission.create",
     "globus_cli.commands.endpoint.role.create",
-    "globus_cli.commands.endpoint.search",
 )
 
 _ALL_NON_GROUP_COMMANDS: tuple[click.Command, ...] = (
