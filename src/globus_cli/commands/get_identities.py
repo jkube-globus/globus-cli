@@ -1,7 +1,9 @@
+import typing as t
+
 import click
 
 from globus_cli.login_manager import LoginManager
-from globus_cli.parsing import IdentityType, command
+from globus_cli.parsing import IdentityType, ParsedIdentity, command
 from globus_cli.termio import Field, TextMode, display, is_verbose
 from globus_cli.utils import CLIStubResponse
 
@@ -37,7 +39,9 @@ $ globus get-identities --verbose go@globusid.org clitester1a@globusid.org \
 )
 @click.option("--provision", hidden=True, is_flag=True)
 @LoginManager.requires_login("auth")
-def get_identities_command(login_manager: LoginManager, *, values, provision):
+def get_identities_command(
+    login_manager: LoginManager, *, values: tuple[ParsedIdentity, ...], provision: bool
+) -> None:
     """
     Lookup Globus Auth Identities given one or more uuids
     and/or usernames.
@@ -70,20 +74,20 @@ def get_identities_command(login_manager: LoginManager, *, values, provision):
         ]
     res = CLIStubResponse({"identities": results})
 
-    def _custom_text_format(identities):
+    def _custom_text_format(identities: list[dict[str, t.Any]]) -> None:
         """
         Non-verbose text output is customized
         """
 
-        def resolve_identity(value):
+        def resolve_identity(value: dict[str, t.Any]) -> str:
             """
             helper to deal with variable inputs and uncertain response order
             """
             for identity in identities:
                 if identity["id"] == value:
-                    return identity["username"]
+                    return t.cast(str, identity["username"])
                 if identity["username"] == value:
-                    return identity["id"]
+                    return t.cast(str, identity["id"])
             return "NO_SUCH_IDENTITY"
 
         # standard output is one resolved identity per line in the same order
