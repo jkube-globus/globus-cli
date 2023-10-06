@@ -13,7 +13,6 @@ click_type_test = pytest.importorskip(
 
 _SKIP_MODULES = (
     "globus_cli.commands.endpoint.permission.create",
-    "globus_cli.commands.endpoint.permission.update",
     "globus_cli.commands.endpoint.role.create",
     "globus_cli.commands.endpoint.search",
 )
