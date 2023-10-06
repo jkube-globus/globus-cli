@@ -53,7 +53,9 @@ $ globus task cancel --all
     "--all", "-a", is_flag=True, help="Cancel all in-progress tasks that you own"
 )
 @LoginManager.requires_login("transfer")
-def cancel_task(login_manager: LoginManager, *, all: bool, task_id: uuid.UUID) -> None:
+def cancel_task(
+    login_manager: LoginManager, *, all: bool, task_id: uuid.UUID | None
+) -> None:
     """
     Cancel a task you own or all tasks which you own.
 
@@ -110,5 +112,5 @@ def cancel_task(login_manager: LoginManager, *, all: bool, task_id: uuid.UUID) -
         display(None, text_mode=_custom_text, json_converter=json_converter)
 
     else:
-        res = transfer_client.cancel_task(task_id)
+        res = transfer_client.cancel_task(t.cast(uuid.UUID, task_id))
         display(res, text_mode=TextMode.text_raw, response_key="message")

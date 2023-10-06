@@ -38,7 +38,7 @@ $ globus endpoint permission update $ep_id $rule_id --permissions r
 def update_command(
     login_manager: LoginManager,
     *,
-    permissions: Literal["r", "rw"] | None,
+    permissions: Literal["r", "rw"],
     rule_id: str,
     endpoint_id: uuid.UUID
 ) -> None:
