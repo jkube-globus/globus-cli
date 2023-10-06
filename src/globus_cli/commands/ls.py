@@ -194,7 +194,7 @@ def ls_command(
     ],
     filter_val: str | None,
     local_user: str | None,
-):
+) -> None:
     """
     List the contents of a directory on an endpoint. If no path is given, the default
     directory on that endpoint will be used.
