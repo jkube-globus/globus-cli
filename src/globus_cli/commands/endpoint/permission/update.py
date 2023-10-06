@@ -1,8 +1,16 @@
+import sys
+import uuid
+
 import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
 from globus_cli.termio import TextMode, display
+
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
 
 
 @command(
@@ -27,7 +35,13 @@ $ globus endpoint permission update $ep_id $rule_id --permissions r
     help="Permissions to add. Read-Only or Read/Write",
 )
 @LoginManager.requires_login("transfer")
-def update_command(login_manager: LoginManager, *, permissions, rule_id, endpoint_id):
+def update_command(
+    login_manager: LoginManager,
+    *,
+    permissions: Literal["r", "rw"],
+    rule_id: str,
+    endpoint_id: uuid.UUID
+) -> None:
     """
     Update an existing access control rule's permissions.
 

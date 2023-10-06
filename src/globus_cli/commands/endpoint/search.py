@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import sys
+
 import click
 from globus_sdk.paging import Paginator
 
@@ -7,6 +9,11 @@ from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
 from globus_cli.termio import display
 from globus_cli.utils import PagingWrapper
+
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
 
 
 @command(
@@ -74,7 +81,16 @@ def endpoint_search(
     filter_fulltext: str | None,
     limit: int,
     filter_owner_id: str | None,
-    filter_scope: str | None,
+    filter_scope: Literal[
+        "all",
+        "administered-by-me",
+        "my-endpoints",
+        "my-gcp-endpoints",
+        "recently-used",
+        "in-use",
+        "shared-by-me",
+        "shared-with-me",
+    ],
 ) -> None:
     """
     Search for Globus endpoints with search filters. If --filter-scope is set to the

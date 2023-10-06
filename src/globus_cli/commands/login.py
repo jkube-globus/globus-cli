@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import uuid
+
 import click
 from globus_sdk.scopes import GCSEndpointScopeBuilder
 from globus_sdk.services.flows import SpecificFlowClient
@@ -80,7 +82,12 @@ Clients are always "logged in"
     """,
     multiple=True,
 )
-def login_command(no_local_server, force, gcs_servers, flow_ids: tuple[str]):
+def login_command(
+    no_local_server: bool,
+    force: bool,
+    gcs_servers: tuple[uuid.UUID, ...],
+    flow_ids: tuple[uuid.UUID, ...],
+) -> None:
     """
     Get credentials for the Globus CLI.
 

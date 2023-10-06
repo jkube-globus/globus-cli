@@ -16,7 +16,7 @@ class SubscriptionIdType(click.ParamType):
 
     def convert(
         self, value: str, param: click.Parameter | None, ctx: click.Context | None
-    ):
+    ) -> t.Any:
         if value is None or (ctx and ctx.resilient_parsing):
             return None
         if value.lower() == "null":
