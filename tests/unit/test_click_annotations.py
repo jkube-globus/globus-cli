@@ -18,7 +18,6 @@ _SKIP_MODULES = (
     "globus_cli.commands.endpoint.permission.update",
     "globus_cli.commands.endpoint.role.create",
     "globus_cli.commands.endpoint.search",
-    "globus_cli.commands.endpoint.show",
     "globus_cli.commands.get_identities",
 )
 
