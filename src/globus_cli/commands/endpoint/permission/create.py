@@ -1,8 +1,16 @@
+import sys
+import uuid
+
 import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import ENDPOINT_PLUS_REQPATH, command, security_principal_opts
 from globus_cli.termio import Field, TextMode, display
+
+if sys.version_info >= (3, 8):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
 
 
 @command(
@@ -49,12 +57,12 @@ $ globus endpoint permission create $ep_id:/ --permissions rw --identity go@glob
 def create_command(
     login_manager: LoginManager,
     *,
-    principal,
-    permissions,
-    endpoint_plus_path,
-    notify_email,
-    notify_message
-):
+    principal: tuple[str, str],
+    permissions: Literal["r", "rw"],
+    endpoint_plus_path: tuple[uuid.UUID, str | None],
+    notify_email: str | None,
+    notify_message: str | None,
+) -> None:
     """
     Create a new access control rule on the target endpoint, granting users new
     permissions on the given path.
@@ -75,12 +83,14 @@ def create_command(
     auth_client = login_manager.get_auth_client()
 
     if principal_type == "identity":
-        principal_val = auth_client.maybe_lookup_identity_id(principal_val)
-        if not principal_val:
+        lookup = auth_client.maybe_lookup_identity_id(principal_val)
+        if not lookup:
             raise click.UsageError(
                 "Identity does not exist. "
                 "Use --provision-identity to auto-provision an identity."
             )
+        else:
+            principal_val = lookup
     elif principal_type == "provision-identity":
         principal_val = auth_client.maybe_lookup_identity_id(
             principal_val, provision=True
