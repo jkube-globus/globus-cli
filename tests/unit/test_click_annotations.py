@@ -12,7 +12,6 @@ click_type_test = pytest.importorskip(
 )
 
 _SKIP_MODULES = (
-    "globus_cli.commands.endpoint.local_id",
     "globus_cli.commands.endpoint.my_shared_endpoint_list",
     "globus_cli.commands.endpoint.permission.create",
     "globus_cli.commands.endpoint.permission.update",
