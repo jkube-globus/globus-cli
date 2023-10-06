@@ -8,7 +8,7 @@ class AclPrincipalFormatter(formatters.auth.PrincipalDictFormatter):
     # unrecognized types. This handles various cases in which
     # `principal_type=all_authenticated_users` or similar, which is the shape of the
     # data from Globus Transfer
-    def fallback_rendering(self, principal: str, principal_type: str):
+    def fallback_rendering(self, principal: str, principal_type: str) -> str:
         return principal_type
 
     # TODO: re-assess Group rendering in the CLI
