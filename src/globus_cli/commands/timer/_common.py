@@ -33,7 +33,7 @@ class CallbackActionTypeFormatter(formatters.StrFormatter):
 
 class TimedeltaFormatter(formatters.FieldFormatter[datetime.timedelta]):
     def parse(self, value: t.Any) -> datetime.timedelta:
-        if not isinstance(value, int):
+        if not isinstance(value, (int, float)):
             raise ValueError("bad timedelta value")
         return datetime.timedelta(seconds=value)
 
