@@ -53,7 +53,7 @@ def group_join(
                 f"Couldn't determine identity from value: {identity}"
             )
     else:
-        userinfo = auth_client.oauth2_userinfo()
+        userinfo = auth_client.userinfo()
         identity_id = userinfo["sub"]
 
     response = groups_client.batch_membership_action(
