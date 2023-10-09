@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import logging.config
 import typing as t
-import warnings
 
 import click
+
+from globus_cli import _warnings
 
 # Format Enum for output formatting
 # could use a namedtuple, but that's overkill
@@ -118,10 +119,10 @@ def debug_option(f: F) -> F:
     def callback(ctx, param, value):
         if not value or ctx.resilient_parsing:
             # turn off warnings altogether
-            warnings.simplefilter("ignore")
+            _warnings.simplefilter("ignore")
             return
 
-        warnings.simplefilter("default")
+        _warnings.simplefilter("default")
         state = ctx.ensure_object(CommandState)
         state.debug = True
         _setup_logging(level="DEBUG")
@@ -146,20 +147,20 @@ def verbose_option(f: F) -> F:
         # all warnings are ignored
         # logging is not turned on
         if value == 0:
-            warnings.simplefilter("ignore")
+            _warnings.simplefilter("ignore")
 
         # verbosity level 1
         # warnings set to once
         # logging set to error
         if value == 1:
-            warnings.simplefilter("once")
+            _warnings.simplefilter("once")
             _setup_logging(level="ERROR")
 
         # verbosity level 2
         # warnings set to default
         # logging set to info
         if value == 2:
-            warnings.simplefilter("default")
+            _warnings.simplefilter("default")
             _setup_logging(level="INFO")
 
         # verbosity level 3+
@@ -167,7 +168,7 @@ def verbose_option(f: F) -> F:
         # logging set to debug
         # sets debug flag to true
         if value >= 3:
-            warnings.simplefilter("always")
+            _warnings.simplefilter("always")
             state.debug = True
             _setup_logging(level="DEBUG")
 
