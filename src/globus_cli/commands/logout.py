@@ -75,9 +75,7 @@ def logout_command(login_manager: LoginManager, *, ignore_errors: bool) -> None:
     # try to get the user's preferred username from userinfo
     # if an API error is raised, they probably are not logged in
     try:
-        username = login_manager.get_auth_client().oauth2_userinfo()[
-            "preferred_username"
-        ]
+        username = login_manager.get_auth_client().userinfo()["preferred_username"]
     except globus_sdk.AuthAPIError:
         warnecho(
             "Unable to lookup username. You may not be logged in. "

@@ -34,6 +34,8 @@ def pytest_configure(config):
         global _PYTEST_VERBOSE
         _PYTEST_VERBOSE = True
 
+    globus_cli._warnings._TEST_WARNING_CONTROL = True
+
 
 @pytest.fixture(autouse=True)
 def mocksleep():

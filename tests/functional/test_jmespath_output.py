@@ -29,7 +29,7 @@ def test_jmespath_extract_from_list(run_line, go_ep2_id):
         (
             "globus endpoint search 'Tutorial' "
             "--filter-owner-id go@globusid.org "
-            "--jmespath 'DATA[?id==`{}`] | [0]'"
+            "--jmespath \"DATA[?id=='{}'] | [0]\""
         ).format(go_ep2_id)
     )
     outputdict = json.loads(result.output)

@@ -58,7 +58,7 @@ def whoami_command(login_manager: LoginManager, *, linked_identities: bool) -> N
     # get userinfo from auth.
     # if we get back an error the user likely needs to log in again
     try:
-        res = auth_client.oauth2_userinfo()
+        res = auth_client.userinfo()
     except globus_sdk.AuthAPIError:
         click.echo(
             "Unable to get user information. Please try logging in again.", err=True

@@ -113,10 +113,10 @@ def print_error_or_response(
         for key in data.headers:
             click.echo(f"{key}: {data.headers[key]}")
         click.echo()
-    # raw_text/text must be used here, to present the exact data which was sent, with
+    # text must be used here, to present the exact data which was sent, with
     # whitespace and other detail preserved
     if isinstance(data, globus_sdk.GlobusAPIError):
-        click.echo(data.raw_text)
+        click.echo(data.text)
     else:
         # however, we will pass this through display using 'simple_text' to get
         # the right semantics

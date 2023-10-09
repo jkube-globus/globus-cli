@@ -133,7 +133,7 @@ def session_update(
 
     auth_client = login_manager.get_auth_client()
     session_params = {"session_message": "Authenticate to update your CLI session."}
-    identity_set = auth_client.oauth2_userinfo()["identity_set"]
+    identity_set = auth_client.userinfo()["identity_set"]
 
     if all:
         _update_session_params_all_case(identity_set, session_params)
