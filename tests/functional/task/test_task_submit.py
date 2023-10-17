@@ -60,7 +60,7 @@ def test_exclude_recursive(run_line, go_ep1_id, go_ep2_id):
     # we want to build the transfer_data object before we parse batch input
     load_response_set("cli.get_submission_id")
     result = run_line(
-        "globus transfer --exclude *.txt " "{}:/ {}:/".format(go_ep1_id, go_ep1_id),
+        f"globus transfer --exclude *.txt {go_ep1_id}:/ {go_ep1_id}:/",
         assert_exit_code=2,
     )
     assert (

@@ -25,8 +25,10 @@ if t.TYPE_CHECKING:
     "--skip-inactive-reason-check",
     is_flag=True,
     default=False,
-    help='Skip the check of the run\'s "inactive reason", which is used to determine '
-    "what action is required to resume the run.",
+    help=(
+        'Skip the check of the run\'s "inactive reason", '
+        "which is used to determine what action is required to resume the run."
+    ),
 )
 @LoginManager.requires_login("auth", "flows")
 def resume_command(

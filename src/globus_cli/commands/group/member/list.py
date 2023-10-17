@@ -18,8 +18,10 @@ def _str2field(fieldname: str) -> Field:
 @group_id_arg
 @click.option(
     "--fields",
-    help="Additional membership fields to display in the output, as a comma-delimited "
-    "string. Has no effect on non-text output.",
+    help=(
+        "Additional membership fields to display in the output, "
+        "as a comma-delimited string. Has no effect on non-text output."
+    ),
     type=CommaDelimitedList(choices=MEMBERSHIP_FIELDS, convert_values=str.lower),
 )
 @command("list")

@@ -51,9 +51,10 @@ class _FullDataField(Field):
 @click.option(
     "--sharing-restrict-paths",
     type=JSONStringOrFile(null="null"),
-    help="Path restrictions for sharing data on guest collections "
-    "based on this collection. This option is only usable on Mapped "
-    "Collections",
+    help=(
+        "Path restrictions for sharing data on guest collections "
+        "based on this collection. This option is only usable on Mapped Collections"
+    ),
 )
 @click.option(
     "--allow-guest-collections/--no-allow-guest-collections",

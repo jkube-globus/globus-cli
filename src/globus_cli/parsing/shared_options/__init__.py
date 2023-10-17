@@ -321,24 +321,30 @@ def security_principal_opts(
                 "--anonymous",
                 "principal",
                 flag_value=("anonymous", ""),
-                help="Allow anyone access, even without logging in "
-                "(treated as a security principal)",
+                help=(
+                    "Allow anyone access, even without logging in "
+                    "(treated as a security principal)"
+                ),
             )(f)
         if allow_all_authenticated:
             f = click.option(
                 "--all-authenticated",
                 "principal",
                 flag_value=("all_authenticated_users", ""),
-                help="Allow anyone access, as long as they login "
-                "(treated as a security principal)",
+                help=(
+                    "Allow anyone access, as long as they login "
+                    "(treated as a security principal)"
+                ),
             )(f)
 
         if allow_provision:
             f = click.option(
                 "--provision-identity",
                 metavar="IDENTITY_USERNAME",
-                help="Identity username to use as a security principal. "
-                "Identity will be provisioned if it does not exist.",
+                help=(
+                    "Identity username to use as a security principal. "
+                    "Identity will be provisioned if it does not exist."
+                ),
             )(f)
 
         return f

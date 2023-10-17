@@ -136,14 +136,16 @@ def _apply_endpointish_create_or_update_params(
             keywords=click.option(
                 "--keywords",
                 type=str if keyword_style == "string" else CommaDelimitedList(),
-                help="Comma separated list of keywords to help searches "
-                f"for the {name}",
+                help=(
+                    f"Comma separated list of keywords to help searches for the {name}"
+                ),
             ),
             default_directory=click.option(
                 "--default-directory",
                 type=StringOrNull(),
-                help="Default directory when browsing or executing tasks "
-                f"on the {name}",
+                help=(
+                    f"Default directory when browsing or executing tasks on the {name}"
+                ),
             ),
             force_encryption=click.option(
                 "--force-encryption/--no-force-encryption",
@@ -264,8 +266,10 @@ _endpoint_subscription_params = [
         "--subscription-id",
         type=click.UUID,
         default=None,
-        help="Set the endpoint as a managed endpoint with the given "
-        "subscription ID. Mutually exclusive with --no-managed",
+        help=(
+            "Set the endpoint as a managed endpoint with the given subscription ID. "
+            "Mutually exclusive with --no-managed"
+        ),
     ),
     mutex_option_group(
         "--subscription-id",
@@ -290,29 +294,37 @@ _endpoint_network_use_params = [
         "--max-concurrency",
         type=int,
         default=None,
-        help="Set the endpoint's max concurrency; requires --network-use=custom "
-        f"{_MANAGEDONLY} {_GCSONLY}",
+        help=(
+            "Set the endpoint's max concurrency; "
+            f"requires --network-use=custom {_MANAGEDONLY} {_GCSONLY}"
+        ),
     ),
     click.option(
         "--preferred-concurrency",
         type=int,
         default=None,
-        help="Set the endpoint's preferred concurrency; requires --network-use=custom "
-        f"{_MANAGEDONLY} {_GCSONLY}",
+        help=(
+            "Set the endpoint's preferred concurrency; "
+            f"requires --network-use=custom {_MANAGEDONLY} {_GCSONLY}"
+        ),
     ),
     click.option(
         "--max-parallelism",
         type=int,
         default=None,
-        help="Set the endpoint's max parallelism; requires --network-use=custom "
-        f"{_MANAGEDONLY} {_GCSONLY}",
+        help=(
+            "Set the endpoint's max parallelism; "
+            f"requires --network-use=custom {_MANAGEDONLY} {_GCSONLY}"
+        ),
     ),
     click.option(
         "--preferred-parallelism",
         type=int,
         default=None,
-        help="Set the endpoint's preferred parallelism; requires --network-use=custom "
-        f"{_MANAGEDONLY} {_GCSONLY}",
+        help=(
+            "Set the endpoint's preferred parallelism; "
+            f"requires --network-use=custom {_MANAGEDONLY} {_GCSONLY}"
+        ),
     ),
 ]
 

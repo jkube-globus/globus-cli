@@ -152,7 +152,9 @@ def session_update(
             "'globus session update --no-local-server'"
             "\n---"
         ),
-        epilog="\nYou have successfully updated your CLI session.\n"
-        "Use 'globus session show' to see the updated session.",
+        epilog=(
+            "\nYou have successfully updated your CLI session.\n"
+            "Use 'globus session show' to see the updated session."
+        ),
         session_params=session_params,
     )

@@ -27,8 +27,10 @@ JOIN_USER_FIELDS = [
 @click.option(
     "--request",
     is_flag=True,
-    help="Instead of attempting to join the group directly, create a join "
-    "request which can be approved by a group administrator",
+    help=(
+        "Instead of attempting to join the group directly, "
+        "create a join request which can be approved by a group administrator"
+    ),
 )
 @LoginManager.requires_login("groups")
 def group_join(
