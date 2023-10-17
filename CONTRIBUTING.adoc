@@ -36,7 +36,7 @@ We use `tox` to run tests and `pre-commit` to run (optional) pre-commit hooks.
 Use `pre-commit install` to setup the hooks.
 
 All code is autoformatted with https://github.com/ambv/black[black] and
-https://github.com/timothycrosley/isort[isort]. You may run
+https://github.com/PyCQA/isort[isort]. You may run
 `make lint` to do this or configure these tools for use in your editor.
 
 Expectations for Pull Requests
