@@ -18,6 +18,7 @@ class FieldFormatter(abc.ABC, t.Generic[T]):
         warnings.warn(
             f"Formatting failed for '{value!r}' with formatter={self!r}",
             FormattingFailedWarning,
+            stacklevel=1,
         )
 
     @abc.abstractmethod
