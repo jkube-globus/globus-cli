@@ -13,6 +13,8 @@ def delete_command(login_manager: LoginManager, *, index_id: str) -> None:
     search_client = login_manager.get_search_client()
     display(
         search_client.delete_index(index_id),
-        simple_text=f"Index {index_id} is now marked for deletion.\n"
-        "It will be fully deleted after cleanup steps complete.",
+        simple_text=(
+            f"Index {index_id} is now marked for deletion.\n"
+            "It will be fully deleted after cleanup steps complete."
+        ),
     )

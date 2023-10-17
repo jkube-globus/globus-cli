@@ -189,25 +189,31 @@ sends a 'GET' request to '{_get_url(service_name)}foo/bar'
         "-Q",
         type=QueryParamType(),
         multiple=True,
-        help="A query parameter, given as 'key=value'. Use this option multiple "
-        "times to pass multiple query parameters.",
+        help=(
+            "A query parameter, given as 'key=value'. "
+            "Use this option multiple times to pass multiple query parameters."
+        ),
     )
     @click.option(
         "--content-type",
         type=click.Choice(("json", "form", "text", "none", "auto")),
         default="auto",
-        help="Use a specific Content-Type header for the request. "
-        "The default (auto) detects a content type from the data being included in "
-        "the request body, while the other names refer to common data encodings. "
-        "Any explicit Content-Type header set via '--header' will override this",
+        help=(
+            "Use a specific Content-Type header for the request. "
+            "The default (auto) detects a content type from the data being included in "
+            "the request body, while the other names refer to common data encodings. "
+            "Any explicit Content-Type header set via '--header' will override this"
+        ),
     )
     @click.option(
         "--header",
         "-H",
         type=HeaderParamType(),
         multiple=True,
-        help="A header, specified as 'Key: Value'. Use this option multiple "
-        "times to pass multiple headers.",
+        help=(
+            "A header, specified as 'Key: Value'. "
+            "Use this option multiple times to pass multiple headers."
+        ),
     )
     @click.option("--body", help="A request body to include, as text")
     @click.option(
@@ -218,16 +224,20 @@ sends a 'GET' request to '{_get_url(service_name)}foo/bar'
     @click.option(
         "--allow-errors",
         is_flag=True,
-        help="Allow error responses (4xx and 5xx) to be displayed without "
-        "triggering normal error handling",
+        help=(
+            "Allow error responses (4xx and 5xx) to be displayed "
+            "without triggering normal error handling"
+        ),
     )
     @click.option(
         "--allow-redirects",
         "--location",
         "-L",
         is_flag=True,
-        help="If the server responds with a redirect (a 3xx response with a Location "
-        "header), follow the redirect. By default, redirects are not followed.",
+        help=(
+            "If the server responds with a redirect (a 3xx response with a Location "
+            "header), follow the redirect. By default, redirects are not followed."
+        ),
     )
     @click.option("--no-retry", is_flag=True, help="Disable built-in request retries")
     @mutex_option_group("--body", "--body-file")

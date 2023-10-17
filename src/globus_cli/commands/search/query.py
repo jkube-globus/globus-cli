@@ -45,8 +45,10 @@ def _print_subjects(data: dict[str, JsonValue]) -> None:
 @click.option(
     "--bypass-visible-to",
     is_flag=True,
-    help="Bypass the visible_to restriction on searches. "
-    "This option is only available to the admins of an index",
+    help=(
+        "Bypass the visible_to restriction on searches. "
+        "This option is only available to the admins of an index"
+    ),
 )
 @click.option(
     "--filter-principal-sets",

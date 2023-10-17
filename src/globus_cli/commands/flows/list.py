@@ -40,8 +40,10 @@ ORDER_BY_FIELDS = (
 @click.option(
     "--filter-fulltext",
     type=str,
-    help="Filter results based on pattern matching within a subset of fields: "
-    "[id, title, subtitle, description, flow_owner, flow_administrators]",
+    help=(
+        "Filter results based on pattern matching within a subset of fields: "
+        "[id, title, subtitle, description, flow_owner, flow_administrators]"
+    ),
 )
 @click.option(
     "--orderby",
