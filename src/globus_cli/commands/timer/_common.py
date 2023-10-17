@@ -25,6 +25,12 @@ class CallbackActionTypeFormatter(formatters.StrFormatter):
             and url.path == "/transfer/transfer/run"
         ):
             return "Transfer"
+        if (
+            url.netloc.startswith("transfer.actions.")
+            and url.netloc.endswith(("globus.org", "globuscs.info"))
+            and url.path == "/transfer/run"
+        ):
+            return "Transfer"
         if url.netloc.endswith("flows.automate.globus.org"):
             return "Flow"
         else:
