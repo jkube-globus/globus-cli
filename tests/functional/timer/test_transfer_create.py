@@ -246,6 +246,26 @@ def test_interval_usually_required(run_line):
     )
 
 
+def test_stop_conditions_are_mutex(run_line):
+    ep_id = str(uuid.UUID(int=1))
+    result = run_line(
+        [
+            "globus",
+            "timer",
+            "create",
+            "transfer",
+            "--stop-after-runs",
+            "1",
+            "--stop-after-date",
+            "2021-01-01T00:00:00",
+            f"{ep_id}:/foo/",
+            f"{ep_id}:/bar/",
+        ],
+        assert_exit_code=2,
+    )
+    assert "mutually exclusive" in result.stderr
+
+
 def test_interval_not_required_if_stop_after_is_one(run_line, ep_for_timer):
     run_line(
         [

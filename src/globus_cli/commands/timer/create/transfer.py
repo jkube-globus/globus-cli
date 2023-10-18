@@ -21,6 +21,7 @@ from globus_cli.parsing import (
     command,
     encrypt_data_option,
     fail_on_quota_errors_option,
+    mutex_option_group,
     preserve_timestamp_option,
     skip_source_errors_option,
     sync_level_option,
@@ -99,6 +100,7 @@ def resolve_start_time(start: datetime.datetime | None) -> datetime.datetime:
     type=click.IntRange(min=1),
     help="Stop running the transfer after this number of runs have happened.",
 )
+@mutex_option_group("--stop-after-date", "--stop-after-runs")
 @LoginManager.requires_login("auth", "timer", "transfer")
 def transfer_command(
     login_manager: LoginManager,
