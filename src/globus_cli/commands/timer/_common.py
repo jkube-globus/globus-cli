@@ -68,6 +68,7 @@ JOB_FORMAT_FIELDS = _COMMON_FIELDS + [
 ]
 
 DELETED_JOB_FORMAT_FIELDS = _COMMON_FIELDS + [
+    Field("Status", "status"),
     Field("Stop After Date", "stop_after.date"),
     Field("Stop After Number of Runs", "stop_after.n_runs"),
 ]
