@@ -48,7 +48,9 @@ def _get_client_creds(conf: ConfigParser) -> tuple[str, str] | None:
     return None
 
 
-def invalidate_old_config(auth_client: globus_sdk.AuthClient) -> None:
+def invalidate_old_config(
+    auth_client: globus_sdk.ConfidentialAppAuthClient | globus_sdk.NativeAppAuthClient,
+) -> None:
     # revoke any old config-stored tokens (logout)
     # and delete old client creds
     conf = _old_conf_parser()

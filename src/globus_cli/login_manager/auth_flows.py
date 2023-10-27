@@ -105,7 +105,10 @@ def do_local_server_auth_flow(
     return True
 
 
-def exchange_code_and_store(auth_client: globus_sdk.AuthClient, auth_code: str) -> None:
+def exchange_code_and_store(
+    auth_client: globus_sdk.ConfidentialAppAuthClient | globus_sdk.NativeAppAuthClient,
+    auth_code: str,
+) -> None:
     """
     Finishes auth flow after code is gotten from command line or local server.
     Exchanges code for tokens and stores them.
