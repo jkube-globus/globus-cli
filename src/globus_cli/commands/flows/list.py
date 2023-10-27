@@ -76,10 +76,10 @@ ORDER_BY_FIELDS = (
 def list_command(
     login_manager: LoginManager,
     *,
-    filter_role: Literal[
-        "flow_viewer", "flow_starter", "flow_administrator", "flow_owner"
-    ]
-    | None,
+    filter_role: (
+        Literal["flow_viewer", "flow_starter", "flow_administrator", "flow_owner"]
+        | None
+    ),
     orderby: tuple[
         tuple[
             Literal[
