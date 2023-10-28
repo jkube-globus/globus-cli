@@ -25,11 +25,7 @@ def _pretty_json(data: dict, compact=False) -> str:
     exit_status=4,
 )
 def handle_internal_auth_requirements(exception: CLIAuthRequirementsError) -> None:
-    if not (
-        exception.gare
-        and exception.gare.authorization_parameters
-        and exception.gare.authorization_parameters.required_scopes
-    ):
+    if not (exception.gare and exception.gare.authorization_parameters.required_scopes):
         click.secho(
             "Fatal Error: Unsupported internal auth requirements error!",
             bold=True,

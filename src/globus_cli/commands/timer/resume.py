@@ -40,16 +40,10 @@ def resume_command(
     timer_client = login_manager.get_timer_client()
     job_doc = timer_client.get_job(job_id)
 
-    gare = _get_inactive_reason(job_doc)
-    if gare is not None and gare.authorization_parameters.required_scopes:
-        consent_required = not _has_required_consent(
-            login_manager, gare.authorization_parameters.required_scopes
-        )
-        if consent_required and not skip_inactive_reason_check:
-            raise CLIAuthRequirementsError(
-                "This run is missing a necessary consent in order to resume.",
-                gare=gare,
-            )
+    gare: GlobusAuthRequirementsError | None = None
+    if not skip_inactive_reason_check:
+        gare = _get_inactive_reason(job_doc)
+        check_inactive_reason(login_manager, gare)
 
     resumed = timer_client.resume_job(
         job_id,
@@ -60,6 +54,41 @@ def resume_command(
         text_mode=TextMode.text_raw,
         simple_text=resumed["message"],
     )
+
+
+def check_inactive_reason(
+    login_manager: LoginManager,
+    gare: GlobusAuthRequirementsError | None,
+) -> None:
+    if gare is None:
+        return
+    if gare.authorization_parameters.required_scopes:
+        consent_required = not _has_required_consent(
+            login_manager, gare.authorization_parameters.required_scopes
+        )
+        if consent_required:
+            raise CLIAuthRequirementsError(
+                "This timer is missing a necessary consent in order to resume.",
+                gare=gare,
+            )
+
+    # at this point, the required_scopes may have been checked and satisfied
+    # therefore, we should check if there are additional requirements other than
+    # the scopes/consents
+    unhandled_requirements = set(gare.authorization_parameters.to_dict().keys()) - {
+        "required_scopes",
+        # also remove 'message' -- not a 'requirement'
+        "session_message",
+    }
+    # reraise if anything remains after consent checking
+    # this ensures that we will reraise if we get an error which contains
+    # both required_scopes and additional requirements
+    # (consents may be present without session requirements met)
+    if unhandled_requirements:
+        raise CLIAuthRequirementsError(
+            "This timer needs strong authentication in order to resume.",
+            gare=gare,
+        )
 
 
 def _get_inactive_reason(
