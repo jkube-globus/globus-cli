@@ -25,7 +25,8 @@ def _pretty_json(data: dict, compact=False) -> str:
     exit_status=4,
 )
 def handle_internal_auth_requirements(exception: CLIAuthRequirementsError) -> None:
-    if not (exception.gare and exception.gare.authorization_parameters.required_scopes):
+    gare = exception.gare
+    if not gare:
         click.secho(
             "Fatal Error: Unsupported internal auth requirements error!",
             bold=True,
@@ -33,9 +34,22 @@ def handle_internal_auth_requirements(exception: CLIAuthRequirementsError) -> No
         )
         click.get_current_context().exit(255)
 
-    required_scopes = exception.gare.authorization_parameters.required_scopes
+    required_scopes = gare.authorization_parameters.required_scopes
+    if required_scopes:
+        ret = _concrete_consent_required_hook(exception.message, required_scopes)
+        if ret is not None:
+            click.get_current_context().exit(ret)
 
-    _concrete_consent_required_hook(exception.message, required_scopes)
+    session_policies = gare.authorization_parameters.session_required_policies
+    session_identities = gare.authorization_parameters.session_required_identities
+    session_domains = gare.authorization_parameters.session_required_single_domain
+    if session_policies or session_identities or session_domains:
+        _concrete_session_hook(
+            exception.message,
+            session_policies,
+            session_identities,
+            session_domains,
+        )
 
 
 @error_handler(
@@ -47,18 +61,22 @@ def session_hook(exception: globus_sdk.GlobusAPIError) -> None:
     """
     Expects an exception with a valid authorization_paramaters info field
     """
-    click.echo(
-        "The resource you are trying to access requires you to "
-        "re-authenticate with specific identities."
-    )
-
     message = exception.info.authorization_parameters.session_message
-    if message:
-        click.echo(f"message: {message}")
-
     identities = exception.info.authorization_parameters.session_required_identities
     domains = exception.info.authorization_parameters.session_required_single_domain
     policies = exception.info.authorization_parameters.session_required_policies
+    _concrete_session_hook(message, policies, identities, domains)
+
+
+def _concrete_session_hook(
+    message: str | None,
+    policies: list[str] | None,
+    identities: list[str] | None,
+    domains: list[str] | None,
+):
+    click.echo("The resource you are trying to access requires you to re-authenticate.")
+    if message:
+        click.echo(f"message: {message}")
 
     if identities or domains:
         # cast: mypy can't deduce that `domains` is not None if `identities` is None
@@ -94,14 +112,20 @@ def consent_required_hook(exception: globus_sdk.GlobusAPIError) -> None:
     """
     Expects an exception with a required_scopes field in its raw_json
     """
-    _concrete_consent_required_hook(
+    ret = _concrete_consent_required_hook(
         exception.message, exception.info.consent_required.required_scopes
     )
+    if ret is not None:
+        click.get_current_context().exit(ret)
 
 
 def _concrete_consent_required_hook(
     message: str | None, required_scopes: list[str]
-) -> None:
+) -> int | None:
+    """
+    Internal handler which may return an exit code to use, or None for
+    "do not force exit"
+    """
     # specialized message for data_access errors
     # otherwise, use more generic phrasing
     if message == "Missing required data_access consent":
@@ -121,7 +145,7 @@ def _concrete_consent_required_hook(
         click.secho(
             "Fatal Error: ConsentRequired but no required_scopes!", bold=True, fg="red"
         )
-        click.get_current_context().exit(255)
+        return 255
     else:
         click.echo(
             "\nPlease run\n\n"
@@ -130,6 +154,8 @@ def _concrete_consent_required_hook(
             )
             + "to login with the required scopes"
         )
+
+    return None
 
 
 @error_handler(
