@@ -48,7 +48,7 @@ def resume_command(
         if consent_required and not skip_inactive_reason_check:
             raise CLIAuthRequirementsError(
                 "This run is missing a necessary consent in order to resume.",
-                required_scopes=gare.authorization_parameters.required_scopes,
+                gare=gare,
             )
 
     resumed = timer_client.resume_job(

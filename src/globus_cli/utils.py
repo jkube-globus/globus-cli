@@ -6,6 +6,13 @@ import click
 
 from globus_cli.types import DATA_CONTAINER_T
 
+# NB: GARE parsing requires other SDK components and therefore needs to be deferred to
+# avoid the performance impact of non-lazy imports
+if t.TYPE_CHECKING:
+    from globus_sdk.experimental.auth_requirements_error import (
+        GlobusAuthRequirementsError,
+    )
+
 F = t.TypeVar("F", bound=t.Callable)
 
 
@@ -200,7 +207,7 @@ class CLIAuthRequirementsError(Exception):
     """
 
     def __init__(
-        self, message: str, *, required_scopes: list[str] | None = None
+        self, message: str, *, gare: GlobusAuthRequirementsError | None = None
     ) -> None:
         self.message = message
-        self.required_scopes = required_scopes
+        self.gare = gare

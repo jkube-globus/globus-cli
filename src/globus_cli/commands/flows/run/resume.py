@@ -51,7 +51,7 @@ def resume_command(
             ):
                 raise CLIAuthRequirementsError(
                     "This run is missing a necessary consent in order to resume.",
-                    required_scopes=gare.authorization_parameters.required_scopes,
+                    gare=gare,
                 )
 
     fields = [
