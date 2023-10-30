@@ -12,7 +12,7 @@ E = t.TypeVar("E", bound=Exception)
 
 HOOK_TYPE = t.Callable[[E], t.NoReturn]
 # something which can be decorated to become a hook
-_HOOK_SRC_TYPE = t.Callable[[E], None]
+_HOOK_SRC_TYPE = t.Union[t.Callable[[E], None], t.Callable[[E], t.Optional[int]]]
 CONDITION_TYPE = t.Callable[[E], bool]
 
 # must cast the registry to avoid type errors around t.List[<nothing>]
@@ -33,8 +33,9 @@ def error_handler(
     def inner_decorator(fn):
         @functools.wraps(fn)
         def wrapped(exception):
-            fn(exception)
+            hook_result = fn(exception)
             ctx = click.get_current_context()
+
             if isinstance(exception, globus_sdk.GlobusAPIError):
                 # get the mapping by looking up the state and getting the mapping attr
                 mapping = ctx.ensure_object(CommandState).http_status_map
@@ -42,6 +43,11 @@ def error_handler(
                 # if there is a mapped exit code, exit with that. Otherwise, exit below
                 if exception.http_status in mapping:
                     ctx.exit(mapping[exception.http_status])
+
+            # if the hook instructed that a specific error code be used, use that
+            if hook_result is not None:
+                ctx.exit(hook_result)
+
             ctx.exit(exit_status)
 
         _REGISTERED_HOOKS.append((wrapped, error_class, condition))
