@@ -24,7 +24,9 @@ def _pretty_json(data: dict, compact=False) -> str:
     error_class=CLIAuthRequirementsError,
     exit_status=4,
 )
-def handle_internal_auth_requirements(exception: CLIAuthRequirementsError) -> None:
+def handle_internal_auth_requirements(
+    exception: CLIAuthRequirementsError,
+) -> int | None:
     gare = exception.gare
     if not gare:
         click.secho(
@@ -32,24 +34,37 @@ def handle_internal_auth_requirements(exception: CLIAuthRequirementsError) -> No
             bold=True,
             fg="red",
         )
-        click.get_current_context().exit(255)
+        return 255
+
+    exit_code: int | None = None
 
     required_scopes = gare.authorization_parameters.required_scopes
     if required_scopes:
-        ret = _concrete_consent_required_hook(exception.message, required_scopes)
-        if ret is not None:
-            click.get_current_context().exit(ret)
+        exit_code = _concrete_consent_required_hook(exception.message, required_scopes)
 
     session_policies = gare.authorization_parameters.session_required_policies
     session_identities = gare.authorization_parameters.session_required_identities
     session_domains = gare.authorization_parameters.session_required_single_domain
     if session_policies or session_identities or session_domains:
-        _concrete_session_hook(
+        ret = _concrete_session_hook(
             exception.message,
             session_policies,
             session_identities,
             session_domains,
         )
+        if exit_code is None:
+            exit_code = ret
+        elif ret is not None:
+            # use bitwise-or if we have two codes to handle
+            # it's guaranteed that if either is 255 the result will be 255, and it's
+            # one of the most information-preserving possible handling paths
+            exit_code |= ret
+
+    if exception.epilog:
+        click.echo("\n* * *\n")
+        click.echo(exception.epilog)
+
+    return exit_code
 
 
 @error_handler(
@@ -90,7 +105,7 @@ def _concrete_session_hook(
 ) -> int | None:
     click.echo("The resource you are trying to access requires you to re-authenticate.")
     if message:
-        click.echo(f"message: {message}")
+        click.echo(message)
 
     if identities or domains:
         # cast: mypy can't deduce that `domains` is not None if `identities` is None
@@ -100,19 +115,19 @@ def _concrete_session_hook(
             else " ".join(t.cast(t.List[str], domains))
         )
         click.echo(
-            "Please run\n\n"
+            "\nPlease run\n\n"
             f"    globus session update {update_target}\n\n"
             "to re-authenticate with the required identities"
         )
     elif policies:
         click.echo(
-            "Please run\n\n"
+            "\nPlease run\n\n"
             f"    globus session update --policy '{','.join(policies)}'\n\n"
             "to re-authenticate with the required identities"
         )
     else:
         click.echo(
-            'Please use "globus session update" to re-authenticate '
+            '\nPlease use "globus session update" to re-authenticate '
             "with specific identities"
         )
     return None

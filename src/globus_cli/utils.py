@@ -207,7 +207,12 @@ class CLIAuthRequirementsError(Exception):
     """
 
     def __init__(
-        self, message: str, *, gare: GlobusAuthRequirementsError | None = None
+        self,
+        message: str,
+        *,
+        gare: GlobusAuthRequirementsError | None = None,
+        epilog: str | None = None,
     ) -> None:
         self.message = message
+        self.epilog = epilog
         self.gare = gare

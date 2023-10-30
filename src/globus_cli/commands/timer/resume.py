@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import textwrap
 import typing as t
 import uuid
 
@@ -55,7 +56,7 @@ def _full_speed_ahead(ctx: click.Context, param: click.Parameter, value: bool) -
 
 
 @command("resume", short_help="Resume a timer")
-@click.argument("JOB_ID", type=click.UUID)
+@click.argument("TIMER_ID", type=click.UUID)
 @click.option(
     "--skip-inactive-reason-check",
     is_flag=True,
@@ -74,21 +75,23 @@ def _full_speed_ahead(ctx: click.Context, param: click.Parameter, value: bool) -
 )
 @LoginManager.requires_login("timer")
 def resume_command(
-    login_manager: LoginManager, *, job_id: uuid.UUID, skip_inactive_reason_check: bool
+    login_manager: LoginManager,
+    *,
+    timer_id: uuid.UUID,
+    skip_inactive_reason_check: bool,
 ) -> None:
     """
     Resume a timer.
     """
     timer_client = login_manager.get_timer_client()
-    job_doc = timer_client.get_job(job_id)
+    job_doc = timer_client.get_job(timer_id)
 
-    gare: GlobusAuthRequirementsError | None = None
+    gare = _get_inactive_reason(job_doc)
     if not skip_inactive_reason_check:
-        gare = _get_inactive_reason(job_doc)
-        check_inactive_reason(login_manager, gare)
+        check_inactive_reason(login_manager, timer_id, gare)
 
     resumed = timer_client.resume_job(
-        job_id,
+        timer_id,
         update_credentials=(gare is not None),
     )
     display(
@@ -100,6 +103,7 @@ def resume_command(
 
 def check_inactive_reason(
     login_manager: LoginManager,
+    timer_id: uuid.UUID,
     gare: GlobusAuthRequirementsError | None,
 ) -> None:
     if gare is None:
@@ -130,6 +134,13 @@ def check_inactive_reason(
         raise CLIAuthRequirementsError(
             "This timer needs strong authentication in order to resume.",
             gare=gare,
+            epilog=textwrap.dedent(
+                f"""\
+                After updating your session, resume the timer with
+
+                    globus timer resume --skip-inactive-reason-check {timer_id}
+                """
+            ),
         )
 
 

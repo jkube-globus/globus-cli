@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import textwrap
 import typing as t
 import uuid
 
@@ -43,10 +44,9 @@ def resume_command(
 
     specific_flow_client = login_manager.get_specific_flow_client(flow_id)
 
-    gare: GlobusAuthRequirementsError | None = None
+    gare = _get_inactive_reason(run_doc)
     if not skip_inactive_reason_check:
-        gare = _get_inactive_reason(run_doc)
-        check_inactive_reason(login_manager, gare)
+        check_inactive_reason(login_manager, run_id, gare)
 
     fields = [
         Field("Run ID", "run_id"),
@@ -64,6 +64,7 @@ def resume_command(
 
 def check_inactive_reason(
     login_manager: LoginManager,
+    run_id: uuid.UUID,
     gare: GlobusAuthRequirementsError | None,
 ) -> None:
     if gare is None:
@@ -74,7 +75,7 @@ def check_inactive_reason(
         )
         if consent_required:
             raise CLIAuthRequirementsError(
-                "This timer is missing a necessary consent in order to resume.",
+                "This run is missing a necessary consent in order to resume.",
                 gare=gare,
             )
 
@@ -92,8 +93,15 @@ def check_inactive_reason(
     # (consents may be present without session requirements met)
     if unhandled_requirements:
         raise CLIAuthRequirementsError(
-            "This timer needs strong authentication in order to resume.",
+            "This run needs strong authentication in order to resume.",
             gare=gare,
+            epilog=textwrap.dedent(
+                f"""\
+                After updating your session, resume the timer with
+
+                    globus flows run resume --skip-inactive-reason-check {run_id}
+                """
+            ),
         )
 
 
