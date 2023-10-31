@@ -54,6 +54,30 @@ def test_resume_job_inactive_gare_consent_missing_but_skip_check(run_line):
     )
 
 
+def test_resume_inactive_gare_session_identity(run_line):
+    meta = load_response_set(
+        "cli.timer_resume.inactive_gare.session_required_identities"
+    ).metadata
+    job_id = meta["job_id"]
+    usernames = meta["session_required_identities"]
+    run_line(
+        ["globus", "timer", "resume", job_id],
+        assert_exit_code=4,
+        search_stdout=f"globus session update {' '.join(usernames)}",
+    )
+
+
+def test_resume_inactive_gare_session_identity_but_skip_check(run_line):
+    meta = load_response_set(
+        "cli.timer_resume.inactive_gare.session_required_identities"
+    ).metadata
+    job_id = meta["job_id"]
+    run_line(
+        ["globus", "timer", "resume", "--skip-inactive-reason-check", job_id],
+        search_stdout=f"Successfully resumed job {job_id}.",
+    )
+
+
 TIMER_ID = str(uuid.uuid1())
 TIMER_JSON = {
     "name": "example timer",
@@ -128,16 +152,16 @@ def _register_responses(mock_user_data):
         },
     }
 
-    get_job_json_consent_gare_body = {
+    timer_session_identity_gare_body = {
         **TIMER_JSON,
         "status": "inactive",
         "inactive_reason": {
             "cause": "globus_auth_requirements",
             "detail": {
-                "code": "ConsentRequired",
+                "code": "AuthorizationParameters",
                 "authorization_parameters": {
-                    "session_message": "Missing required data_access consent",
-                    "required_scopes": [required_scope],
+                    "session_message": "Required identity: foo (GlobusID)",
+                    "session_required_identities": ["foo@globusid.org"],
                 },
             },
         },
@@ -222,6 +246,28 @@ def _register_responses(mock_user_data):
             ),
         ),
         metadata=metadata,
+    )
+
+    register_response_set(
+        "cli.timer_resume.inactive_gare.session_required_identities",
+        dict(
+            get_job=dict(
+                service="timer",
+                path=f"/jobs/{timer_id}",
+                method="GET",
+                json=timer_session_identity_gare_body,
+            ),
+            resume=dict(
+                service="timer",
+                path=f"/jobs/{timer_id}/resume",
+                method="POST",
+                json={"message": f"Successfully resumed job {timer_id}."},
+            ),
+        ),
+        metadata={
+            "session_required_identities": ["foo@globusid.org"],
+            **metadata,
+        },
     )
 
 
