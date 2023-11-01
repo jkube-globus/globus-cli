@@ -55,6 +55,8 @@ def handle_internal_auth_requirements(
         click.echo("\n* * *\n")
         click.echo(exception.epilog)
 
+    return None
+
 
 @error_handler(
     error_class="GlobusAPIError",
@@ -86,9 +88,10 @@ def consent_required_hook(exception: globus_sdk.GlobusAPIError) -> int | None:
             "Fatal Error: ConsentRequired but no required_scopes!", bold=True, fg="red"
         )
         return 255
-    return _concrete_consent_required_hook(
+    _concrete_consent_required_hook(
         exception.message, exception.info.consent_required.required_scopes
     )
+    return None
 
 
 def _concrete_session_hook(
