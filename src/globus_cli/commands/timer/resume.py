@@ -20,41 +20,6 @@ if t.TYPE_CHECKING:
     )
 
 
-def _full_speed_ahead(ctx: click.Context, param: click.Parameter, value: bool) -> None:
-    # this easter egg has no effects other than printing a message
-    # this choice was made to ensure that there are no important behaviors which are
-    # impacted by it, or which *require* its use
-    if value:
-        click.secho(
-            r'''
-   ___                       __   __
-  / _ \ ___ _ __ _   ___    / /_ / /  ___
- / // // _ `//  ' \ / _ \  / __// _ \/ -_)
-/____/ \_,_//_/_/_//_//_/  \__//_//_/\__/
-
-  __                           __
- / /_ ___   ____ ___  ___  ___/ /___  ___  ___
-/ __// _ \ / __// _ \/ -_)/ _  // _ \/ -_)(_-< _
-\__/ \___//_/  / .__/\__/ \_,_/ \___/\__//___/( )
-              /_/                             |/
-   ___       __ __                         __        __                 __ __
-  / _/__ __ / // /  ___  ___  ___  ___  ___/ / ___ _ / /  ___  ___ _ ___/ // /
- / _// // // // /  (_-< / _ \/ -_)/ -_)/ _  / / _ `// _ \/ -_)/ _ `// _  //_/
-/_/  \_,_//_//_/  /___// .__/\__/ \__/ \_,_/  \_,_//_//_/\__/ \_,_/ \_,_/(_)
-                      /_/
-
- .  o ..
- o . o o.o
-      ...oo
-        __[]__
-     __|_o_o_o\__
-     \""""""""""/
-      \. ..  . /
- ^^^^^^^^^^^^^^^^^^^^
-'''
-        )
-
-
 @command("resume", short_help="Resume a timer")
 @click.argument("TIMER_ID", type=click.UUID)
 @click.option(
@@ -65,13 +30,6 @@ def _full_speed_ahead(ctx: click.Context, param: click.Parameter, value: bool) -
         'Skip the check of the timer\'s "inactive reason", which is used to determine '
         "if additional steps are required to successfully resume the timer."
     ),
-)
-@click.option(
-    "--damn-the-torpedoes",
-    expose_value=False,
-    is_flag=True,
-    hidden=True,
-    callback=_full_speed_ahead,
 )
 @LoginManager.requires_login("timer")
 def resume_command(
