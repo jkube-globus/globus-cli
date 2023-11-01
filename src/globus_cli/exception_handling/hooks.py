@@ -36,35 +36,24 @@ def handle_internal_auth_requirements(
         )
         return 255
 
-    exit_code: int | None = None
-
     required_scopes = gare.authorization_parameters.required_scopes
     if required_scopes:
-        exit_code = _concrete_consent_required_hook(exception.message, required_scopes)
+        _concrete_consent_required_hook(exception.message, required_scopes)
 
     session_policies = gare.authorization_parameters.session_required_policies
     session_identities = gare.authorization_parameters.session_required_identities
     session_domains = gare.authorization_parameters.session_required_single_domain
     if session_policies or session_identities or session_domains:
-        ret = _concrete_session_hook(
+        _concrete_session_hook(
             exception.message,
             session_policies,
             session_identities,
             session_domains,
         )
-        if exit_code is None:
-            exit_code = ret
-        elif ret is not None:
-            # use bitwise-or if we have two codes to handle
-            # it's guaranteed that if either is 255 the result will be 255, and it's
-            # one of the most information-preserving possible handling paths
-            exit_code |= ret
 
     if exception.epilog:
         click.echo("\n* * *\n")
         click.echo(exception.epilog)
-
-    return exit_code
 
 
 @error_handler(
@@ -72,7 +61,7 @@ def handle_internal_auth_requirements(
     condition=lambda err: err.info.authorization_parameters,
     exit_status=4,
 )
-def session_hook(exception: globus_sdk.GlobusAPIError) -> int | None:
+def session_hook(exception: globus_sdk.GlobusAPIError) -> None:
     """
     Expects an exception with a valid authorization_paramaters info field
     """
@@ -92,6 +81,11 @@ def consent_required_hook(exception: globus_sdk.GlobusAPIError) -> int | None:
     """
     Expects an exception with a required_scopes field in its raw_json
     """
+    if not exception.info.consent_required.required_scopes:
+        click.secho(
+            "Fatal Error: ConsentRequired but no required_scopes!", bold=True, fg="red"
+        )
+        return 255
     return _concrete_consent_required_hook(
         exception.message, exception.info.consent_required.required_scopes
     )
@@ -102,7 +96,7 @@ def _concrete_session_hook(
     policies: list[str] | None,
     identities: list[str] | None,
     domains: list[str] | None,
-) -> int | None:
+) -> None:
     click.echo("The resource you are trying to access requires you to re-authenticate.")
     if message:
         click.echo(message)
@@ -130,16 +124,11 @@ def _concrete_session_hook(
             '\nPlease use "globus session update" to re-authenticate '
             "with specific identities"
         )
-    return None
 
 
 def _concrete_consent_required_hook(
     message: str | None, required_scopes: list[str]
-) -> int | None:
-    """
-    Internal handler which may return an exit code to use, or None for
-    "do not force exit"
-    """
+) -> None:
     # specialized message for data_access errors
     # otherwise, use more generic phrasing
     if message == "Missing required data_access consent":
@@ -155,21 +144,13 @@ def _concrete_consent_required_hook(
     if message:
         click.echo(f"message: {message}")
 
-    if not required_scopes:
-        click.secho(
-            "Fatal Error: ConsentRequired but no required_scopes!", bold=True, fg="red"
+    click.echo(
+        "\nPlease run\n\n"
+        "  globus session consent {}\n\n".format(
+            " ".join(f"'{x}'" for x in required_scopes)
         )
-        return 255
-    else:
-        click.echo(
-            "\nPlease run\n\n"
-            "  globus session consent {}\n\n".format(
-                " ".join(f"'{x}'" for x in required_scopes)
-            )
-            + "to login with the required scopes"
-        )
-
-    return None
+        + "to login with the required scopes"
+    )
 
 
 @error_handler(
