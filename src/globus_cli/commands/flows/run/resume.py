@@ -93,7 +93,8 @@ def check_inactive_reason(
     # (consents may be present without session requirements met)
     if unhandled_requirements:
         raise CLIAuthRequirementsError(
-            "This run needs strong authentication in order to resume.",
+            "This run has additional authentication requirements that must be met "
+            "in order to resume.",
             gare=gare,
             epilog=textwrap.dedent(
                 f"""\

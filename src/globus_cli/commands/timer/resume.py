@@ -90,11 +90,12 @@ def check_inactive_reason(
     # (consents may be present without session requirements met)
     if unhandled_requirements:
         raise CLIAuthRequirementsError(
-            "This timer needs strong authentication in order to resume.",
+            "This timer has additional authentication requirements that must be met "
+            "in order to resume.",
             gare=gare,
             epilog=textwrap.dedent(
                 f"""\
-                After updating your session, resume the timer with
+                After updating your session, resume the timer with:
 
                     globus timer resume --skip-inactive-reason-check {timer_id}
                 """
