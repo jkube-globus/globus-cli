@@ -98,7 +98,7 @@ def check_inactive_reason(
             gare=gare,
             epilog=textwrap.dedent(
                 f"""\
-                After updating your session, resume the timer with
+                After updating your session, resume the run with
 
                     globus flows run resume --skip-inactive-reason-check {run_id}
                 """
