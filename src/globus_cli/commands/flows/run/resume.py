@@ -82,7 +82,7 @@ def check_inactive_reason(
     # at this point, the required_scopes may have been checked and satisfied
     # therefore, we should check if there are additional requirements other than
     # the scopes/consents
-    unhandled_requirements = set(gare.authorization_parameters.to_dict().keys()) - {
+    unhandled_requirements = set(gare.authorization_parameters.to_dict()) - {
         "required_scopes",
         # also remove 'message' -- not a 'requirement'
         "session_message",
