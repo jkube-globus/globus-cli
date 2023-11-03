@@ -64,6 +64,16 @@ e.g. '1h30m', '500s', '10d'
 """
 
 
+def resolve_start_time(
+    start: datetime.datetime | None,
+) -> datetime.datetime | globus_sdk.MISSING:
+    if start is None:
+        return globus_sdk.MISSING
+    # set the timezone to local system time if the timezone input is not aware
+    start_with_tz = start.astimezone() if start.tzinfo is None else start
+    return start_with_tz
+
+
 @command("transfer", short_help="Create a recurring transfer job in Timer")
 @click.argument(
     "source", metavar="SOURCE_ENDPOINT_ID[:SOURCE_PATH]", type=ENDPOINT_PLUS_OPTPATH
@@ -184,7 +194,7 @@ def transfer_command(
     # Interval must be null iff the job is 'once', i.e. stop-after-runs == 1.
     # and it must be non-null if the job is 'recurring'
     schedule: globus_sdk.RecurringTimerSchedule | globus_sdk.OnceTimerSchedule
-    start_ = start if start is not None else globus_sdk.MISSING
+    start_ = resolve_start_time(start)
     if stop_after_runs == 1:
         if interval is not None:
             raise click.UsageError("'--interval' is invalid with `--stop-after-runs=1`")
@@ -200,7 +210,7 @@ def transfer_command(
         if stop_after_runs is not None:
             end = {
                 "condition": "iterations",
-                "count": stop_after_runs,
+                "count": resolve_start_time(stop_after_runs),
             }
         elif stop_after_date is not None:
             end = {
@@ -209,9 +219,7 @@ def transfer_command(
             }
 
         schedule = globus_sdk.RecurringTimerSchedule(
-            interval_seconds=interval,
-            end=end,
-            start=start if start is not None else globus_sdk.MISSING,
+            interval_seconds=interval, end=end, start=start_
         )
 
     # default name, dynamically computed from the current time

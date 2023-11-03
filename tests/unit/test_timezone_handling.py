@@ -1,18 +1,15 @@
 import datetime
 
+import globus_sdk
+
 from globus_cli.commands.timer.create.transfer import resolve_start_time
 
 EST = datetime.timezone(datetime.timedelta(hours=-5), name="EST")
 
 
-def test_resolve_start_time_defaults_to_now():
+def test_resolve_start_time_converts_none_to_missing():
     value = resolve_start_time(None)
-    assert isinstance(value, datetime.datetime)
-    assert value.tzinfo is not None
-    # check for closeness, rather than being exact
-    assert (datetime.datetime.now().astimezone() - value) < datetime.timedelta(
-        seconds=1
-    )
+    assert value is globus_sdk.MISSING
 
 
 def test_resolve_start_time_preserves_existing_tzinfo():
