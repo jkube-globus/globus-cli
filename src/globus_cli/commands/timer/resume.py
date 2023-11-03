@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import textwrap
 import typing as t
 import uuid
 
@@ -20,7 +21,7 @@ if t.TYPE_CHECKING:
 
 
 @command("resume", short_help="Resume a timer")
-@click.argument("JOB_ID", type=click.UUID)
+@click.argument("TIMER_ID", type=click.UUID)
 @click.option(
     "--skip-inactive-reason-check",
     is_flag=True,
@@ -32,27 +33,23 @@ if t.TYPE_CHECKING:
 )
 @LoginManager.requires_login("timer")
 def resume_command(
-    login_manager: LoginManager, *, job_id: uuid.UUID, skip_inactive_reason_check: bool
+    login_manager: LoginManager,
+    *,
+    timer_id: uuid.UUID,
+    skip_inactive_reason_check: bool,
 ) -> None:
     """
     Resume a timer.
     """
     timer_client = login_manager.get_timer_client()
-    job_doc = timer_client.get_job(job_id)
+    job_doc = timer_client.get_job(timer_id)
 
     gare = _get_inactive_reason(job_doc)
-    if gare is not None and gare.authorization_parameters.required_scopes:
-        consent_required = not _has_required_consent(
-            login_manager, gare.authorization_parameters.required_scopes
-        )
-        if consent_required and not skip_inactive_reason_check:
-            raise CLIAuthRequirementsError(
-                "This run is missing a necessary consent in order to resume.",
-                required_scopes=gare.authorization_parameters.required_scopes,
-            )
+    if not skip_inactive_reason_check:
+        check_inactive_reason(login_manager, timer_id, gare)
 
     resumed = timer_client.resume_job(
-        job_id,
+        timer_id,
         update_credentials=(gare is not None),
     )
     display(
@@ -60,6 +57,50 @@ def resume_command(
         text_mode=TextMode.text_raw,
         simple_text=resumed["message"],
     )
+
+
+def check_inactive_reason(
+    login_manager: LoginManager,
+    timer_id: uuid.UUID,
+    gare: GlobusAuthRequirementsError | None,
+) -> None:
+    if gare is None:
+        return
+    if gare.authorization_parameters.required_scopes:
+        consent_required = not _has_required_consent(
+            login_manager, gare.authorization_parameters.required_scopes
+        )
+        if consent_required:
+            raise CLIAuthRequirementsError(
+                "This timer is missing a necessary consent in order to resume.",
+                gare=gare,
+            )
+
+    # at this point, the required_scopes may have been checked and satisfied
+    # therefore, we should check if there are additional requirements other than
+    # the scopes/consents
+    unhandled_requirements = set(gare.authorization_parameters.to_dict().keys()) - {
+        "required_scopes",
+        # also remove 'message' -- not a 'requirement'
+        "session_message",
+    }
+    # reraise if anything remains after consent checking
+    # this ensures that we will reraise if we get an error which contains
+    # both required_scopes and additional requirements
+    # (consents may be present without session requirements met)
+    if unhandled_requirements:
+        raise CLIAuthRequirementsError(
+            "This timer has additional authentication requirements that must be met "
+            "in order to resume.",
+            gare=gare,
+            epilog=textwrap.dedent(
+                f"""\
+                After updating your session, resume the timer with:
+
+                    globus timer resume --skip-inactive-reason-check {timer_id}
+                """
+            ),
+        )
 
 
 def _get_inactive_reason(

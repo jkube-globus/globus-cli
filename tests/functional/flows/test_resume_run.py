@@ -10,8 +10,82 @@ from globus_sdk._testing import (
 )
 
 
-def _urlscope(m: str, s: str) -> str:
-    return f"https://auth.globus.org/scopes/{m}/{s}"
+def test_resume_inactive_run_missing_consent(run_line, add_flow_login):
+    # setup the response scenario
+    meta = load_response_set("cli.resume_run.inactive_consents_missing").metadata
+    flow_id = meta["flow_id"]
+    run_id = meta["run_id"]
+    required_scope = meta["required_scope"]
+
+    # setup the login mock for the flow_id as well
+    add_flow_login(flow_id)
+
+    result = run_line(["globus", "flows", "run", "resume", run_id], assert_exit_code=4)
+    assert f"globus session consent '{required_scope}'" in result.output
+
+
+def test_resume_inactive_run_consent_present(run_line, add_flow_login):
+    # setup the response scenario
+    meta = load_response_set("cli.resume_run.inactive_consents_present").metadata
+    flow_id = meta["flow_id"]
+    run_id = meta["run_id"]
+
+    # setup the login mock for the flow_id as well
+    add_flow_login(flow_id)
+
+    run_line(
+        ["globus", "flows", "run", "resume", run_id],
+        search_stdout=[("Flow ID", flow_id), ("Run ID", run_id)],
+    )
+
+
+def test_resume_inactive_run_consent_missing_but_skip_check(run_line, add_flow_login):
+    # setup the response scenario
+    meta = load_response_set("cli.resume_run.inactive_consents_missing").metadata
+    flow_id = meta["flow_id"]
+    run_id = meta["run_id"]
+
+    # setup the login mock for the flow_id as well
+    add_flow_login(flow_id)
+
+    run_line(
+        ["globus", "flows", "run", "resume", run_id, "--skip-inactive-reason-check"],
+        search_stdout=[("Flow ID", flow_id), ("Run ID", run_id)],
+    )
+
+
+def test_resume_inactive_run_session_identities(run_line, add_flow_login):
+    # setup the response scenario
+    meta = load_response_set("cli.resume_run.inactive_session_identities").metadata
+    flow_id = meta["flow_id"]
+    run_id = meta["run_id"]
+    username = meta["username"]
+
+    # setup the login mock for the flow_id as well
+    add_flow_login(flow_id)
+
+    run_line(
+        ["globus", "flows", "run", "resume", run_id],
+        assert_exit_code=4,
+        search_stdout=f"globus session update {username}",
+    )
+
+
+def test_resume_inactive_run_session_identities_but_skip_check(
+    run_line, add_flow_login
+):
+    # setup the response scenario
+    meta = load_response_set("cli.resume_run.inactive_session_identities").metadata
+    flow_id = meta["flow_id"]
+    run_id = meta["run_id"]
+
+    # setup the login mock for the flow_id as well
+    add_flow_login(flow_id)
+
+    run_line(
+        ["globus", "flows", "run", "resume", run_id, "--skip-inactive-reason-check"],
+        search_stdout=[("Flow ID", flow_id), ("Run ID", run_id)],
+    )
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -28,9 +102,11 @@ def _register_responses(mock_user_data):
     data_access_scope = _urlscope(collection_id, "data_access")
     full_data_access_scope = f"{transfer_scope}[*{data_access_scope}]"
     required_scope = f"{flow_scope}[{full_data_access_scope}]"
+    username = "shrek@fairytale"
 
     metadata = {
         "user_id": user_id,
+        "username": username,
         "flow_id": flow_id,
         "run_id": run_id,
         "collection_id": collection_id,
@@ -66,6 +142,49 @@ def _register_responses(mock_user_data):
             "description": "Go to Tosche Station to pick up some power converters.",
             "required_scope": required_scope,
             "state_name": "GetPermissionFromUncleOwen",
+        },
+        "display_status": "INACTIVE",
+        "flow_id": flow_id,
+        "flow_last_updated": "2023-08-02T17:20:17.442007+00:00",
+        "flow_title": "Convert Power",
+        "label": "you can waste time with your friends when your chores are done",
+        "manage_by": [],
+        "monitor_by": [],
+        "run_id": run_id,
+        "run_managers": [],
+        "run_monitors": [],
+        "run_owner": user_urn,
+        "start_time": "2023-08-07T17:24:03.315708+00:00",
+        "status": "INACTIVE",
+        "tags": ["tatooine"],
+        "user_role": "run_owner",
+    }
+    inactive_required_session_identities_body = {
+        "action_id": run_id,
+        "created_by": user_urn,
+        "details": {
+            "action_statuses": [
+                {
+                    "action_id": "1IcYClstkVzjn",
+                    "creator_id": user_urn,
+                    "details": {
+                        "code": "AuthorizationParameters",
+                        "description": f"Need a login with {username}",
+                        "authorization_parameters": {
+                            "session_required_identities": [username]
+                        },
+                    },
+                    "state_name": "authn",
+                    "status": "INACTIVE",
+                }
+            ],
+            "code": "AuthorizationParameters",
+            "description": "Go to Tosche Station to pick up some power converters.",
+            "authorization_parameters": {
+                "session_message": f"Need a login with {username}",
+                "session_required_identities": [username],
+            },
+            "state_name": "authn",
         },
         "display_status": "INACTIVE",
         "flow_id": flow_id,
@@ -182,6 +301,24 @@ def _register_responses(mock_user_data):
         metadata=metadata,
     )
 
+    register_response_set(
+        "cli.resume_run.inactive_session_identities",
+        dict(
+            get_run=dict(
+                service="flows",
+                path=f"/runs/{run_id}",
+                json=inactive_required_session_identities_body,
+            ),
+            resume=dict(
+                service="flows",
+                path=f"/runs/{run_id}/resume",
+                method="POST",
+                json=succeeded_body,
+            ),
+        ),
+        metadata=metadata,
+    )
+
 
 def test_resume_run_text_output(run_line, add_flow_login):
     # get fields for resume_run
@@ -226,45 +363,5 @@ def test_resume_run_text_output(run_line, add_flow_login):
     )
 
 
-def test_resume_inactive_run_missing_consent(run_line, add_flow_login):
-    # setup the response scenario
-    meta = load_response_set("cli.resume_run.inactive_consents_missing").metadata
-    flow_id = meta["flow_id"]
-    run_id = meta["run_id"]
-    required_scope = meta["required_scope"]
-
-    # setup the login mock for the flow_id as well
-    add_flow_login(flow_id)
-
-    result = run_line(["globus", "flows", "run", "resume", run_id], assert_exit_code=4)
-    assert f"globus session consent '{required_scope}'" in result.output
-
-
-def test_resume_inactive_run_consent_present(run_line, add_flow_login):
-    # setup the response scenario
-    meta = load_response_set("cli.resume_run.inactive_consents_present").metadata
-    flow_id = meta["flow_id"]
-    run_id = meta["run_id"]
-
-    # setup the login mock for the flow_id as well
-    add_flow_login(flow_id)
-
-    run_line(
-        ["globus", "flows", "run", "resume", run_id],
-        search_stdout=[("Flow ID", flow_id), ("Run ID", run_id)],
-    )
-
-
-def test_resume_inactive_run_consent_missing_but_skip_check(run_line, add_flow_login):
-    # setup the response scenario
-    meta = load_response_set("cli.resume_run.inactive_consents_missing").metadata
-    flow_id = meta["flow_id"]
-    run_id = meta["run_id"]
-
-    # setup the login mock for the flow_id as well
-    add_flow_login(flow_id)
-
-    run_line(
-        ["globus", "flows", "run", "resume", run_id, "--skip-inactive-reason-check"],
-        search_stdout=[("Flow ID", flow_id), ("Run ID", run_id)],
-    )
+def _urlscope(m: str, s: str) -> str:
+    return f"https://auth.globus.org/scopes/{m}/{s}"

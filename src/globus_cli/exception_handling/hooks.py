@@ -20,19 +20,53 @@ def _pretty_json(data: dict, compact=False) -> str:
     return json.dumps(data, indent=2, separators=(",", ": "), sort_keys=True)
 
 
+_DEFAULT_SESSION_REAUTH_MESSAGE = (
+    "The resource you are trying to access requires you to re-authenticate."
+)
+_DEFAULT_CONSENT_REAUTH_MESSAGE = (
+    "The resource you are trying to access requires you to "
+    "consent to additional access for the Globus CLI."
+)
+
+
 @error_handler(
     error_class=CLIAuthRequirementsError,
     exit_status=4,
 )
-def handle_internal_auth_requirements(exception: CLIAuthRequirementsError) -> None:
-    if not exception.required_scopes:
+def handle_internal_auth_requirements(
+    exception: CLIAuthRequirementsError,
+) -> int | None:
+    gare = exception.gare
+    if not gare:
         click.secho(
             "Fatal Error: Unsupported internal auth requirements error!",
             bold=True,
             fg="red",
         )
-        click.get_current_context().exit(255)
-    _concrete_consent_required_hook(exception.message, exception.required_scopes)
+        return 255
+
+    required_scopes = gare.authorization_parameters.required_scopes
+    if required_scopes:
+        _concrete_consent_required_hook(
+            required_scopes=required_scopes, message=exception.message
+        )
+
+    session_policies = gare.authorization_parameters.session_required_policies
+    session_identities = gare.authorization_parameters.session_required_identities
+    session_domains = gare.authorization_parameters.session_required_single_domain
+    if session_policies or session_identities or session_domains:
+        _concrete_session_hook(
+            policies=session_policies,
+            identities=session_identities,
+            domains=session_domains,
+            message=exception.message or _DEFAULT_SESSION_REAUTH_MESSAGE,
+        )
+
+    if exception.epilog:
+        click.echo("\n* * *\n")
+        click.echo(exception.epilog)
+
+    return None
 
 
 @error_handler(
@@ -44,18 +78,60 @@ def session_hook(exception: globus_sdk.GlobusAPIError) -> None:
     """
     Expects an exception with a valid authorization_paramaters info field
     """
-    click.echo(
-        "The resource you are trying to access requires you to "
-        "re-authenticate with specific identities."
-    )
-
     message = exception.info.authorization_parameters.session_message
     if message:
-        click.echo(f"message: {message}")
+        message = f"{_DEFAULT_SESSION_REAUTH_MESSAGE}\nmessage: {message}"
+    else:
+        message = _DEFAULT_SESSION_REAUTH_MESSAGE
 
-    identities = exception.info.authorization_parameters.session_required_identities
-    domains = exception.info.authorization_parameters.session_required_single_domain
-    policies = exception.info.authorization_parameters.session_required_policies
+    return _concrete_session_hook(
+        identities=exception.info.authorization_parameters.session_required_identities,
+        domains=exception.info.authorization_parameters.session_required_single_domain,
+        policies=exception.info.authorization_parameters.session_required_policies,
+        message=message,
+    )
+
+
+@error_handler(
+    error_class="GlobusAPIError",
+    condition=lambda err: err.info.consent_required,
+    exit_status=4,
+)
+def consent_required_hook(exception: globus_sdk.GlobusAPIError) -> int | None:
+    """
+    Expects an exception with a required_scopes field in its raw_json
+    """
+    if not exception.info.consent_required.required_scopes:
+        click.secho(
+            "Fatal Error: ConsentRequired but no required_scopes!", bold=True, fg="red"
+        )
+        return 255
+
+    # specialized message for data_access errors
+    # otherwise, use more generic phrasing
+    if exception.message == "Missing required data_access consent":
+        message = (
+            "The collection you are trying to access data on requires you to "
+            "grant consent for the Globus CLI to access it."
+        )
+    else:
+        message = f"{_DEFAULT_CONSENT_REAUTH_MESSAGE}\nmessage: {exception.message}"
+
+    _concrete_consent_required_hook(
+        required_scopes=exception.info.consent_required.required_scopes,
+        message=message,
+    )
+    return None
+
+
+def _concrete_session_hook(
+    *,
+    policies: list[str] | None,
+    identities: list[str] | None,
+    domains: list[str] | None,
+    message: str = _DEFAULT_SESSION_REAUTH_MESSAGE,
+) -> None:
+    click.echo(message)
 
     if identities or domains:
         # cast: mypy can't deduce that `domains` is not None if `identities` is None
@@ -65,68 +141,37 @@ def session_hook(exception: globus_sdk.GlobusAPIError) -> None:
             else " ".join(t.cast(t.List[str], domains))
         )
         click.echo(
-            "Please run\n\n"
+            "\nPlease run:\n\n"
             f"    globus session update {update_target}\n\n"
-            "to re-authenticate with the required identities"
+            "to re-authenticate with the required identities."
         )
     elif policies:
         click.echo(
-            "Please run\n\n"
+            "\nPlease run:\n\n"
             f"    globus session update --policy '{','.join(policies)}'\n\n"
-            "to re-authenticate with the required identities"
+            "to re-authenticate with the required identities."
         )
     else:
         click.echo(
-            'Please use "globus session update" to re-authenticate '
-            "with specific identities"
+            '\nPlease use "globus session update" to re-authenticate '
+            "with specific identities."
         )
-
-
-@error_handler(
-    error_class="GlobusAPIError",
-    condition=lambda err: err.info.consent_required,
-    exit_status=4,
-)
-def consent_required_hook(exception: globus_sdk.GlobusAPIError) -> None:
-    """
-    Expects an exception with a required_scopes field in its raw_json
-    """
-    _concrete_consent_required_hook(
-        exception.message, exception.info.consent_required.required_scopes
-    )
 
 
 def _concrete_consent_required_hook(
-    message: str | None, required_scopes: list[str]
+    *,
+    required_scopes: list[str],
+    message: str = _DEFAULT_CONSENT_REAUTH_MESSAGE,
 ) -> None:
-    # specialized message for data_access errors
-    # otherwise, use more generic phrasing
-    if message == "Missing required data_access consent":
-        click.echo(
-            "The collection you are trying to access data on requires you to "
-            "grant consent for the Globus CLI to access it."
-        )
-    else:
-        click.echo(
-            "The resource you are trying to access requires you to "
-            "consent to additional access for the Globus CLI."
-        )
-    if message:
-        click.echo(f"message: {message}")
+    click.echo(message)
 
-    if not required_scopes:
-        click.secho(
-            "Fatal Error: ConsentRequired but no required_scopes!", bold=True, fg="red"
+    click.echo(
+        "\nPlease run:\n\n"
+        "  globus session consent {}\n\n".format(
+            " ".join(f"'{x}'" for x in required_scopes)
         )
-        click.get_current_context().exit(255)
-    else:
-        click.echo(
-            "\nPlease run\n\n"
-            "  globus session consent {}\n\n".format(
-                " ".join(f"'{x}'" for x in required_scopes)
-            )
-            + "to login with the required scopes"
-        )
+        + "to login with the required scopes."
+    )
 
 
 @error_handler(
