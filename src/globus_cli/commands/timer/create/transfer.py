@@ -210,7 +210,7 @@ def transfer_command(
         if stop_after_runs is not None:
             end = {
                 "condition": "iterations",
-                "count": resolve_start_time(stop_after_runs),
+                "count": stop_after_runs,
             }
         elif stop_after_date is not None:
             end = {
