@@ -66,7 +66,7 @@ e.g. '1h30m', '500s', '10d'
 
 def resolve_start_time(
     start: datetime.datetime | None,
-) -> datetime.datetime | globus_sdk.MISSING:
+) -> datetime.datetime | globus_sdk.utils.MissingType:
     if start is None:
         return globus_sdk.MISSING
     # set the timezone to local system time if the timezone input is not aware
