@@ -26,7 +26,8 @@ def resolve_times_to_utc(monkeypatch):
         return dt.replace(tzinfo=datetime.timezone.utc)
 
     monkeypatch.setattr(
-        "globus_cli.commands.timer.create.transfer.resolve_start_time", fake_resolve
+        "globus_cli.commands.timer.create.transfer.resolve_optional_local_time",
+        fake_resolve,
     )
 
 

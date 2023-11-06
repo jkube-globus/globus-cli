@@ -64,7 +64,7 @@ e.g. '1h30m', '500s', '10d'
 """
 
 
-def resolve_start_time(
+def resolve_optional_local_time(
     start: datetime.datetime | None,
 ) -> datetime.datetime | globus_sdk.utils.MissingType:
     if start is None:
@@ -194,7 +194,7 @@ def transfer_command(
     # Interval must be null iff the job is 'once', i.e. stop-after-runs == 1.
     # and it must be non-null if the job is 'recurring'
     schedule: globus_sdk.RecurringTimerSchedule | globus_sdk.OnceTimerSchedule
-    start_ = resolve_start_time(start)
+    start_ = resolve_optional_local_time(start)
     if stop_after_runs == 1:
         if interval is not None:
             raise click.UsageError("'--interval' is invalid with `--stop-after-runs=1`")
@@ -215,7 +215,7 @@ def transfer_command(
         elif stop_after_date is not None:
             end = {
                 "condition": "time",
-                "datetime": stop_after_date,
+                "datetime": resolve_optional_local_time(stop_after_date),
             }
 
         schedule = globus_sdk.RecurringTimerSchedule(
