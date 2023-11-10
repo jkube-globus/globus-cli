@@ -2,6 +2,32 @@
 
 // scriv-insert-here
 
+== 3.19.0 (2023-11-10)
+
+Bugfixes:
+
+* Fix the rendering of timedeltas in CLI output  for `globus timer` commands.
+
+Enhancements:
+
+* Add new commands to support pausing (`globus timer pause`) and resuming
+  (`globus timer resume`) **timers**.
+
+* A hint is now printed to stderr (interactive usage only) when
+  `globus flows run show-logs` is run on a **run** with the `INACTIVE` status,
+  informing users that the log will not grow until the **run** resumes.
+
+* **Timer** types (like "Transfer") are identified more accurately.
+
+* Show the status of the timer when running `globus timer delete`.
+  This clarifies whether the **timer** is immediately deleted or in a
+  `delete_pending` state.
+
+* `globus timer resume` and `globus flows run resume` have new functionality
+  for handling session-related errors (e.g. high-assurance timeouts), enabling
+  them to prompt the user in the event that a **timer** or **run** is inactive
+  due to a session error.
+
 == 3.18.0 (2023-08-30)
 
 Bugfixes:
