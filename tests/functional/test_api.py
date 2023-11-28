@@ -45,6 +45,20 @@ def test_api_command_get(run_line, service_name, is_error_response):
     assert result.output == '{"foo": "bar"}\n'
 
 
+def test_api_groups_v2_path_stripping(run_line):
+    load_response(
+        RegisteredResponse(
+            service="groups",
+            status=200,
+            path="/foo",
+            json={"foo": "bar"},
+        )
+    )
+
+    result = run_line(["globus", "api", "groups", "get", "/v2/foo"])
+    assert result.output == '{"foo": "bar"}\n'
+
+
 def test_api_command_can_use_jmespath(run_line):
     load_response("cli.api.transfer_stub")
 
