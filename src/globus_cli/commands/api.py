@@ -258,6 +258,7 @@ sends a 'GET' request to '{_get_url(service_name)}foo/bar'
         # the overall flow of this command will be as follows:
         # - prepare a client
         # - prepare parameters for the request
+        # - Groups-only - strip copied-and-pasted paths with `/v2/` that will fail
         # - send the request capturing any error raised
         # - process the response
         #   - on success or error with --allow-errors, print
@@ -299,6 +300,10 @@ sends a 'GET' request to '{_get_url(service_name)}foo/bar'
                 headers_d["Content-Type"] = detected_content_type
         for header_name, header_value in header:
             headers_d[header_name] = header_value
+
+        # Strip `/v2` from Groups paths, which are auto-added by `GroupsClient`.
+        if service_name == "groups" and path.startswith("/v2"):
+            path = path[3:]
 
         # try sending and handle any error
         try:
