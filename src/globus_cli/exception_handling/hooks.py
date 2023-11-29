@@ -11,10 +11,10 @@ from globus_cli.login_manager import MissingLoginError
 from globus_cli.termio import PrintableErrorField, write_error_info
 from globus_cli.utils import CLIAuthRequirementsError
 
-from .registry import error_handler
+from .registry import error_handler, sdk_error_handler
 
 
-def _pretty_json(data: dict, compact=False) -> str:
+def _pretty_json(data: dict, compact: bool = False) -> str:
     if compact:
         return json.dumps(data, separators=(",", ":"), sort_keys=True)
     return json.dumps(data, indent=2, separators=(",", ": "), sort_keys=True)
@@ -69,9 +69,8 @@ def handle_internal_auth_requirements(
     return None
 
 
-@error_handler(
-    error_class="GlobusAPIError",
-    condition=lambda err: err.info.authorization_parameters,
+@sdk_error_handler(
+    condition=lambda err: bool(err.info.authorization_parameters),
     exit_status=4,
 )
 def session_hook(exception: globus_sdk.GlobusAPIError) -> None:
@@ -92,9 +91,8 @@ def session_hook(exception: globus_sdk.GlobusAPIError) -> None:
     )
 
 
-@error_handler(
-    error_class="GlobusAPIError",
-    condition=lambda err: err.info.consent_required,
+@sdk_error_handler(
+    condition=lambda err: bool(err.info.consent_required),
     exit_status=4,
 )
 def consent_required_hook(exception: globus_sdk.GlobusAPIError) -> int | None:
@@ -174,7 +172,7 @@ def _concrete_consent_required_hook(
     )
 
 
-@error_handler(
+@sdk_error_handler(
     condition=lambda err: (
         (
             isinstance(err, globus_sdk.TransferAPIError)
@@ -200,7 +198,7 @@ def authentication_hook(
     )
 
 
-@error_handler(error_class="TransferAPIError")
+@sdk_error_handler(error_class="TransferAPIError")
 def transferapi_hook(exception: globus_sdk.TransferAPIError) -> None:
     write_error_info(
         "Transfer API Error",
@@ -213,7 +211,7 @@ def transferapi_hook(exception: globus_sdk.TransferAPIError) -> None:
     )
 
 
-@error_handler(
+@sdk_error_handler(
     error_class="SearchAPIError",
     condition=lambda err: err.code == "BadRequest.ValidationError",
 )
@@ -244,7 +242,7 @@ def searchapi_validationerror_hook(exception: globus_sdk.SearchAPIError) -> None
     write_error_info("Search API Error", fields)
 
 
-@error_handler(error_class="SearchAPIError")
+@sdk_error_handler(error_class="SearchAPIError")
 def searchapi_hook(exception: globus_sdk.SearchAPIError) -> None:
     fields = [
         PrintableErrorField("HTTP status", exception.http_status),
@@ -264,7 +262,7 @@ def searchapi_hook(exception: globus_sdk.SearchAPIError) -> None:
     write_error_info("Search API Error", fields)
 
 
-@error_handler(
+@sdk_error_handler(
     error_class="AuthAPIError",
     condition=lambda err: err.message == "invalid_grant",
 )
@@ -283,7 +281,7 @@ def invalidrefresh_hook(exception: globus_sdk.AuthAPIError) -> None:
     )
 
 
-@error_handler(error_class="AuthAPIError")
+@sdk_error_handler(error_class="AuthAPIError")
 def authapi_hook(exception: globus_sdk.AuthAPIError) -> None:
     write_error_info(
         "Auth API Error",
@@ -295,7 +293,7 @@ def authapi_hook(exception: globus_sdk.AuthAPIError) -> None:
     )
 
 
-@error_handler(error_class="GlobusAPIError")  # catch-all
+@sdk_error_handler()  # catch-all
 def globusapi_hook(exception: globus_sdk.GlobusAPIError) -> None:
     write_error_info(
         "Globus API Error",
@@ -307,7 +305,7 @@ def globusapi_hook(exception: globus_sdk.GlobusAPIError) -> None:
     )
 
 
-@error_handler(error_class="GlobusError")
+@sdk_error_handler(error_class="GlobusError")
 def globus_error_hook(exception: globus_sdk.GlobusError) -> None:
     write_error_info(
         "Globus Error",
