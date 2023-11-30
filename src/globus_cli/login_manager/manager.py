@@ -231,9 +231,7 @@ class LoginManager:
 
             return wrapper
 
-        # TODO: remove this ignore after a mypy release fixes ParamSpec regressions
-        # see https://github.com/python/mypy/pull/15272 for a candidate fix PR
-        return inner  # type: ignore[return-value]
+        return inner
 
     def _get_client_authorizer(
         self, resource_server: str, *, no_tokens_msg: str | None = None

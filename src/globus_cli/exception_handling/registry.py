@@ -13,26 +13,55 @@ E = t.TypeVar("E", bound=Exception)
 HOOK_TYPE = t.Callable[[E], t.NoReturn]
 # something which can be decorated to become a hook
 _HOOK_SRC_TYPE = t.Union[t.Callable[[E], None], t.Callable[[E], t.Optional[int]]]
+
 CONDITION_TYPE = t.Callable[[E], bool]
 
-# must cast the registry to avoid type errors around t.List[<nothing>]
-_HOOKLIST_TYPE = t.List[
-    t.Tuple[HOOK_TYPE, t.Union[str, t.Type[Exception]], CONDITION_TYPE]
-]
-_REGISTERED_HOOKS: _HOOKLIST_TYPE = t.cast(_HOOKLIST_TYPE, [])
+_REGISTERED_HOOKS: list[tuple[HOOK_TYPE, CONDITION_TYPE]] = []
+
+
+def sdk_error_handler(
+    *,
+    error_class: str = "GlobusAPIError",
+    condition: t.Callable[[globus_sdk.GlobusAPIError], bool] | None = None,
+    exit_status: int = 1,
+) -> t.Callable[[_HOOK_SRC_TYPE], HOOK_TYPE]:
+    return _error_handler(
+        condition=_build_condition(condition, error_class), exit_status=exit_status
+    )
 
 
 def error_handler(
-    *, error_class=None, condition=None, exit_status: int = 1
+    *,
+    error_class: type[Exception] | None = None,
+    condition: t.Callable[[globus_sdk.GlobusAPIError], bool] | None = None,
+    exit_status: int = 1,
+) -> t.Callable[[_HOOK_SRC_TYPE], HOOK_TYPE]:
+    return _error_handler(
+        condition=_build_condition(condition, error_class), exit_status=exit_status
+    )
+
+
+def find_handler(exception: Exception) -> HOOK_TYPE | None:
+    for handler, condition in _REGISTERED_HOOKS:
+        if not condition(exception):
+            continue
+        return handler
+    return None
+
+
+def _error_handler(
+    *,
+    condition: t.Callable[[Exception], bool],
+    exit_status: int = 1,
 ) -> t.Callable[[_HOOK_SRC_TYPE], HOOK_TYPE]:
     """decorator for excepthooks
 
     register each one, in order, with any relevant "condition"
     """
 
-    def inner_decorator(fn):
+    def inner_decorator(fn: _HOOK_SRC_TYPE) -> HOOK_TYPE:
         @functools.wraps(fn)
-        def wrapped(exception):
+        def wrapped(exception: Exception) -> t.NoReturn:
             hook_result = fn(exception)
             ctx = click.get_current_context()
 
@@ -50,23 +79,44 @@ def error_handler(
 
             ctx.exit(exit_status)
 
-        _REGISTERED_HOOKS.append((wrapped, error_class, condition))
+        _REGISTERED_HOOKS.append((wrapped, condition))
         return wrapped
 
     return inner_decorator
 
 
-def find_handler(exception: Exception) -> HOOK_TYPE | None:
-    for handler, error_class, condition in _REGISTERED_HOOKS:
-        if isinstance(error_class, str):
-            error_class_: type[Exception] = getattr(globus_sdk, error_class)
-            assert issubclass(error_class_, Exception)
-        else:
-            error_class_ = error_class
+def _build_condition(
+    condition: CONDITION_TYPE | None, error_class: str | type[Exception] | None
+) -> CONDITION_TYPE:
+    inner_condition: CONDITION_TYPE
 
-        if error_class_ is not None and not isinstance(exception, error_class_):
-            continue
-        if condition is not None and not condition(exception):
-            continue
-        return handler
-    return None
+    if condition is None:
+        if error_class is None:
+            raise ValueError("a hook must specify either condition or error_class")
+
+        def inner_condition(exception: Exception) -> bool:
+            error_class_ = _resolve_error_class(error_class)
+            return isinstance(exception, error_class_)
+
+    elif error_class is None:
+        inner_condition = condition
+
+    else:
+
+        def inner_condition(exception: Exception) -> bool:
+            error_class_ = _resolve_error_class(error_class)
+            return isinstance(exception, error_class_) and condition(exception)
+
+    return inner_condition
+
+
+def _resolve_error_class(error_class: str | type[Exception]) -> type[Exception]:
+    if isinstance(error_class, str):
+        resolved = getattr(globus_sdk, error_class, None)
+        if resolved is None:
+            raise LookupError(f"no such globus_sdk error class '{error_class}'")
+        if not (isinstance(resolved, type) and issubclass(resolved, Exception)):
+            raise ValueError(f"'globus_sdk.{error_class}' is not an error class")
+        return resolved
+    else:
+        return error_class
