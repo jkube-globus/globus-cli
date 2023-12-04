@@ -55,7 +55,7 @@ def test_show_on_gcsv5_collection(run_line):
     ) in result.stderr
     assert (
         "Please run the following command instead:\n\n"
-        f"    globus collection show {epid}"
+        f"    globus gcs collection show {epid}"
     ) in result.stderr
 
 
