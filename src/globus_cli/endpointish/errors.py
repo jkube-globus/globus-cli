@@ -6,16 +6,29 @@ SHOULD_USE_MAP = {
     "globus collection delete": [
         ("globus endpoint delete", EntityType.traditional_endpoints()),
     ],
+    "globus gcs collection delete": [
+        ("globus endpoint delete", EntityType.traditional_endpoints()),
+    ],
     "globus endpoint delete": [
-        ("globus collection delete", EntityType.gcsv5_collections()),
+        ("globus gcs collection delete", EntityType.gcsv5_collections()),
     ],
     "globus collection show": [
+        ("globus endpoint show", EntityType.non_gcsv5_collection_types()),
+    ],
+    "globus gcs collection show": [
         ("globus endpoint show", EntityType.non_gcsv5_collection_types()),
     ],
     "globus endpoint show": [
         ("globus collection show", EntityType.gcsv5_collections()),
     ],
     "globus collection update": [
+        ("globus gcp update mapped", (EntityType.GCP_MAPPED,)),
+        ("globus gcp update guest", (EntityType.GCP_GUEST,)),
+        ("globus endpoint update", EntityType.traditional_endpoints()),
+    ],
+    "globus gcs collection update": [
+        ("globus gcp update mapped", (EntityType.GCP_MAPPED,)),
+        ("globus gcp update guest", (EntityType.GCP_GUEST,)),
         ("globus endpoint update", EntityType.traditional_endpoints()),
     ],
     "globus endpoint update": [

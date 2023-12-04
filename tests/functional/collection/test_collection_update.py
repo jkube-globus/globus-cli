@@ -5,8 +5,17 @@ import responses
 from globus_sdk._testing import load_response_set
 
 
+# toggle between the (newer) 'gcs' variant and the 'bare' variant
+@pytest.fixture(params=(True, False), ids=("gcs-collection", "collection"))
+def base_command(request):
+    if request.param:
+        return ["globus", "gcs", "collection", "update"]
+    else:
+        return ["globus", "collection", "update"]
+
+
 @pytest.mark.parametrize("cid_key", ["mapped_collection_id", "guest_collection_id"])
-def test_collection_update(run_line, add_gcs_login, cid_key):
+def test_collection_update(run_line, add_gcs_login, base_command, cid_key):
     is_mapped = cid_key.startswith("mapped")
 
     meta = load_response_set("cli.collection_operations").metadata
@@ -19,10 +28,8 @@ def test_collection_update(run_line, add_gcs_login, cid_key):
         ep_type_specific_opts = ["--sharing-user-allow", ""]
 
     result = run_line(
-        [
-            "globus",
-            "collection",
-            "update",
+        base_command
+        + [
             cid,
             "--description",
             "FooBar",
@@ -53,14 +60,14 @@ def test_collection_update(run_line, add_gcs_login, cid_key):
 )
 @pytest.mark.parametrize("cid_key", ["mapped_collection_id", "guest_collection_id"])
 def test_collection_update_verify_opts(
-    run_line, add_gcs_login, verify_str, verify_settings, cid_key
+    run_line, add_gcs_login, base_command, verify_str, verify_settings, cid_key
 ):
     meta = load_response_set("cli.collection_operations").metadata
     cid = meta[cid_key]
     epid = meta["endpoint_id"]
     add_gcs_login(epid)
 
-    result = run_line(["globus", "collection", "update", cid, "--verify", verify_str])
+    result = run_line(base_command + [cid, "--verify", verify_str])
     assert "success" in result.output
 
     sent = json.loads(responses.calls[-1].request.body)
@@ -69,30 +76,26 @@ def test_collection_update_verify_opts(
         assert sent[k] == v
 
 
-def test_collection_update_on_gcp(run_line):
+def test_collection_update_on_gcp(run_line, base_command):
     meta = load_response_set("cli.collection_operations").metadata
     epid = meta["gcp_endpoint_id"]
 
-    result = run_line(
-        f"globus collection update {epid} --description foo", assert_exit_code=3
-    )
+    result = run_line(base_command + [epid, "--description", "foo"], assert_exit_code=3)
     assert (
         f"Expected {epid} to be a collection ID.\n"
         "Instead, found it was of type 'Globus Connect Personal Mapped Collection'."
     ) in result.stderr
     assert (
         "Please run the following command instead:\n\n"
-        f"    globus endpoint update {epid}"
+        f"    globus gcp update mapped {epid}"
     ) in result.stderr
 
 
-def test_collection_update_on_gcsv5_host(run_line):
+def test_collection_update_on_gcsv5_host(run_line, base_command):
     meta = load_response_set("cli.collection_operations").metadata
     epid = meta["endpoint_id"]
 
-    result = run_line(
-        f"globus collection update {epid} --description foo", assert_exit_code=3
-    )
+    result = run_line(base_command + [epid, "--description", "foo"], assert_exit_code=3)
     assert "success" not in result.output
     assert (
         f"Expected {epid} to be a collection ID.\n"
@@ -101,14 +104,16 @@ def test_collection_update_on_gcsv5_host(run_line):
     assert "This operation is not supported on objects of this type." in result.stderr
 
 
-def test_gust_collection_update_rejects_invalid_opts(run_line, add_gcs_login):
+def test_guest_collection_update_rejects_invalid_opts(
+    run_line, add_gcs_login, base_command
+):
     meta = load_response_set("cli.collection_operations").metadata
     cid = meta["guest_collection_id"]
     epid = meta["endpoint_id"]
     add_gcs_login(epid)
 
     result = run_line(
-        ["globus", "collection", "update", cid, "--sharing-user-allow", ""],
+        base_command + [cid, "--sharing-user-allow", ""],
         assert_exit_code=2,
     )
     assert "success" not in result.output
