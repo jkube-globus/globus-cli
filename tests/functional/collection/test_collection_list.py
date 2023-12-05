@@ -4,12 +4,9 @@ from globus_sdk._testing import load_response_set
 
 
 # toggle between the (newer) 'gcs' variant and the 'bare' variant
-@pytest.fixture(params=(True, False), ids=("gcs-collection", "collection"))
+@pytest.fixture(params=("gcs collection", "collection"))
 def base_command(request):
-    if request.param:
-        return ["globus", "gcs", "collection", "list"]
-    else:
-        return ["globus", "collection", "list"]
+    return f"globus {request.param} list"
 
 
 def get_last_gcs_call(gcs_addr):
@@ -27,7 +24,7 @@ def test_collection_list(run_line, add_gcs_login, base_command):
     meta = load_response_set("cli.collection_operations").metadata
     epid = meta["endpoint_id"]
     add_gcs_login(epid)
-    result = run_line(base_command + [epid])
+    result = run_line(f"{base_command} {epid}")
     collection_names = ["Happy Fun Collection Name 1", "Happy Fun Collection Name 2"]
     for name in collection_names:
         assert name in result.stdout
@@ -38,7 +35,7 @@ def test_collection_list_opts(run_line, add_gcs_login, base_command):
     epid = meta["endpoint_id"]
     add_gcs_login(epid)
     cid = meta["mapped_collection_id"]
-    run_line(base_command + ["--mapped-collection-id", cid, epid])
+    run_line(f"{base_command} --mapped-collection-id {cid} {epid}")
 
     gcs_addr = meta["gcs_hostname"]
     last_call = get_last_gcs_call(gcs_addr)
@@ -53,7 +50,7 @@ def test_collection_list_on_gcp(run_line, base_command):
     meta = load_response_set("cli.collection_operations").metadata
     epid = meta["gcp_endpoint_id"]
 
-    result = run_line(base_command + [epid], assert_exit_code=3)
+    result = run_line(f"{base_command} {epid}", assert_exit_code=3)
     assert "success" not in result.output
     assert (
         f"Expected {epid} to be a Globus Connect Server v5 Endpoint.\n"
@@ -66,7 +63,7 @@ def test_collection_list_on_mapped_collection(run_line, base_command):
     meta = load_response_set("cli.collection_operations").metadata
     epid = meta["mapped_collection_id"]
 
-    result = run_line(base_command + [epid], assert_exit_code=3)
+    result = run_line(f"{base_command} {epid}", assert_exit_code=3)
     assert "success" not in result.output
     assert (
         f"Expected {epid} to be a Globus Connect Server v5 Endpoint.\n"
@@ -97,7 +94,7 @@ def test_collection_list_filters(run_line, add_gcs_login, filter_val, base_comma
     for f in filter_val:
         filters.extend(["--filter", f])
 
-    run_line(base_command + filters + [epid])
+    run_line(base_command.split() + filters + [epid])
     filter_params = {v.lower().replace("-", "_") for v in filter_val}
 
     gcs_addr = meta["gcs_hostname"]

@@ -3,12 +3,9 @@ from globus_sdk._testing import load_response_set
 
 
 # toggle between the (newer) 'gcs' variant and the 'bare' variant
-@pytest.fixture(params=(True, False), ids=("gcs-collection", "collection"))
+@pytest.fixture(params=("gcs collection", "collection"))
 def base_command(request):
-    if request.param:
-        return ["globus", "gcs", "collection", "delete"]
-    else:
-        return ["globus", "collection", "delete"]
+    return f"globus {request.param} delete"
 
 
 def test_guest_collection_delete(run_line, add_gcs_login, base_command):
@@ -17,7 +14,7 @@ def test_guest_collection_delete(run_line, add_gcs_login, base_command):
     cid = meta["guest_collection_id"]
     add_gcs_login(epid)
 
-    result = run_line(base_command + [cid])
+    result = run_line(f"{base_command} {cid}")
     assert "success" in result.output
 
 
@@ -27,7 +24,7 @@ def test_mapped_collection_delete(run_line, add_gcs_login, base_command):
     cid = meta["mapped_collection_id"]
     add_gcs_login(epid)
 
-    result = run_line(base_command + [cid])
+    result = run_line(f"{base_command} {cid}")
     assert "success" in result.output
 
 
@@ -36,7 +33,7 @@ def test_collection_delete_missing_login(run_line, base_command):
     epid = meta["endpoint_id"]
     cid = meta["guest_collection_id"]
 
-    result = run_line(base_command + [cid], assert_exit_code=4)
+    result = run_line(f"{base_command} {cid}", assert_exit_code=4)
     assert "success" not in result.output
     assert f"Missing login for {epid}" in result.stderr
     assert f"  globus login --gcs {epid}" in result.stderr
@@ -46,7 +43,7 @@ def test_collection_delete_on_gcsv5_host(run_line, base_command):
     meta = load_response_set("cli.collection_operations").metadata
     epid = meta["endpoint_id"]
 
-    result = run_line(base_command + [epid], assert_exit_code=3)
+    result = run_line(f"{base_command} {epid}", assert_exit_code=3)
     assert "success" not in result.output
     assert (
         f"Expected {epid} to be a collection ID.\n"
@@ -59,7 +56,7 @@ def test_collection_delete_on_gcp(run_line, base_command):
     meta = load_response_set("cli.collection_operations").metadata
     epid = meta["gcp_endpoint_id"]
 
-    result = run_line(base_command + [epid], assert_exit_code=3)
+    result = run_line(f"{base_command} {epid}", assert_exit_code=3)
     assert "success" not in result.output
     assert (
         f"Expected {epid} to be a collection ID.\n"

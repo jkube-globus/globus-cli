@@ -6,12 +6,9 @@ from globus_sdk._testing import load_response_set
 
 
 # toggle between the (newer) 'gcs' variant and the 'bare' variant
-@pytest.fixture(params=(True, False), ids=("gcs-collection", "collection"))
+@pytest.fixture(params=("gcs collection", "collection"))
 def base_command(request):
-    if request.param:
-        return ["globus", "gcs", "collection", "update"]
-    else:
-        return ["globus", "collection", "update"]
+    return f"globus {request.param} update"
 
 
 @pytest.mark.parametrize("cid_key", ["mapped_collection_id", "guest_collection_id"])
@@ -28,7 +25,7 @@ def test_collection_update(run_line, add_gcs_login, base_command, cid_key):
         ep_type_specific_opts = ["--sharing-user-allow", ""]
 
     result = run_line(
-        base_command
+        base_command.split()
         + [
             cid,
             "--description",
@@ -67,7 +64,7 @@ def test_collection_update_verify_opts(
     epid = meta["endpoint_id"]
     add_gcs_login(epid)
 
-    result = run_line(base_command + [cid, "--verify", verify_str])
+    result = run_line(f"{base_command} {cid} --verify {verify_str}")
     assert "success" in result.output
 
     sent = json.loads(responses.calls[-1].request.body)
@@ -80,7 +77,7 @@ def test_collection_update_on_gcp(run_line, base_command):
     meta = load_response_set("cli.collection_operations").metadata
     epid = meta["gcp_endpoint_id"]
 
-    result = run_line(base_command + [epid, "--description", "foo"], assert_exit_code=3)
+    result = run_line(f"{base_command} {epid} --description foo", assert_exit_code=3)
     assert (
         f"Expected {epid} to be a collection ID.\n"
         "Instead, found it was of type 'Globus Connect Personal Mapped Collection'."
@@ -95,7 +92,7 @@ def test_collection_update_on_gcsv5_host(run_line, base_command):
     meta = load_response_set("cli.collection_operations").metadata
     epid = meta["endpoint_id"]
 
-    result = run_line(base_command + [epid, "--description", "foo"], assert_exit_code=3)
+    result = run_line(f"{base_command} {epid} --description foo", assert_exit_code=3)
     assert "success" not in result.output
     assert (
         f"Expected {epid} to be a collection ID.\n"
@@ -113,7 +110,7 @@ def test_guest_collection_update_rejects_invalid_opts(
     add_gcs_login(epid)
 
     result = run_line(
-        base_command + [cid, "--sharing-user-allow", ""],
+        f"{base_command} {cid} --sharing-user-allow ''",
         assert_exit_code=2,
     )
     assert "success" not in result.output
