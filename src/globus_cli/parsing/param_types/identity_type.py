@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import base64
 import uuid
 from collections import namedtuple
@@ -11,7 +13,7 @@ class _B32DecodeError(ValueError):
     """custom exception type"""
 
 
-def _b32decode(v):
+def _b32decode(v: str) -> str:
     # should start with "u_"
     if not v.startswith("u_"):
         raise _B32DecodeError("should start with 'u_'")
@@ -45,14 +47,18 @@ class IdentityType(click.ParamType):
 
     name = "IDENTITY"
 
-    def __init__(self, allow_domains=False, allow_b32_usernames=False):
+    def __init__(
+        self, allow_domains: bool = False, allow_b32_usernames: bool = False
+    ) -> None:
         self.allow_domains = allow_domains
         self.allow_b32_usernames = allow_b32_usernames
 
     def get_type_annotation(self, param: click.Parameter) -> type:
         return ParsedIdentity
 
-    def convert(self, value, param, ctx):
+    def convert(
+        self, value: str, param: click.Parameter | None, ctx: click.Context | None
+    ) -> ParsedIdentity:
         # uuid format -> identity
         try:
             uuid.UUID(value)
@@ -81,11 +87,11 @@ class IdentityType(click.ParamType):
 
         self.fail(f"'{value}' does not appear to be a valid identity", param=param)
 
-    def get_metavar(self, param):
+    def get_metavar(self, param: click.Parameter) -> str:
         return self.metavar
 
     @property
-    def metavar(self):
+    def metavar(self) -> str:
         if self.allow_domains:
             return "IDENTITY_OR_DOMAIN"
         else:
