@@ -1,27 +1,67 @@
 from __future__ import annotations
 
+import dataclasses
+
 from .entity_type import EntityType
 
-SHOULD_USE_MAP = {
-    "globus collection delete": [
-        ("globus endpoint delete", EntityType.traditional_endpoints()),
-    ],
-    "globus endpoint delete": [
-        ("globus collection delete", EntityType.gcsv5_collections()),
-    ],
-    "globus collection show": [
-        ("globus endpoint show", EntityType.non_gcsv5_collection_types()),
-    ],
-    "globus endpoint show": [
-        ("globus collection show", EntityType.gcsv5_collections()),
-    ],
-    "globus collection update": [
-        ("globus endpoint update", EntityType.traditional_endpoints()),
-    ],
-    "globus endpoint update": [
-        ("globus collection update", EntityType.gcsv5_collections()),
-    ],
-}
+
+@dataclasses.dataclass
+class ShouldUse:
+    if_types: tuple[EntityType, ...]
+    src_commands: tuple[str, ...]
+    dst_command: str
+
+
+# listed in precedence order; matching uses `if_types`+`src_commands`
+SHOULD_USE_MAPPINGS = (
+    # update [gcp]
+    ShouldUse(
+        if_types=(EntityType.GCP_MAPPED,),
+        src_commands=("globus collection update", "globus gcs collection update"),
+        dst_command="globus gcp update mapped",
+    ),
+    ShouldUse(
+        if_types=(EntityType.GCP_GUEST,),
+        src_commands=("globus collection update", "globus gcs collection update"),
+        dst_command="globus gcp update guest",
+    ),
+    # update [gcsv4 endpoints (host/share)]
+    ShouldUse(
+        if_types=EntityType.traditional_endpoints(),
+        src_commands=("globus collection update", "globus gcs collection update"),
+        dst_command="globus endpoint update",
+    ),
+    # update [gcsv5 collections]
+    ShouldUse(
+        if_types=EntityType.gcsv5_collections(),
+        src_commands=("globus endpoint update",),
+        dst_command="globus gcs collection update",
+    ),
+    # delete [gcsv4 endpoints (host/share)]
+    ShouldUse(
+        if_types=EntityType.traditional_endpoints(),
+        src_commands=("globus collection delete", "globus gcs collection delete"),
+        dst_command="globus endpoint delete",
+    ),
+    # delete [gcsv5 collections]
+    ShouldUse(
+        if_types=EntityType.gcsv5_collections(),
+        src_commands=("globus endpoint delete",),
+        dst_command="globus gcs collection delete",
+    ),
+    # show [gcsv4 endpoints (host/share) + gcp + gcsv5 endpoint]
+    ShouldUse(
+        if_types=EntityType.non_gcsv5_collection_types(),
+        src_commands=("globus collection show", "globus gcs collection show"),
+        dst_command="globus endpoint show",
+    ),
+    # show [gcsv5 collections]
+    ShouldUse(
+        if_types=EntityType.gcsv5_collections(),
+        src_commands=("globus endpoint show",),
+        dst_command="globus gcs collection show",
+    ),
+)
 
 
 class WrongEntityTypeError(ValueError):
@@ -53,10 +93,12 @@ class WrongEntityTypeError(ValueError):
         return f"Instead, found it was of type '{actual_str}'."
 
     def should_use_command(self) -> str | None:
-        if self.from_command in SHOULD_USE_MAP:
-            for should_use, if_types in SHOULD_USE_MAP[self.from_command]:
-                if self.actual_type in if_types:
-                    return should_use
+        for should_use_data in SHOULD_USE_MAPPINGS:
+            if (
+                self.from_command in should_use_data.src_commands
+                and self.actual_type in should_use_data.if_types
+            ):
+                return should_use_data.dst_command
         return None
 
 

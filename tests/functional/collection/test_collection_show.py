@@ -2,7 +2,13 @@ import pytest
 from globus_sdk._testing import load_response_set
 
 
-def test_collection_show(run_line, add_gcs_login):
+# toggle between the (newer) 'gcs' variant and the 'bare' variant
+@pytest.fixture(params=("gcs collection", "collection"))
+def base_command(request):
+    return f"globus {request.param} show"
+
+
+def test_collection_show(run_line, add_gcs_login, base_command):
     meta = load_response_set("cli.collection_operations").metadata
     cid = meta["mapped_collection_id"]
     username = meta["username"]
@@ -10,7 +16,7 @@ def test_collection_show(run_line, add_gcs_login):
     add_gcs_login(epid)
 
     run_line(
-        f"globus collection show {cid}",
+        f"{base_command} {cid}",
         search_stdout=[
             ("Display Name", "Happy Fun Collection Name"),
             ("Owner", username),
@@ -21,7 +27,7 @@ def test_collection_show(run_line, add_gcs_login):
     )
 
 
-def test_collection_show_private_policies(run_line, add_gcs_login):
+def test_collection_show_private_policies(run_line, add_gcs_login, base_command):
     meta = load_response_set("cli.collection_show_private_policies").metadata
     cid = meta["collection_id"]
     username = meta["username"]
@@ -29,7 +35,7 @@ def test_collection_show_private_policies(run_line, add_gcs_login):
     add_gcs_login(epid)
 
     run_line(
-        f"globus collection show --include-private-policies {cid}",
+        f"{base_command} --include-private-policies {cid}",
         search_stdout=[
             ("Display Name", "Happy Fun Collection Name"),
             ("Owner", username),
@@ -52,11 +58,11 @@ def test_collection_show_private_policies(run_line, add_gcs_login):
         ("endpoint_id", "Globus Connect Server v5 Endpoint"),
     ],
 )
-def test_collection_show_on_non_collection(run_line, epid_key, ep_type):
+def test_collection_show_on_non_collection(run_line, base_command, epid_key, ep_type):
     meta = load_response_set("cli.collection_operations").metadata
     epid = meta[epid_key]
 
-    result = run_line(f"globus collection show {epid}", assert_exit_code=3)
+    result = run_line(f"{base_command} {epid}", assert_exit_code=3)
     assert (
         f"Expected {epid} to be a collection ID.\n"
         f"Instead, found it was of type '{ep_type}'."

@@ -26,7 +26,7 @@ def test_delete_gcs_guest_collection(run_line):
     ) in result.stderr
     assert (
         "Please run the following command instead:\n\n"
-        f"    globus collection delete {epid}"
+        f"    globus gcs collection delete {epid}"
     ) in result.stderr
 
 
@@ -42,7 +42,7 @@ def test_delete_gcs_mapped_collection(run_line):
     ) in result.stderr
     assert (
         "Please run the following command instead:\n\n"
-        f"    globus collection delete {epid}"
+        f"    globus gcs collection delete {epid}"
     ) in result.stderr
 
 
