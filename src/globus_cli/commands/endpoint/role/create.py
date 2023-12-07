@@ -23,11 +23,11 @@ else:
         "containing the ID of the created role."
     ),
     adoc_examples="""Grant 'demo@globus.org' the 'activity_monitor' role on
-'ddb59aef-6d04-11e5-ba46-22000b92c6ec':
+'aa752cea-8222-5bc8-acd9-555b090c0ccb':
 
 [source,bash]
 ----
-$ globus endpoint role create 'ddb59aef-6d04-11e5-ba46-22000b92c6ec' \
+$ globus endpoint role create 'aa752cea-8222-5bc8-acd9-555b090c0ccb' \
     --identity 'demo@globus.org' --role activity_monitor
 ----
 """,

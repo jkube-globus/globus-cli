@@ -22,7 +22,7 @@ else:
 
 [source,bash]
 ----
-$ ep_id=ddb59aef-6d04-11e5-ba46-22000b92c6ec
+$ ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb
 $ globus endpoint permission create $ep_id:/dir --permissions r --anonymous
 ----
 
@@ -30,7 +30,7 @@ Give read and write access to a specific user.
 
 [source,bash]
 ----
-$ ep_id=ddb59aef-6d04-11e5-ba46-22000b92c6ec
+$ ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb
 $ globus endpoint permission create $ep_id:/ --permissions rw --identity go@globusid.org
 ----
 """,

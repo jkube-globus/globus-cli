@@ -21,11 +21,11 @@ The principal is a user or group ID, and the principal type says which of these
 types the principal is. The term "Principal" is used in the sense of "a
 security principal", an entity which has some privileges associated with it.
 """,
-    adoc_examples="""Show all roles on 'ddb59aef-6d04-11e5-ba46-22000b92c6ec':
+    adoc_examples="""Show all roles on 'aa752cea-8222-5bc8-acd9-555b090c0ccb':
 
 [source,bash]
 ----
-$ globus endpoint role list 'ddb59aef-6d04-11e5-ba46-22000b92c6ec'
+$ globus endpoint role list 'aa752cea-8222-5bc8-acd9-555b090c0ccb'
 ----
 """,
 )

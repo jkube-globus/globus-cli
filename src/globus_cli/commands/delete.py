@@ -33,7 +33,7 @@ from globus_cli.termio import (
 
 [source,bash]
 ----
-$ ep_id=ddb59af0-6d04-11e5-ba46-22000b92c6ec
+$ ep_id=313ce13e-b597-5858-ae13-29e46fea26e6
 $ globus delete $ep_id:~/myfile.txt
 ----
 
@@ -41,7 +41,7 @@ Delete a directory recursively.
 
 [source,bash]
 ----
-$ ep_id=ddb59af0-6d04-11e5-ba46-22000b92c6ec
+$ ep_id=313ce13e-b597-5858-ae13-29e46fea26e6
 $ globus delete $ep_id:~/mydir --recursive
 ----
 
@@ -49,7 +49,7 @@ Use the batch input method to transfer multiple files and or dirs.
 
 [source,bash]
 ----
-$ ep_id=ddb59af0-6d04-11e5-ba46-22000b92c6ec
+$ ep_id=313ce13e-b597-5858-ae13-29e46fea26e6
 $ globus delete $ep_id --batch - --recursive
 ~/myfile1.txt
 ~/myfile2.txt
@@ -62,7 +62,7 @@ Submit a deletion task and get back the task ID for use in `globus task wait`:
 
 [source,bash]
 ----
-$ ep_id=ddb59af0-6d04-11e5-ba46-22000b92c6ec
+$ ep_id=313ce13e-b597-5858-ae13-29e46fea26e6
 $ task_id="$(globus delete $ep_id:~/mydir --recursive \
     --jmespath 'task_id' --format unix)"
 $ echo "Waiting on $task_id"

@@ -27,7 +27,7 @@ from ._common import transfer_task_wait_with_io
 
 [source,bash]
 ----
-$ ep_id=ddb59af0-6d04-11e5-ba46-22000b92c6ec
+$ ep_id=313ce13e-b597-5858-ae13-29e46fea26e6
 $ globus rm $ep_id:~/myfile.txt
 ----
 
@@ -35,7 +35,7 @@ Delete a directory recursively.
 
 [source,bash]
 ----
-$ ep_id=ddb59af0-6d04-11e5-ba46-22000b92c6ec
+$ ep_id=313ce13e-b597-5858-ae13-29e46fea26e6
 $ globus rm $ep_id:~/mydir --recursive
 ----
 """,

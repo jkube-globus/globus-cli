@@ -44,8 +44,8 @@ else:
 
 [source,bash]
 ----
-$ source_ep=ddb59aef-6d04-11e5-ba46-22000b92c6ec
-$ dest_ep=ddb59af0-6d04-11e5-ba46-22000b92c6ec
+$ source_ep=aa752cea-8222-5bc8-acd9-555b090c0ccb
+$ dest_ep=313ce13e-b597-5858-ae13-29e46fea26e6
 $ globus transfer $source_ep:/share/godata/file1.txt $dest_ep:~/mynewfile.txt
 ----
 
@@ -53,8 +53,8 @@ Transfer a directory recursively:
 
 [source,bash]
 ----
-$ source_ep=ddb59aef-6d04-11e5-ba46-22000b92c6ec
-$ dest_ep=ddb59af0-6d04-11e5-ba46-22000b92c6ec
+$ source_ep=aa752cea-8222-5bc8-acd9-555b090c0ccb
+$ dest_ep=313ce13e-b597-5858-ae13-29e46fea26e6
 $ globus transfer $source_ep:/share/godata/ $dest_ep:~/mynewdir/ --recursive
 ----
 
@@ -62,8 +62,8 @@ Use the batch input method to transfer multiple files and directories:
 
 [source,bash]
 ----
-$ source_ep=ddb59aef-6d04-11e5-ba46-22000b92c6ec
-$ dest_ep=ddb59af0-6d04-11e5-ba46-22000b92c6ec
+$ source_ep=aa752cea-8222-5bc8-acd9-555b090c0ccb
+$ dest_ep=313ce13e-b597-5858-ae13-29e46fea26e6
 $ globus transfer $source_ep $dest_ep --batch -
 # lines starting with '#' are comments
 # and blank lines (for spacing) are allowed
@@ -85,8 +85,8 @@ above, but much more concise):
 
 [source,bash]
 ----
-$ source_ep=ddb59aef-6d04-11e5-ba46-22000b92c6ec
-$ dest_ep=ddb59af0-6d04-11e5-ba46-22000b92c6ec
+$ source_ep=aa752cea-8222-5bc8-acd9-555b090c0ccb
+$ dest_ep=313ce13e-b597-5858-ae13-29e46fea26e6
 $ globus transfer $source_ep:/share/ $dest_ep:~/ --batch -
 godata/file1.txt myfile1.txt
 godata/file2.txt myfile2.txt
@@ -111,8 +111,8 @@ $ cat my_file_batch.txt
 
 [source,bash]
 ----
-source_ep=ddb59aef-6d04-11e5-ba46-22000b92c6ec
-dest_ep=ddb59af0-6d04-11e5-ba46-22000b92c6ec
+source_ep=aa752cea-8222-5bc8-acd9-555b090c0ccb
+dest_ep=313ce13e-b597-5858-ae13-29e46fea26e6
 
 task_id="$(globus transfer $source_ep $dest_ep \
     --jmespath 'task_id' --format=UNIX \

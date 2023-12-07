@@ -12,11 +12,11 @@ from ._common import role_id_arg
     short_help="Remove a role from an endpoint",
     adoc_output="Textual output is a simple success message in the absence of errors.",
     adoc_examples="""Delete role '0f007eec-1aeb-11e7-aec4-3c970e0c9cc4' on endpoint
-'ddb59aef-6d04-11e5-ba46-22000b92c6ec':
+'aa752cea-8222-5bc8-acd9-555b090c0ccb':
 
 [source,bash]
 ----
-$ globus endpoint role delete 'ddb59aef-6d04-11e5-ba46-22000b92c6ec' \
+$ globus endpoint role delete 'aa752cea-8222-5bc8-acd9-555b090c0ccb' \
     '0f007eec-1aeb-11e7-aec4-3c970e0c9cc4'
 ----
 """,

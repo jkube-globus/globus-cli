@@ -19,7 +19,7 @@ from globus_cli.termio import display
 
 [source,bash]
 ----
-$ globus bookmark create 'ddb59aef-6d04-11e5-ba46-22000b92c6ec:/~/' mybookmark
+$ globus bookmark create 'aa752cea-8222-5bc8-acd9-555b090c0ccb:/~/' mybookmark
 ----
 
 Take a specific field from the JSON output and format it into unix-friendly
@@ -28,7 +28,7 @@ output by using '--jmespath' and '--format=UNIX':
 [source,bash]
 ----
 $ globus bookmark create \
-    'ddb59aef-6d04-11e5-ba46-22000b92c6ec:/~/' mybookmark \
+    'aa752cea-8222-5bc8-acd9-555b090c0ccb:/~/' mybookmark \
      -F unix --jmespath 'id'
 ----
 """,

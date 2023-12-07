@@ -23,7 +23,7 @@ transfer:
             "DATA_TYPE": "event",
             "code": "PERMISSION_DENIED",
             "description": "permission denied",
-            "details": "Error (make directories)\nEndpoint: Globus Tutorial Endpoint 1 (ddb59aef-6d04-11e5-ba46-22000b92c6ec)\nServer: ep1.transfer.globus.org:2811\nFile: /foo/\nCommand: MKD /foo\nMessage: Fatal FTP response\n---\nDetails: 550-GlobusError: v=1 c=PERMISSION_DENIED\\r\\n550-GridFTP-Error: Path not allowed.\\r\\n550 End.\\r\\n",
+            "details": "Error (make directories)\nEndpoint: Globus Tutorial Endpoint 1 (aa752cea-8222-5bc8-acd9-555b090c0ccb)\nServer: ep1.transfer.globus.org:2811\nFile: /foo/\nCommand: MKD /foo\nMessage: Fatal FTP response\n---\nDetails: 550-GlobusError: v=1 c=PERMISSION_DENIED\\r\\n550-GridFTP-Error: Path not allowed.\\r\\n550 End.\\r\\n",
             "is_error": true,
             "time": "2021-10-06T16:13:57+00:00"
           },
