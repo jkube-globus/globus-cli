@@ -10,58 +10,7 @@ from globus_cli.parsing import command, endpoint_id_arg
 from globus_cli.termio import display
 
 
-@command(
-    "is-activated",
-    short_help="Check if an endpoint is activated",
-    adoc_exit_status="""0 if the endpoint is activated.
-
-1 if the endpoint is not activated, unless --map-http-status has been
-used to change exit behavior on http error codes.
-
-2 if the command was used improperly.
-""",
-    adoc_examples=r"""[source,bash]
-----
-$ ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb
-$ globus endpoint is-activated $ep_id
-----
-
-Check *globus endpoint is-activated* as part of a script:
-
-[source,bash]
-----
-ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb
-globus endpoint is-activated $ep_id
-if [ $? -ne 0 ]; then
-    echo "$ep_id is not activated! This script cannot run!"
-    exit 1
-fi
-# ... more stuff using $ep_id below ...
-----
-
-Use `is-activated` to get and parse activation requirements, finding out the
-expiration time, but only for endpoints which are activated. Uses '--jmespath'
-to select fields, exit status to indicate that the endpoint is or is not
-activated, and '--format=UNIX' to get nice, unix-friendly output.
-
-[source,bash]
-----
-ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb
-output="$(globus endpoint is-activated "$ep_id" \
-    --jmespath expires_in --format unix)"
-if [ $? -eq 0 ]; then
-    if [ "$output" -eq "-1" ]; then
-        echo "$ep_id is activated forever. Activation never expires."
-    else
-        echo "$ep_id activation expires in $output seconds"
-    fi
-else
-    echo "$ep_id not activated"
-    exit 1
-fi
-----
-""",
-)
+@command("is-activated", deprecated=True, hidden=True)
 @endpoint_id_arg
 @click.option(
     "--until",

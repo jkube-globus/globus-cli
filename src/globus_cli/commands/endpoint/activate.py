@@ -10,34 +10,7 @@ from globus_cli.parsing import command, endpoint_id_arg, mutex_option_group
 from globus_cli.termio import TextMode, display
 
 
-@command(
-    "activate",
-    short_help="Activate an endpoint",
-    adoc_examples="""Activate an endpoint using just Automatic activation:
-
-[source,bash]
-----
-$ ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb
-$ globus endpoint activate $ep_id
-----
-
-Activate an endpoint using Web activation
-
-[source,bash]
-----
-$ ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb
-$ globus endpoint activate $ep_id --web
-----
-
-Activate an endpoint using Myproxy activation, skipping the username prompt.
-
-[source,bash]
-----
-$ ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb
-$ globus endpoint activate $ep_id --myproxy -U username
-----
-""",
-)
+@command("activate", deprecated=True, hidden=True)
 @endpoint_id_arg
 @click.option(
     "--web",

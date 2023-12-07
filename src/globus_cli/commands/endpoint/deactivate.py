@@ -5,18 +5,7 @@ from globus_cli.parsing import command, endpoint_id_arg
 from globus_cli.termio import TextMode, display
 
 
-@command(
-    "deactivate",
-    short_help="Deactivate an endpoint",
-    adoc_examples="""Deactivate an endpoint:
-
-[source,bash]
-----
-$ ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb
-$ globus endpoint deactivate $ep_id
-----
-""",
-)
+@command("deactivate", deprecated=True, hidden=True)
 @endpoint_id_arg
 @LoginManager.requires_login("transfer")
 def endpoint_deactivate(login_manager: LoginManager, *, endpoint_id: uuid.UUID) -> None:
