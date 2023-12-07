@@ -22,7 +22,7 @@ used to change exit behavior on http error codes.
 """,
     adoc_examples=r"""[source,bash]
 ----
-$ ep_id=ddb59aef-6d04-11e5-ba46-22000b92c6ec
+$ ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb
 $ globus endpoint is-activated $ep_id
 ----
 
@@ -30,7 +30,7 @@ Check *globus endpoint is-activated* as part of a script:
 
 [source,bash]
 ----
-ep_id=ddb59aef-6d04-11e5-ba46-22000b92c6ec
+ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb
 globus endpoint is-activated $ep_id
 if [ $? -ne 0 ]; then
     echo "$ep_id is not activated! This script cannot run!"
@@ -46,7 +46,7 @@ activated, and '--format=UNIX' to get nice, unix-friendly output.
 
 [source,bash]
 ----
-ep_id=ddb59aef-6d04-11e5-ba46-22000b92c6ec
+ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb
 output="$(globus endpoint is-activated "$ep_id" \
     --jmespath expires_in --format unix)"
 if [ $? -eq 0 ]; then

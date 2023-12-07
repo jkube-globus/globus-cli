@@ -11,7 +11,7 @@ from globus_cli.termio import TextMode, display
     short_help="Delete an endpoint",
     adoc_examples="""[source,bash]
 ----
-$ ep_id=ddb59aef-6d04-11e5-ba46-22000b92c6ec
+$ ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb
 $ globus endpoint delete $ep_id
 ----
 """,

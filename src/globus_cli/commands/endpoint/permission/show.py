@@ -16,7 +16,7 @@ from ._common import AclPrincipalFormatter
     short_help="Display an access control rule",
     adoc_examples="""[source,bash]
 ----
-$ ep_id=ddb59aef-6d04-11e5-ba46-22000b92c6ec
+$ ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb
 $ rule_id=1ddeddda-1ae8-11e7-bbe4-22000b9a448b
 $ globus endpoint permission show $ep_id $rule_id
 ----

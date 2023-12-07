@@ -30,7 +30,7 @@ DELETE_RESPONSE = RegisteredResponse(
                 ],
                 "DATA_TYPE": "transfer",
                 "delete_destination_extra": False,
-                "destination_endpoint": "ddb59af0-6d04-11e5-ba46-22000b92c6ec",
+                "destination_endpoint": "313ce13e-b597-5858-ae13-29e46fea26e6",
                 "encrypt_data": False,
                 "fail_on_quota_errors": False,
                 "notify_on_failed": True,
@@ -39,7 +39,7 @@ DELETE_RESPONSE = RegisteredResponse(
                 "preserve_timestamp": False,
                 "recursive_symlinks": "ignore",
                 "skip_source_errors": False,
-                "source_endpoint": "ddb59aef-6d04-11e5-ba46-22000b92c6ec",
+                "source_endpoint": "aa752cea-8222-5bc8-acd9-555b090c0ccb",
                 "submission_id": "548ec2d3-b4fd-11ec-b87f-3912f602f346",
                 "verify_checksum": False,
             }

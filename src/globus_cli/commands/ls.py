@@ -50,7 +50,7 @@ class PathItemFormatter(formatters.StrFormatter):
 
 [source,bash]
 ----
-$ ep_id=ddb59aef-6d04-11e5-ba46-22000b92c6ec
+$ ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb
 $ globus ls $ep_id
 ----
 
@@ -58,7 +58,7 @@ List files and dirs on a specific path on an endpoint
 
 [source,bash]
 ----
-$ ep_id=ddb59aef-6d04-11e5-ba46-22000b92c6ec
+$ ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb
 $ globus ls $ep_id:/share/godata/
 ----
 
@@ -75,7 +75,7 @@ output:
 
 [source,bash]
 ----
-$ ep_id=ddb59aef-6d04-11e5-ba46-22000b92c6ec
+$ ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb
 $  globus ls $ep_id:/share/godata/ \
     --jmespath 'DATA[*].[type, permissions, name, last_modified]' \
     --format UNIX
@@ -88,7 +88,7 @@ ways.
 
 [source,bash]
 ----
-$ ep_id=ddb59aef-6d04-11e5-ba46-22000b92c6ec
+$ ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb
 $ globus ls $ep_id:/share/godata/ --filter '~*.txt'  # all txt files
 $ globus ls $ep_id:/share/godata/ --filter '!~file1.*'  # not starting in "file1."
 $ globus ls $ep_id:/share/godata/ --filter '~*ile3.tx*'  # anything with "ile3.tx"
@@ -103,7 +103,7 @@ filtered out are returned to the CLI:
 
 [source,bash]
 ----
-$ ep_id=ddb59aef-6d04-11e5-ba46-22000b92c6ec
+$ ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb
 $ globus ls $ep_id:/share/godata/ | egrep '.*\.txt$'  # done with grep, okay
 $ globus ls $ep_id:/share/godata/ --filter '~*.txt'  # done with --filter, better
 ----

@@ -59,12 +59,12 @@ def disable_login_manager_validate_token():
 
 @pytest.fixture(scope="session")
 def go_ep1_id():
-    return "ddb59aef-6d04-11e5-ba46-22000b92c6ec"
+    return "aa752cea-8222-5bc8-acd9-555b090c0ccb"
 
 
 @pytest.fixture(scope="session")
 def go_ep2_id():
-    return "ddb59af0-6d04-11e5-ba46-22000b92c6ec"
+    return "313ce13e-b597-5858-ae13-29e46fea26e6"
 
 
 def _mock_token_response_data(rs_name, scope, token_blob=None):
