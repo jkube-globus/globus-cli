@@ -65,6 +65,7 @@ def _detect_mode(server: str) -> Literal["id", "uri", "hostname", "hostname_port
 
 @command(
     "delete",
+    deprecated=True,
     short_help="Delete a server belonging to an endpoint",
     adoc_examples="""[source,bash]
 ----

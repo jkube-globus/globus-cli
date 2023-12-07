@@ -29,7 +29,7 @@ COMMON_FIELDS = [Field("Message", "message"), Field("Endpoint ID", "id")]
 GCP_FIELDS = [Field("Setup Key", "globus_connect_setup_key")]
 
 
-@command("create", hidden=True)
+@command("create", deprecated=True, hidden=True)
 @endpointish_params.create(
     name="endpoint",
     keyword_style="string",
@@ -117,7 +117,6 @@ def endpoint_create(
 
     print_command_hint(
         """\
-WARNING: This command is deprecated!
 
 For GCP, use one of the following replacements instead:
     globus gcp create mapped

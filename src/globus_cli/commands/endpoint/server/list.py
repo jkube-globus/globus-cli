@@ -21,6 +21,7 @@ class ServerURIFormatter(formatters.StrFormatter):
 
 @command(
     "list",
+    deprecated=True,
     short_help="List all servers for an endpoint",
     adoc_examples="""[source,bash]
 ----

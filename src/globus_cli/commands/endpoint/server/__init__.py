@@ -3,6 +3,8 @@ from globus_cli.parsing import group
 
 @group(
     "server",
+    deprecated=True,
+    hidden=True,
     short_help="Manage servers for a Globus endpoint",
     lazy_subcommands={
         "add": (".add", "server_add"),
