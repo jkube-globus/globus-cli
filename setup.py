@@ -4,14 +4,16 @@ import re
 from setuptools import find_packages, setup
 
 TEST_REQUIREMENTS = [
-    "coverage<7",
-    "pytest<7",
+    "coverage>=7",
+    "pytest>=7",
     "pytest-xdist<3",
     "pytest-timeout<2",
     "click-type-test==0.0.5;python_version>='3.10'",
     "responses==0.23.3",
     # loading test fixture data
     "ruamel.yaml==0.17.32",
+    # Python 3.12 needs setuptools.
+    "setuptools;python_version>='3.12'",
 ]
 DEV_REQUIREMENTS = TEST_REQUIREMENTS + [
     "tox>=4",
@@ -79,5 +81,6 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
     ],
 )
