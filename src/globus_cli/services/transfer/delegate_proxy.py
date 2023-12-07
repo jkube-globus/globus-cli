@@ -162,10 +162,9 @@ def create_proxy_cert(
     builder = builder.serial_number(serial)
 
     # set the new proxy as valid from now until lifetime_hours have passed
-    builder = builder.not_valid_before(datetime.datetime.utcnow())
-    builder = builder.not_valid_after(
-        datetime.datetime.utcnow() + datetime.timedelta(hours=lifetime_hours)
-    )
+    now = datetime.datetime.now(tz=datetime.timezone.utc)
+    builder = builder.not_valid_before(now)
+    builder = builder.not_valid_after(now + datetime.timedelta(hours=lifetime_hours))
 
     # set the public key of the new proxy to the given public key
     builder = builder.public_key(loaded_public_key)
