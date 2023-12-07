@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import typing as t
-import uuid
 
 import click
 import globus_sdk
@@ -24,7 +23,12 @@ def add_batch_to_transfer_data(
     @click.argument("source_path", type=TaskPath(base_dir=source_base_path))
     @click.argument("dest_path", type=TaskPath(base_dir=dest_base_path))
     @mutex_option_group("--recursive", "--external-checksum")
-    def process_batch_line(dest_path, source_path, recursive, external_checksum):
+    def process_batch_line(
+        dest_path: TaskPath,
+        source_path: TaskPath,
+        recursive: bool | None,
+        external_checksum: str | None,
+    ) -> None:
         """
         Parse a line of batch input and turn it into a transfer submission
         item.
@@ -44,8 +48,8 @@ def display_name_or_cname(ep_doc: dict | globus_sdk.GlobusHTTPResponse) -> str:
     return t.cast(str, ep_doc["display_name"] or ep_doc["canonical_name"])
 
 
-def iterable_response_to_dict(iterator):
-    output_dict = {"DATA": []}
+def iterable_response_to_dict(iterator: t.Iterable[t.Any]) -> dict[str, list[t.Any]]:
+    output_dict: dict[str, list[t.Any]] = {"DATA": []}
     for item in iterator:
         dat = item
         try:
@@ -56,12 +60,5 @@ def iterable_response_to_dict(iterator):
     return output_dict
 
 
-def assemble_generic_doc(datatype, **kwargs):
-    doc = {"DATA_TYPE": datatype}
-    for key, val in kwargs.items():
-        if isinstance(val, uuid.UUID):
-            val = str(val)
-
-        if val is not None:
-            doc[key] = ExplicitNullType.nullify(val)
-    return doc
+def assemble_generic_doc(datatype: str, **kwargs: t.Any) -> dict[str, t.Any]:
+    return ExplicitNullType.nullify_dict({"DATA_TYPE": datatype, **kwargs})
