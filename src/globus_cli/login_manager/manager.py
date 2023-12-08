@@ -110,13 +110,16 @@ class LoginManager:
         if tokens is None or "refresh_token" not in tokens:
             return False
 
-        if not self._tokens_meet_static_requirements(resource_server, tokens):
-            return False
+        return self._tokens_meet_auth_requirements(
+            resource_server, tokens
+        ) and self._validate_token(tokens["refresh_token"])
 
-        if not self._tokens_meet_nonstatic_requirements(resource_server, tokens):
-            return False
-
-        return self._validate_token(tokens["refresh_token"])
+    def _tokens_meet_auth_requirements(
+        self, resource_server: str, tokens: dict[str, t.Any]
+    ) -> bool:
+        return self._tokens_meet_static_requirements(
+            resource_server, tokens
+        ) and self._tokens_meet_nonstatic_requirements(resource_server, tokens)
 
     def _tokens_meet_static_requirements(
         self, resource_server: str, tokens: dict[str, t.Any]
@@ -309,7 +312,7 @@ class LoginManager:
             # or for another client, but automatic retries will handle that
             access_token = None
             expires_at = None
-            if tokens:
+            if tokens and self._tokens_meet_auth_requirements(resource_server, tokens):
                 access_token = tokens["access_token"]
                 expires_at = tokens["expires_at_seconds"]
 

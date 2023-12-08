@@ -9,7 +9,7 @@ import click
 import globus_sdk
 
 from globus_cli import termio, version
-from globus_cli.login_manager import LoginManager
+from globus_cli.login_manager import LoginManager, is_client_login
 from globus_cli.login_manager.scopes import CLI_SCOPE_REQUIREMENTS
 from globus_cli.parsing import command, group, mutex_option_group
 from globus_cli.termio import display
@@ -122,6 +122,20 @@ def print_error_or_response(
         # the right semantics
         # specifically: respect `--jmespath` and pretty-print JSON if `-Fjson` is used
         display(data, simple_text=data.text)
+
+
+def _get_resource_server(service_name: str) -> str:
+    _resource_server = {
+        "auth": globus_sdk.AuthClient.resource_server,
+        "flows": globus_sdk.FlowsClient.resource_server,
+        "groups": globus_sdk.GroupsClient.resource_server,
+        "search": globus_sdk.SearchClient.resource_server,
+        "transfer": globus_sdk.TransferClient.resource_server,
+        "timer": globus_sdk.TimerClient.resource_server,
+    }.get(service_name)
+    if _resource_server is None:
+        raise NotImplementedError(f"unrecognized service: {service_name}")
+    return _resource_server
 
 
 def _get_client(
@@ -240,6 +254,16 @@ sends a 'GET' request to '{_get_url(service_name)}foo/bar'
         ),
     )
     @click.option("--no-retry", is_flag=True, help="Disable built-in request retries")
+    @click.option(
+        "--scope-string",
+        type=str,
+        multiple=True,
+        help=(
+            "A scope string that will be used when making the api call. "
+            "At present, only supported for confidential-client based authorization. "
+            "Pass this option multiple times to specify multiple scopes."
+        ),
+    )
     @mutex_option_group("--body", "--body-file")
     def service_command(
         login_manager: LoginManager,
@@ -254,6 +278,7 @@ sends a 'GET' request to '{_get_url(service_name)}foo/bar'
         allow_errors: bool,
         allow_redirects: bool,
         no_retry: bool,
+        scope_string: tuple[str, ...],
     ) -> None:
         # the overall flow of this command will be as follows:
         # - prepare a client
@@ -263,6 +288,15 @@ sends a 'GET' request to '{_get_url(service_name)}foo/bar'
         # - process the response
         #   - on success or error with --allow-errors, print
         #   - on error without --allow-errors, reraise
+
+        if scope_string:
+            if not is_client_login():
+                raise click.UsageError(
+                    "Scope requirements (--scope-string) are currently only "
+                    "supported for confidential-client authorized calls."
+                )
+            resource_server = _get_resource_server(service_name)
+            login_manager.add_requirement(resource_server, scope_string)
 
         client = _get_client(login_manager, service_name)
         client.app_name = version.app_name + " raw-api-command"
