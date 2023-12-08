@@ -2,6 +2,35 @@
 
 // scriv-insert-here
 
+== 3.21.0 (2023-12-08)
+
+Enhancements:
+
+* The ``globus api <service>`` command now supports a ``--scope-string`` parameter.
+
+  * If supplied, the CLI will enforce that any specified scope strings are included
+    in consent requirements *in addition to* standard service scope requirements.
+
+  * This parameter may be supplied multiple times to specify multiple scope strings.
+
+  * This parameter is only supported in the context of Client Credentials-based authentication.
+    ([Client Credentials with GLOBUS_CLI_CLIENT_ID](https://docs.globus.org/cli/environment_variables/#client_credentials_with_globus_cli_client_id))
+
+* Support Python 3.12.
+
+Other:
+
+* Test against Python 3.12 in CI.
+
+* Replaced all references to the tutorial endpoints.
+
+* Deprecate and hide commands related to management of GCSv4:
+
+  * `globus endpoint activate`
+  * `globus endpoint deactivate`
+  * `globus endpoint is-activated`
+  * `globus endpoint server`
+
 == 3.20.0 (2023-12-06)
 
 Bugfixes:
