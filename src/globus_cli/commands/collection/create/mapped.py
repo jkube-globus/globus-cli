@@ -6,6 +6,10 @@ import uuid
 import click
 import globus_sdk
 
+from globus_cli.commands.collection._common import (
+    filter_fields,
+    standard_collection_fields,
+)
 from globus_cli.constants import ExplicitNullType
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import (
@@ -15,7 +19,7 @@ from globus_cli.parsing import (
     endpoint_id_arg,
     endpointish_params,
 )
-from globus_cli.termio import Field, TextMode, display
+from globus_cli.termio import TextMode, display
 
 
 def _make_multi_use_option_str(s: str) -> str:
@@ -292,4 +296,9 @@ def collection_create_mapped(
     )
     res = gcs_client.create_collection(collection_doc)
 
-    display(res, text_mode=TextMode.text_record, fields=[Field("Collection ID", "id")])
+    fields = standard_collection_fields(login_manager.get_auth_client())
+    display(
+        res,
+        text_mode=TextMode.text_record,
+        fields=filter_fields(fields, res),
+    )
