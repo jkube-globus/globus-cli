@@ -20,10 +20,8 @@ def test_list_commands_contains_expected_commands(run_line):
         "globus api auth",
         "globus bookmark create",
         "globus collection delete",
-        "globus endpoint activate",
         "globus endpoint permission create",
         "globus endpoint role create",
-        "globus endpoint server add",
         "globus endpoint storage-gateway list",
         "globus endpoint user-credential delete",
         "globus flows delete",
@@ -41,3 +39,14 @@ def test_list_commands_contains_expected_commands(run_line):
         "globus timer list",
     ):
         assert cmd in result.output
+
+    # and does not contain hidden commands
+    for cmd in (
+        "globus endpoint create",
+        "globus endpoint activate",
+        "globus endpoint deactivate",
+        "globus endpoint is-activated",
+        "globus endpoint server",
+        "globus endpoint server add",
+    ):
+        assert cmd not in result.output

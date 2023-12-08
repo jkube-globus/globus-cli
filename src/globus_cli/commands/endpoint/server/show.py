@@ -54,6 +54,7 @@ class PortRangeFormatter(
 
 @command(
     "show",
+    deprecated=True,
     short_help="Show an endpoint server",
     adoc_examples="""[source,bash]
 ----

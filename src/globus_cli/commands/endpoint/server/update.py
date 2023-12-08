@@ -17,6 +17,7 @@ else:
 
 @command(
     "update",
+    deprecated=True,
     short_help="Update an endpoint server",
     adoc_examples="""Change an existing server's scheme to use ftp:
 
