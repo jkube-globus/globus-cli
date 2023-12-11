@@ -1,4 +1,5 @@
 import urllib.parse
+import uuid
 
 import pytest
 import responses
@@ -26,10 +27,10 @@ def _register_stub_transfer_response():
 
 
 @pytest.mark.parametrize(
-    "service_name", ["auth", "flows", "groups", "search", "timer", "transfer"]
+    "service_name", ["gcs", "auth", "flows", "groups", "search", "timer", "transfer"]
 )
 @pytest.mark.parametrize("is_error_response", (False, True))
-def test_api_command_get(run_line, service_name, is_error_response):
+def test_api_command_get(run_line, service_name, add_gcs_login, is_error_response):
     load_response(
         RegisteredResponse(
             service=service_name,
@@ -38,9 +39,31 @@ def test_api_command_get(run_line, service_name, is_error_response):
             json={"foo": "bar"},
         )
     )
+    service_args = [service_name]
+
+    if service_name == "gcs":
+        endpoint_id = str(uuid.uuid1())
+        load_response(
+            RegisteredResponse(
+                service="transfer",
+                path=f"/endpoint/{endpoint_id}",
+                # this data contains the GCS server hostname which is baked into
+                # globus_sdk._testing, so there's some "magical" data coordination at
+                # play here
+                json={
+                    "DATA": [
+                        {"DATA_TYPE": "server", "hostname": "abc.xyz.data.globus.org"}
+                    ],
+                    "gcs_manager_url": "https://abc.xyz.data.globus.org",
+                    "entity_type": "GCSv5_endpoint",
+                },
+            )
+        )
+        service_args.append(endpoint_id)
+        add_gcs_login(endpoint_id)
 
     result = run_line(
-        ["globus", "api", service_name, "get", "/foo"]
+        ["globus", "api", *service_args, "get", "/foo"]
         + (["--no-retry", "--allow-errors"] if is_error_response else [])
     )
     assert result.output == '{"foo": "bar"}\n'
