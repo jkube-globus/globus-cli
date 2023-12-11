@@ -454,5 +454,6 @@ sends a 'GET' request to '{_get_url(service_name)}foo/bar'
 
 for service_name_ in CLI_SCOPE_REQUIREMENTS:
     api_command.add_command(build_command(service_name_))
+del service_name_
 
 api_command.add_command(build_command("gcs"))
