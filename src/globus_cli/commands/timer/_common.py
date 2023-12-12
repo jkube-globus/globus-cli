@@ -57,19 +57,23 @@ class ScheduleFormatter(formatters.FieldFormatter[t.Dict[str, t.Any]]):
         if value.get("type") == "once":
             when = value.get("datetime")
             if when:
-                return f"once at {when}"
+                timestamp = formatters.Date.render(formatters.Date.parse(when))
+                return f"once at {timestamp}"
             else:  # should be unreachable
                 return "once"
         elif value.get("type") == "recurring":
             interval = value.get("interval_seconds")
             start = value.get("start")
+            if start:
+                start = formatters.Date.render(formatters.Date.parse(start))
             end = value.get("end", {})
 
             ret = f"every {interval} seconds, starting {start}"
-            if end.get("condition") == "time":
-                ret += f" and running until {end['datetime']}"
-            elif end.get("condition") == "iterations":
-                ret += f" and running for {end['iterations']} iterations"
+            if end.get("datetime"):
+                stop = formatters.Date.render(formatters.Date.parse(end["datetime"]))
+                ret += f" and running until {stop}"
+            elif end.get("count"):
+                ret += f" and running for {end['count']} iterations"
             return ret
         else:  # should be unreachable
             return f"unrecognized schedule type: {value}"
