@@ -43,9 +43,9 @@ def resume_command(
     Resume a timer.
     """
     timer_client = login_manager.get_timer_client()
-    job_doc = timer_client.get_job(timer_id)
+    timer_doc = timer_client.get_job(timer_id)
 
-    gare = _get_inactive_reason(job_doc)
+    gare = _get_inactive_reason(timer_doc)
     if not skip_inactive_reason_check:
         check_inactive_reason(login_manager, timer_id, gare)
 
@@ -105,16 +105,16 @@ def check_inactive_reason(
 
 
 def _get_inactive_reason(
-    job_doc: dict[str, t.Any] | globus_sdk.GlobusHTTPResponse
+    timer_doc: dict[str, t.Any] | globus_sdk.GlobusHTTPResponse
 ) -> GlobusAuthRequirementsError | None:
     from globus_sdk.experimental.auth_requirements_error import (
         to_auth_requirements_error,
     )
 
-    if job_doc.get("status") != "inactive":
+    if timer_doc.get("status") != "inactive":
         return None
 
-    reason = job_doc.get("inactive_reason", {})
+    reason = timer_doc.get("inactive_reason", {})
     if reason.get("cause") != "globus_auth_requirements":
         return None
 

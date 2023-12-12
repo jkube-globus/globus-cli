@@ -5,52 +5,52 @@ import pytest
 from globus_sdk._testing import load_response, load_response_set, register_response_set
 
 
-def test_resume_job_active(run_line):
+def test_resume_timer_active(run_line):
     meta = load_response("timer.get_job").metadata
     load_response("timer.resume_job")
-    job_id = meta["job_id"]
+    timer_id = meta["job_id"]
     run_line(
-        ["globus", "timer", "resume", job_id],
-        search_stdout=f"Successfully resumed job {job_id}.",
+        ["globus", "timer", "resume", timer_id],
+        search_stdout=f"Successfully resumed job {timer_id}.",
     )
 
 
-def test_resume_job_inactive_user(run_line):
+def test_resume_timer_inactive_user(run_line):
     meta = load_response("timer.get_job", case="inactive_user").metadata
     load_response("timer.resume_job")
-    job_id = meta["job_id"]
+    timer_id = meta["job_id"]
     run_line(
-        ["globus", "timer", "resume", job_id],
-        search_stdout=f"Successfully resumed job {job_id}.",
+        ["globus", "timer", "resume", timer_id],
+        search_stdout=f"Successfully resumed job {timer_id}.",
     )
 
 
-def test_resume_job_inactive_gare_consent_missing(run_line):
+def test_resume_timer_inactive_gare_consent_missing(run_line):
     meta = load_response_set("cli.timer_resume.inactive_gare.consents_missing").metadata
-    job_id = meta["job_id"]
+    timer_id = meta["timer_id"]
     required_scope = meta["required_scope"]
     result = run_line(
-        ["globus", "timer", "resume", job_id],
+        ["globus", "timer", "resume", timer_id],
         assert_exit_code=4,
     )
     assert f"globus session consent '{required_scope}'" in result.output
 
 
-def test_resume_job_inactive_gare_consent_present(run_line):
+def test_resume_timer_inactive_gare_consent_present(run_line):
     meta = load_response_set("cli.timer_resume.inactive_gare.consents_present").metadata
-    job_id = meta["job_id"]
+    timer_id = meta["timer_id"]
     run_line(
-        ["globus", "timer", "resume", job_id],
-        search_stdout=f"Successfully resumed job {job_id}.",
+        ["globus", "timer", "resume", timer_id],
+        search_stdout=f"Successfully resumed timer {timer_id}.",
     )
 
 
-def test_resume_job_inactive_gare_consent_missing_but_skip_check(run_line):
+def test_resume_timer_inactive_gare_consent_missing_but_skip_check(run_line):
     meta = load_response_set("cli.timer_resume.inactive_gare.consents_missing").metadata
-    job_id = meta["job_id"]
+    timer_id = meta["timer_id"]
     run_line(
-        ["globus", "timer", "resume", "--skip-inactive-reason-check", job_id],
-        search_stdout=f"Successfully resumed job {job_id}.",
+        ["globus", "timer", "resume", "--skip-inactive-reason-check", timer_id],
+        search_stdout=f"Successfully resumed timer {timer_id}.",
     )
 
 
@@ -58,10 +58,10 @@ def test_resume_inactive_gare_session_identity(run_line):
     meta = load_response_set(
         "cli.timer_resume.inactive_gare.session_required_identities"
     ).metadata
-    job_id = meta["job_id"]
+    timer_id = meta["timer_id"]
     usernames = meta["session_required_identities"]
     run_line(
-        ["globus", "timer", "resume", job_id],
+        ["globus", "timer", "resume", timer_id],
         assert_exit_code=4,
         search_stdout=f"globus session update {' '.join(usernames)}",
     )
@@ -71,10 +71,10 @@ def test_resume_inactive_gare_session_identity_but_skip_check(run_line):
     meta = load_response_set(
         "cli.timer_resume.inactive_gare.session_required_identities"
     ).metadata
-    job_id = meta["job_id"]
+    timer_id = meta["timer_id"]
     run_line(
-        ["globus", "timer", "resume", "--skip-inactive-reason-check", job_id],
-        search_stdout=f"Successfully resumed job {job_id}.",
+        ["globus", "timer", "resume", "--skip-inactive-reason-check", timer_id],
+        search_stdout=f"Successfully resumed timer {timer_id}.",
     )
 
 
@@ -132,12 +132,12 @@ def _register_responses(mock_user_data):
 
     metadata = {
         "user_id": user_id,
-        "job_id": timer_id,
+        "timer_id": timer_id,
         "collection_id": collection_id,
         "required_scope": required_scope,
     }
 
-    get_job_json_consent_gare_body = {
+    get_timer_json_consent_gare_body = {
         **TIMER_JSON,
         "status": "inactive",
         "inactive_reason": {
@@ -170,17 +170,17 @@ def _register_responses(mock_user_data):
     register_response_set(
         "cli.timer_resume.inactive_gare.consents_missing",
         dict(
-            get_job=dict(
+            get_timer=dict(
                 service="timer",
                 path=f"/jobs/{timer_id}",
                 method="GET",
-                json=get_job_json_consent_gare_body,
+                json=get_timer_json_consent_gare_body,
             ),
             resume=dict(
                 service="timer",
                 path=f"/jobs/{timer_id}/resume",
                 method="POST",
-                json={"message": f"Successfully resumed job {timer_id}."},
+                json={"message": f"Successfully resumed timer {timer_id}."},
             ),
             consents=dict(
                 service="auth",
@@ -203,17 +203,17 @@ def _register_responses(mock_user_data):
     register_response_set(
         "cli.timer_resume.inactive_gare.consents_present",
         dict(
-            get_job=dict(
+            get_timer=dict(
                 service="timer",
                 path=f"/jobs/{timer_id}",
                 method="GET",
-                json=get_job_json_consent_gare_body,
+                json=get_timer_json_consent_gare_body,
             ),
             resume=dict(
                 service="timer",
                 path=f"/jobs/{timer_id}/resume",
                 method="POST",
-                json={"message": f"Successfully resumed job {timer_id}."},
+                json={"message": f"Successfully resumed timer {timer_id}."},
             ),
             consents=dict(
                 service="auth",
@@ -251,7 +251,7 @@ def _register_responses(mock_user_data):
     register_response_set(
         "cli.timer_resume.inactive_gare.session_required_identities",
         dict(
-            get_job=dict(
+            get_timer=dict(
                 service="timer",
                 path=f"/jobs/{timer_id}",
                 method="GET",
@@ -261,7 +261,7 @@ def _register_responses(mock_user_data):
                 service="timer",
                 path=f"/jobs/{timer_id}/resume",
                 method="POST",
-                json={"message": f"Successfully resumed job {timer_id}."},
+                json={"message": f"Successfully resumed timer {timer_id}."},
             ),
         ),
         metadata={
