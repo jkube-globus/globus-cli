@@ -1,3 +1,4 @@
+import re
 import uuid
 
 import pytest
@@ -365,12 +366,25 @@ def test_mapped_collection_create_accepts_various_policy_options(
             ],
             id="posix+posix-staging",
         ),
+        pytest.param(
+            [
+                "--google-project-id",
+                "fooid",
+                "--posix-sharing-group-deny",
+                "foo",
+                "--posix-staging-sharing-group-deny",
+                "foo",
+            ],
+            id="google+posix+posix-staging",
+        ),
+        pytest.param(
+            ["--google-project-id", "", "--posix-sharing-group-allow", ""],
+            id="google-emptystr+posix-emptystr",
+        ),
     ),
 )
-def test_mapped_collection_create_rejects_incompatible_policy_options(
-    run_line,
-    add_gcs_login,
-    add_opts,
+def test_mapped_collection_create_rejects_incompatible_policy_options_as_mutex(
+    run_line, add_gcs_login, add_opts
 ):
     load_response("cli.collection_create_mapped.storage_gateway_list")
     gcs_meta = load_response("cli.collection_create_mapped.get_endpoint").metadata
@@ -381,5 +395,13 @@ def test_mapped_collection_create_rejects_incompatible_policy_options(
 
     add_gcs_login(epid)
     run_line(
-        cmd, assert_exit_code=2, search_stderr="Incompatible policy options detected."
+        cmd,
+        assert_exit_code=2,
+        search_stderr=re.escape(
+            "--google-project-id, "
+            "--posix-sharing-group-allow/--posix-sharing-group-deny, and "
+            "--posix-staging-sharing-group-allow/"
+            "--posix-staging-sharing-group-deny "
+            "are mutually exclusive"
+        ),
     )

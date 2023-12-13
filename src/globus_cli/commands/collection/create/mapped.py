@@ -16,16 +16,29 @@ from globus_cli.constants import ExplicitNullType
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import (
     JSONStringOrFile,
+    MutexInfo,
     ParsedJSONData,
     command,
     endpoint_id_arg,
     endpointish_params,
+    mutex_option_group,
 )
 from globus_cli.termio import TextMode, display
 
 
 def _make_multi_use_option_str(s: str) -> str:
     return f"Give this option multiple times to {s}."
+
+
+def _posix_policy_options_present(params: dict[str, t.Any]) -> bool:
+    return params["posix_sharing_group_allow"] or params["posix_sharing_group_deny"]
+
+
+def _posix_staging_policy_options_present(params: dict[str, t.Any]) -> bool:
+    return (
+        params["posix_staging_sharing_group_allow"]
+        or params["posix_staging_sharing_group_deny"]
+    )
 
 
 @command("create", short_help="Create a new Mapped Collection")
@@ -153,6 +166,22 @@ def _make_multi_use_option_str(s: str) -> str:
         + _make_multi_use_option_str("deny multiple groups")
     ),
 )
+@mutex_option_group(
+    MutexInfo(
+        "--google-project-id",
+        # override the default check, which would be `bool(params["google_project_id"])`
+        # and would therefore be False for `""`
+        present=lambda params: params["google_project_id"] is not None,
+    ),
+    MutexInfo(
+        "--posix-sharing-group-allow/--posix-sharing-group-deny",
+        present=_posix_policy_options_present,
+    ),
+    MutexInfo(
+        "--posix-staging-sharing-group-allow/--posix-staging-sharing-group-deny",
+        present=_posix_staging_policy_options_present,
+    ),
+)
 @LoginManager.requires_login("auth", "transfer")
 def collection_create_mapped(
     login_manager: LoginManager,
@@ -224,19 +253,13 @@ def collection_create_mapped(
         policies = globus_sdk.GoogleCloudStorageCollectionPolicies(
             project=google_project_id
         )
-
-    if posix_sharing_group_allow or posix_sharing_group_deny:
-        if policies is not None:
-            raise click.UsageError("Incompatible policy options detected.")
+    elif posix_sharing_group_allow or posix_sharing_group_deny:
         # Added in 5.4.8 for POSIX connector
         policies = globus_sdk.POSIXCollectionPolicies(
             sharing_groups_allow=posix_sharing_group_allow,
             sharing_groups_deny=posix_sharing_group_deny,
         )
-
-    if posix_staging_sharing_group_allow or posix_staging_sharing_group_deny:
-        if policies is not None:
-            raise click.UsageError("Incompatible policy options detected.")
+    elif posix_staging_sharing_group_allow or posix_staging_sharing_group_deny:
         # Added in 5.4.10 for POSIX staging connector
         policies = globus_sdk.POSIXStagingCollectionPolicies(
             sharing_groups_allow=posix_staging_sharing_group_allow,
