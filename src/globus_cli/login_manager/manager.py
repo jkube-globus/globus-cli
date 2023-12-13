@@ -80,10 +80,9 @@ class LoginManager:
         yield from CLI_SCOPE_REQUIREMENTS["auth"]["scopes"]
 
     def is_logged_in(self) -> bool:
-        res = []
-        for rs_name, _scopes in self.login_requirements:
-            res.append(self.has_login(rs_name))
-        return all(res)
+        return all(
+            self.has_login(rs_name) for rs_name, _scopes in self.login_requirements
+        )
 
     def _validate_token(self, token: str) -> bool:
         auth_client = internal_auth_client()
