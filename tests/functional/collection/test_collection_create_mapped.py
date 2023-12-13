@@ -249,7 +249,7 @@ def test_mapped_collection_create(
 
     cmd = ["globus", "gcs", "collection", "create", "mapped", epid, "/"]
     if not implicit_storage_gateway:
-        cmd.extend(["--storage-gateway", create_meta["storage_gateway_id"]])
+        cmd.extend(["--storage-gateway-id", create_meta["storage_gateway_id"]])
 
     add_gcs_login(epid)
     run_line(

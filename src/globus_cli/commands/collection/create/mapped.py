@@ -35,7 +35,7 @@ def _make_multi_use_option_str(s: str) -> str:
     help="The location within the storage gateway where the collection is rooted.",
 )
 @click.option(
-    "--storage-gateway",
+    "--storage-gateway-id",
     help=(
         "The storage gateway ID to host this collection. "
         "If no value is provided but the endpoint has exactly one gateway, "
@@ -189,7 +189,7 @@ def collection_create_mapped(
     sharing_restrict_paths: ParsedJSONData | None | ExplicitNullType,
     sharing_users_allow: tuple[str, ...],
     sharing_users_deny: tuple[str, ...],
-    storage_gateway: str | None,
+    storage_gateway_id: str | None,
     user_message: str | None | ExplicitNullType,
     user_message_link: str | None | ExplicitNullType,
     verify: dict[str, bool],
@@ -208,9 +208,7 @@ def collection_create_mapped(
         raise click.UsageError("--sharing-restrict-paths must be a JSON object")
 
     gcs_client = login_manager.get_gcs_client(endpoint_id=endpoint_id)
-    if storage_gateway is not None:
-        storage_gateway_id = storage_gateway
-    else:
+    if storage_gateway_id is None:
         all_gateways = list(gcs_client.get_storage_gateway_list())
         if len(all_gateways) == 0:
             raise click.UsageError(
