@@ -102,7 +102,7 @@ class GCSEndpointType(click.ParamType):
 @click.option(
     "--force",
     is_flag=True,
-    help=("Do a fresh login, ignoring any existing credentials"),
+    help="Do a fresh login, ignoring any existing credentials",
 )
 @click.option(
     "gcs_servers",
