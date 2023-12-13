@@ -43,12 +43,6 @@ def _make_multi_use_option_str(s: str) -> str:
     ),
 )
 @click.option(
-    "--public/--private",
-    "public",
-    default=True,
-    help="Set the collection to be public or private.",
-)
-@click.option(
     "--sharing-restrict-paths",
     type=JSONStringOrFile(null="null"),
     help=(

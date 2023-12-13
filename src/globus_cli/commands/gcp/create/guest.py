@@ -16,7 +16,7 @@ from ._common import deprecated_verify_option
 @endpointish_params.create(
     name="collection",
     keyword_style="string",
-    skip=("user_message", "user_message_link"),
+    skip=("user_message", "user_message_link", "public"),
 )
 @click.argument("HOST_GCP_PATH", type=ENDPOINT_PLUS_REQPATH)
 @deprecated_verify_option

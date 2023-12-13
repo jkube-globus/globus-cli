@@ -31,11 +31,8 @@ GCP_FIELDS = [Field("Setup Key", "globus_connect_setup_key")]
 
 @command("create", deprecated=True, hidden=True)
 @endpointish_params.create(
-    name="endpoint",
-    keyword_style="string",
-    verify_style="flag",
+    name="endpoint", keyword_style="string", verify_style="flag", add_legacy_params=True
 )
-@endpointish_params.legacy_transfer_params()
 @one_use_option(
     "--personal",
     is_flag=True,
@@ -94,7 +91,7 @@ def endpoint_create(
     organization: str | None | ExplicitNullType,
     preferred_concurrency: int | None,
     preferred_parallelism: int | None,
-    public: bool | None,
+    public: bool,
     subscription_id: uuid.UUID | None,
     user_message: str | None | ExplicitNullType,
     user_message_link: str | None | ExplicitNullType,

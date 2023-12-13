@@ -47,12 +47,6 @@ from globus_cli.termio import TextMode, display
     help="User who should own the collection (defaults to the current user)",
 )
 @click.option(
-    "--public/--private",
-    "public",
-    default=True,
-    help="Set the collection to be public or private",
-)
-@click.option(
     "--enable-https/--disable-https",
     "enable_https",
     default=None,

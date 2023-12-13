@@ -16,7 +16,6 @@ from ._common import deprecated_verify_option
     "--subscription-id",
     help="Set the collection as managed with the given subscription ID",
 )
-@click.option("--public", is_flag=True, help="Set the collection to be public.")
 @deprecated_verify_option
 @LoginManager.requires_login("transfer")
 def mapped_command(
