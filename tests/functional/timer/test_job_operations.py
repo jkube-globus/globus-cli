@@ -5,15 +5,15 @@ import globus_sdk
 import pytest
 from globus_sdk._testing import RegisteredResponse, load_response, load_response_set
 
-from globus_cli.commands.timer._common import JOB_FORMAT_FIELDS
+from globus_cli.commands.timer._common import TIMER_FORMAT_FIELDS
 
-# NOTE: this is not quite the same as the "normal" job responses from
+# NOTE: this is not quite the same as the "normal" timer responses from
 # create/update—definitely something to consider revisiting on the Timer API.
-_job_id = "e304f241-b77a-4e75-89f6-c431ddafe497"
+_timer_id = "e304f241-b77a-4e75-89f6-c431ddafe497"
 DELETE_RESPONSE = RegisteredResponse(
-    metadata={"job_id": _job_id},
+    metadata={"timer_id": _timer_id},
     service="timer",
-    path=f"/jobs/{_job_id}",
+    path=f"/jobs/{_timer_id}",
     method="DELETE",
     json={
         "callback_body": {
@@ -46,9 +46,9 @@ DELETE_RESPONSE = RegisteredResponse(
         },
         "callback_url": "https://actions.automate.globus.org/transfer/transfer/run",
         "interval": None,
-        "job_id": _job_id,
+        "job_id": _timer_id,
         "n_tries": 1,
-        "name": "example-timer-job",
+        "name": "example-timer",
         "owner": "5276fa05-eedf-46c5-919f-ad2d0160d1a9",
         "refresh_token": None,
         "results": [],
@@ -62,44 +62,44 @@ DELETE_RESPONSE = RegisteredResponse(
 )
 
 
-def test_show_job(run_line):
+def test_show_timer(run_line):
     meta = load_response_set(globus_sdk.TimerClient.get_job).metadata
     assert meta
     result = run_line(["globus", "timer", "show", meta["job_id"]])
     assert result.exit_code == 0
     assert meta["job_id"] in result.output
-    for field in JOB_FORMAT_FIELDS:
+    for field in TIMER_FORMAT_FIELDS:
         assert field.name in result.output
 
 
-def test_list_jobs(run_line):
+def test_list_timers(run_line):
     meta = load_response_set(globus_sdk.TimerClient.list_jobs).metadata
     assert meta
     result = run_line(["globus", "timer", "list"])
     assert result.exit_code == 0
-    assert all(job_id in result.output for job_id in meta["job_ids"])
-    for field in JOB_FORMAT_FIELDS:
+    assert all(timer_id in result.output for timer_id in meta["job_ids"])
+    for field in TIMER_FORMAT_FIELDS:
         assert field.name in result.output
 
 
 @pytest.mark.parametrize("out_format", ["text", "json"])
-def test_delete_job(run_line, out_format):
+def test_delete_timer(run_line, out_format):
     meta = load_response(DELETE_RESPONSE).metadata
     add_args = []
     if out_format == "json":
         add_args = ["-F", "json"]
-    result = run_line(["globus", "timer", "delete", meta["job_id"]] + add_args)
+    result = run_line(["globus", "timer", "delete", meta["timer_id"]] + add_args)
     assert result.exit_code == 0
     if out_format == "json":
         assert json.loads(result.output) == DELETE_RESPONSE.json
     else:
         pattern = re.compile(
-            r"^Job ID:\s+" + re.escape(meta["job_id"]) + "$", flags=re.MULTILINE
+            r"^Timer ID:\s+" + re.escape(meta["timer_id"]) + "$", flags=re.MULTILINE
         )
         assert pattern.search(result.output) is not None
 
 
-def test_pause_job(run_line):
+def test_pause_timer(run_line):
     meta = load_response_set(globus_sdk.TimerClient.pause_job).metadata
     add_args = []
     run_line(

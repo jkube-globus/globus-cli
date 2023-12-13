@@ -80,7 +80,7 @@ class ScheduleFormatter(formatters.FieldFormatter[t.Dict[str, t.Any]]):
 
 
 _COMMON_FIELDS = [
-    Field("Job ID", "job_id"),
+    Field("Timer ID", "job_id"),
     Field("Name", "name"),
     Field("Type", "callback_url", formatter=CallbackActionTypeFormatter()),
     Field("Submitted At", "submitted_at", formatter=formatters.Date),
@@ -89,7 +89,7 @@ _COMMON_FIELDS = [
 ]
 
 
-JOB_FORMAT_FIELDS = _COMMON_FIELDS + [
+TIMER_FORMAT_FIELDS = _COMMON_FIELDS + [
     Field("Status", "status"),
     Field("Last Run", "last_ran_at", formatter=formatters.Date),
     Field("Next Run", "next_run", formatter=formatters.Date),
@@ -99,7 +99,7 @@ JOB_FORMAT_FIELDS = _COMMON_FIELDS + [
     Field("Number of Timer Errors", "n_errors"),
 ]
 
-DELETED_JOB_FORMAT_FIELDS = _COMMON_FIELDS + [
+DELETED_TIMER_FORMAT_FIELDS = _COMMON_FIELDS + [
     Field("Status", "status"),
     Field("Stop After Date", "stop_after.date"),
     Field("Stop After Number of Runs", "stop_after.n_runs"),

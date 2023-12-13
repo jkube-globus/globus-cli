@@ -55,7 +55,7 @@ FORMAT_FIELDS = [
 
 
 INTERVAL_HELP = """\
-Interval at which the job should run. Expressed in weeks, days, hours, minutes, and
+Interval at which the timer should run. Expressed in weeks, days, hours, minutes, and
 seconds. Use 'w', 'd', 'h', 'm', and 's' as suffixes to specify.
 e.g. '1h30m', '500s', '10d'
 """
@@ -71,7 +71,7 @@ def resolve_optional_local_time(
     return start_with_tz
 
 
-@command("transfer", short_help="Create a recurring transfer job in Timer")
+@command("transfer", short_help="Create a recurring transfer timer")
 @click.argument(
     "source", metavar="SOURCE_ENDPOINT_ID[:SOURCE_PATH]", type=ENDPOINT_PLUS_OPTPATH
 )
@@ -90,18 +90,18 @@ def resolve_optional_local_time(
 @click.option(
     "--start",
     type=click.DateTime(formats=DATETIME_FORMATS),
-    help="Start time for the job. Defaults to current time.",
+    help="Start time for the timer. Defaults to current time.",
 )
 @click.option(
     "--interval",
     type=TimedeltaType(),
     help=INTERVAL_HELP,
 )
-@click.option("--name", type=str, help="A name for the Timer job.")
+@click.option("--name", type=str, help="A name for the timer.")
 @click.option(
     "--label",
     type=str,
-    help="A label for the Transfer tasks submitted by the Timer job.",
+    help="A label for the Transfer tasks submitted by the timer.",
 )
 @click.option(
     "--stop-after-date",
@@ -137,10 +137,10 @@ def transfer_command(
     notify: dict[str, bool],
 ) -> None:
     """
-    Create a Timer job which will run a transfer on a recurring schedule
+    Create a timer which will run a transfer on a recurring schedule
     according to the parameters provided.
 
-    For example, to create a job which runs a Transfer from /foo/ on one endpoint to
+    For example, to create a timer which runs a Transfer from /foo/ on one endpoint to
     /bar/ on another endpoint every day, with no end condition:
 
     \b
@@ -188,8 +188,8 @@ def transfer_command(
             "transfer requires either SOURCE_PATH and DEST_PATH or --batch"
         )
 
-    # Interval must be null iff the job is 'once', i.e. stop-after-runs == 1.
-    # and it must be non-null if the job is 'recurring'
+    # Interval must be null iff the timer is 'once', i.e. stop-after-runs == 1.
+    # and it must be non-null if the timer is 'recurring'
     schedule: globus_sdk.RecurringTimerSchedule | globus_sdk.OnceTimerSchedule
     start_ = resolve_optional_local_time(start)
     if stop_after_runs == 1:
