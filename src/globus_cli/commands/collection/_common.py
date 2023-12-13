@@ -1,9 +1,43 @@
 from __future__ import annotations
 
+import click
 import globus_sdk
 
+from globus_cli.login_manager.utils import get_current_identity_id
+from globus_cli.parsing import AnnotatedOption
 from globus_cli.termio import Field, formatters
 from globus_cli.types import DATA_CONTAINER_T
+
+
+class LazyCurrentIdentity:
+    def __init__(self, value: str | None) -> None:
+        self._value = value
+
+    @property
+    def value(self) -> str:
+        if self._value is None:
+            self._value = get_current_identity_id()
+        return str(self._value)
+
+
+def _identity_id_callback(
+    ctx: click.Context | None,
+    param: click.Parameter | None,
+    value: str | None,
+) -> LazyCurrentIdentity:
+    return LazyCurrentIdentity(value)
+
+
+# NB: this is implemented using a callback rather than a custom type because this lets
+# us ensure that we convert the default of `None` to `LazyCurrentIdentity(None)`
+# a custom type would still pass a default of `None` unless a callback were specified
+identity_id_option = click.option(
+    "--identity-id",
+    help="User who should own the collection (defaults to the current user)",
+    callback=_identity_id_callback,
+    cls=AnnotatedOption,
+    type_annotation=LazyCurrentIdentity,
+)
 
 
 def filter_fields(check_fields: list[Field], data: DATA_CONTAINER_T) -> list[Field]:

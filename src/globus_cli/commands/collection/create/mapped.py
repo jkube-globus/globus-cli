@@ -7,7 +7,9 @@ import click
 import globus_sdk
 
 from globus_cli.commands.collection._common import (
+    LazyCurrentIdentity,
     filter_fields,
+    identity_id_option,
     standard_collection_fields,
 )
 from globus_cli.constants import ExplicitNullType
@@ -28,6 +30,8 @@ def _make_multi_use_option_str(s: str) -> str:
 
 @command("create", short_help="Create a new Mapped Collection")
 @endpoint_id_arg
+@endpointish_params.create(name="collection")
+@identity_id_option
 @click.option(
     "--base-path",
     default="/",
@@ -76,13 +80,6 @@ def _make_multi_use_option_str(s: str) -> str:
         "DNS host name for the collection. This may be either a host name "
         "or a fully-qualified domain name, but if it is the latter "
         "it must be a subdomain of the endpoint's domain."
-    ),
-)
-@click.option(
-    "--identity-id",
-    help=(
-        "Globus Auth identity to who acts as the owner of this Collection. This "
-        "identity must be an administrator on the Endpoint."
     ),
 )
 @click.option(
@@ -156,7 +153,6 @@ def _make_multi_use_option_str(s: str) -> str:
         + _make_multi_use_option_str("deny multiple groups")
     ),
 )
-@endpointish_params.create(name="collection")
 @LoginManager.requires_login("auth", "transfer")
 def collection_create_mapped(
     login_manager: LoginManager,
@@ -177,7 +173,7 @@ def collection_create_mapped(
     enable_https: bool | None,
     force_encryption: bool | None,
     google_project_id: str | None,
-    identity_id: str | None,
+    identity_id: LazyCurrentIdentity,
     info_link: str | None | ExplicitNullType,
     keywords: list[str] | None,
     organization: str | None | ExplicitNullType,
@@ -263,7 +259,7 @@ def collection_create_mapped(
             "domain_name": domain_name,
             "enable_https": enable_https,
             "force_encryption": force_encryption,
-            "identity_id": identity_id,
+            "identity_id": identity_id.value,
             "info_link": info_link,
             "keywords": keywords,
             "organization": organization,
