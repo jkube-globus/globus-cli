@@ -31,11 +31,13 @@ def _make_multi_use_option_str(s: str) -> str:
 
 
 def _posix_policy_options_present(params: dict[str, t.Any]) -> bool:
-    return params["posix_sharing_group_allow"] or params["posix_sharing_group_deny"]
+    return bool(
+        params["posix_sharing_group_allow"] or params["posix_sharing_group_deny"]
+    )
 
 
 def _posix_staging_policy_options_present(params: dict[str, t.Any]) -> bool:
-    return (
+    return bool(
         params["posix_staging_sharing_group_allow"]
         or params["posix_staging_sharing_group_deny"]
     )
