@@ -36,12 +36,6 @@ class _FullDataField(Field):
 @collection_id_arg
 @endpointish_params.update(name="collection")
 @click.option(
-    "--public/--private",
-    "public",
-    default=None,
-    help="Set the collection to be public or private",
-)
-@click.option(
     "--force-encryption/--no-force-encryption",
     "force_encryption",
     default=None,

@@ -8,14 +8,15 @@ import globus_sdk
 import globus_sdk.experimental.auth_requirements_error
 
 from globus_cli.commands.collection._common import (
+    LazyCurrentIdentity,
     filter_fields,
+    identity_id_option,
     standard_collection_fields,
 )
 from globus_cli.constants import ExplicitNullType
 from globus_cli.endpointish import EntityType
 from globus_cli.login_manager import LoginManager, MissingLoginError
 from globus_cli.login_manager.context import LoginContext
-from globus_cli.login_manager.utils import get_current_identity_id
 from globus_cli.parsing import command, endpointish_params, mutex_option_group
 from globus_cli.services.gcs import CustomGCSClient
 from globus_cli.termio import TextMode, display
@@ -41,17 +42,7 @@ from globus_cli.termio import TextMode, display
 )
 @mutex_option_group("--user-credential-id", "--local-username")
 @endpointish_params.create(name="collection")
-@click.option(
-    "--identity-id",
-    default=None,
-    help="User who should own the collection (defaults to the current user)",
-)
-@click.option(
-    "--public/--private",
-    "public",
-    default=True,
-    help="Set the collection to be public or private",
-)
+@identity_id_option
 @click.option(
     "--enable-https/--disable-https",
     "enable_https",
@@ -77,7 +68,7 @@ def collection_create_guest(
     display_name: str,
     enable_https: bool | None,
     force_encryption: bool | None,
-    identity_id: str | None,
+    identity_id: LazyCurrentIdentity,
     info_link: str | None | ExplicitNullType,
     keywords: list[str] | None,
     public: bool,
@@ -101,7 +92,7 @@ def collection_create_guest(
 
     if not user_credential_id:
         user_credential_id = _select_user_credential_id(
-            gcs_client, mapped_collection_id, local_username, identity_id
+            gcs_client, mapped_collection_id, local_username, identity_id.value
         )
 
     converted_kwargs: dict[str, t.Any] = ExplicitNullType.nullify_dict(
@@ -115,7 +106,7 @@ def collection_create_guest(
             "display_name": display_name,
             "enable_https": enable_https,
             "force_encryption": force_encryption,
-            "identity_id": identity_id,
+            "identity_id": identity_id.value,
             "info_link": info_link,
             "keywords": keywords,
             "mapped_collection_id": mapped_collection_id,
@@ -155,7 +146,7 @@ def _select_user_credential_id(
     gcs_client: CustomGCSClient,
     mapped_collection_id: uuid.UUID,
     local_username: str | None,
-    identity_id: str | None,
+    identity_id: str,
 ) -> uuid.UUID:
     """
     In the case that the user didn't specify a user credential id, see if we can select
@@ -166,9 +157,6 @@ def _select_user_credential_id(
     """
     mapped_collection = gcs_client.get_collection(mapped_collection_id)
     storage_gateway_id = mapped_collection["storage_gateway_id"]
-
-    if not identity_id:
-        identity_id = get_current_identity_id()
 
     # Grab the list of user credentials which match the endpoint, storage gateway,
     #   identity id, and local username (if specified)

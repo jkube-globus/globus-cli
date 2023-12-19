@@ -17,12 +17,6 @@ from globus_cli.termio import TextMode, display
     "--subscription-id",
     help="Set the collection as managed with the given subscription ID",
 )
-@click.option(
-    "--public/--private",
-    default=None,
-    is_flag=True,
-    help="Set the collection to be public or private.",
-)
 @LoginManager.requires_login("transfer")
 def mapped_command(
     login_manager: LoginManager,

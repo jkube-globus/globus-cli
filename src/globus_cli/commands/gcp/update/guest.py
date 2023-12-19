@@ -13,7 +13,7 @@ from globus_cli.termio import TextMode, display
 @endpointish_params.update(
     name="collection",
     keyword_style="string",
-    skip=("user_message", "user_message_link"),
+    skip=("user_message", "user_message_link", "public"),
 )
 @LoginManager.requires_login("transfer")
 def guest_command(

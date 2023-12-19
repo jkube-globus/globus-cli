@@ -24,6 +24,10 @@ from globus_cli.types import DictType
 C = t.TypeVar("C", bound=t.Union[t.Callable, click.Command])
 
 
+_GCSONLY = "(Globus Connect Server only)"
+_MANAGEDONLY = "(Managed endpoints only)"
+
+
 class endpointish_params:
     """
     This helper provides arguments and options for "endpointish" entity types.
@@ -40,6 +44,7 @@ class endpointish_params:
         display_name_style: Literal["argument", "option"] = "argument",
         keyword_style: Literal["string", "list"] = "list",
         verify_style: Literal["flag", "choice"] = "choice",
+        add_legacy_params: bool = False,
         skip: tuple[str, ...] = (),
     ) -> t.Callable[[C], C]:
         def decorator(f: C) -> C:
@@ -49,6 +54,7 @@ class endpointish_params:
                 display_name_style=display_name_style,
                 keyword_style=keyword_style,
                 verify_style=verify_style,
+                add_legacy_params=add_legacy_params,
                 skip=skip,
             )
 
@@ -62,6 +68,7 @@ class endpointish_params:
         display_name_style: Literal["argument", "option"] = "option",
         keyword_style: Literal["string", "list"] = "list",
         verify_style: Literal["flag", "choice"] = "choice",
+        add_legacy_params: bool = False,
         skip: tuple[str, ...] = (),
     ) -> t.Callable[[C], C]:
         def decorator(f: C) -> C:
@@ -71,25 +78,23 @@ class endpointish_params:
                 display_name_style=display_name_style,
                 keyword_style=keyword_style,
                 verify_style=verify_style,
+                public_default=None,
+                add_legacy_params=add_legacy_params,
                 skip=skip,
             )
 
         return decorator
-
-    @classmethod
-    def legacy_transfer_params(
-        cls,
-    ) -> t.Callable[[C], C]:
-        return _apply_legacy_transfer_params
 
 
 def _apply_endpointish_create_or_update_params(
     f: C,
     name: Literal["endpoint", "collection"],
     *,
+    public_default: bool | None = True,
     display_name_style: str,
     keyword_style: str,
     verify_style: str,
+    add_legacy_params: bool,
     skip: tuple[str, ...] = (),
 ) -> C:
     decorators: dict[str, t.Callable[[C], C]] = {}
@@ -169,6 +174,15 @@ def _apply_endpointish_create_or_update_params(
                 ),
                 type=UrlOrNull(),
             ),
+            public=click.option(
+                "--public/--private",
+                is_flag=True,
+                default=public_default,
+                help=(
+                    f"Set the {name} to be public or private."
+                    + (f" {_GCSONLY}" if add_legacy_params else "")
+                ),
+            ),
         )
     )
 
@@ -203,6 +217,9 @@ def _apply_endpointish_create_or_update_params(
 
     decorator_list = [v for k, v in decorators.items() if k not in skip]
 
+    if add_legacy_params:
+        decorator_list.extend(_LEGACY_TRANSFER_PARAMS)
+
     return utils.fold_decorators(f, decorator_list)
 
 
@@ -214,21 +231,6 @@ def _verify_choice_to_dict(
     value = value.lower()
     return {"force_verify": value == "force", "disable_verify": value == "disable"}
 
-
-def _apply_legacy_transfer_params(f: C) -> C:
-    return utils.fold_decorators(
-        f,
-        (
-            [_location_option, _public_option]
-            + _endpoint_network_use_params
-            + _endpoint_activation_params
-            + _endpoint_subscription_params
-        ),
-    )
-
-
-_GCSONLY = "(Globus Connect Server only)"
-_MANAGEDONLY = "(Managed endpoints only)"
 
 _endpoint_activation_params = [
     click.option("--myproxy-dn", help=f"Set the MyProxy Server DN {_GCSONLY}"),
@@ -328,16 +330,17 @@ _endpoint_network_use_params = [
     ),
 ]
 
-_public_option = click.option(
-    "--public/--private",
-    "public",
-    default=None,
-    help=f"Set the endpoint to be public or private {_GCSONLY}",
-)
-
 _location_option = click.option(
     "--location",
     type=LocationType(),
     default=None,
     help=f"Manually set the endpoint's latitude and longitude {_GCSONLY}",
+)
+
+
+_LEGACY_TRANSFER_PARAMS = (
+    [_location_option]
+    + _endpoint_network_use_params
+    + _endpoint_activation_params
+    + _endpoint_subscription_params
 )

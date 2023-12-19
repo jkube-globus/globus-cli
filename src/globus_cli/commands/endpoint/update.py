@@ -26,8 +26,9 @@ else:
 
 @command("update")
 @endpoint_id_arg
-@endpointish_params.update(name="endpoint", keyword_style="string", verify_style="flag")
-@endpointish_params.legacy_transfer_params()
+@endpointish_params.update(
+    name="endpoint", keyword_style="string", verify_style="flag", add_legacy_params=True
+)
 @click.option(
     "--no-default-directory",
     is_flag=True,
