@@ -91,7 +91,7 @@ class GlobusCommand(click.Command):
         log.debug("command invoke start")
         try:
             # this isn't forcing interactive mode, it's just checking to see that
-            # the GLOBUS_CLI_INTERACTIVE valude is *valid*
+            # the GLOBUS_CLI_INTERACTIVE value is *valid*
             env_interactive(raising=True)
             return super().invoke(ctx)
         finally:
