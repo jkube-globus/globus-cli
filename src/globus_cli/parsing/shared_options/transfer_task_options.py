@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import functools
 import textwrap
 import typing as t
 
@@ -9,36 +8,23 @@ import click
 C = t.TypeVar("C", bound=t.Union[t.Callable, click.Command])
 
 
-@t.overload
-def sync_level_option(f: C) -> C:
-    ...
+def sync_level_option(*, aliases: tuple[str, ...] = ()) -> t.Callable[[C], C]:
+    def decorator(f: C) -> C:
+        return click.option(
+            "--sync-level",
+            *aliases,
+            default=None,
+            show_default=True,
+            type=click.Choice(
+                ("exists", "size", "mtime", "checksum"), case_sensitive=False
+            ),
+            help=(
+                "Specify that only new or modified files should be transferred, "
+                "depending on which setting is provided."
+            ),
+        )(f)
 
-
-@t.overload
-def sync_level_option(*, aliases: tuple[str, ...]) -> t.Callable[[C], C]:
-    ...
-
-
-def sync_level_option(
-    f: C | None = None, *, aliases: tuple[str, ...] = ()
-) -> t.Callable[[C], C] | C:
-    if f is None:
-        return t.cast(
-            t.Callable[[C], C], functools.partial(sync_level_option, aliases=aliases)
-        )
-    return click.option(
-        "--sync-level",
-        *aliases,
-        default=None,
-        show_default=True,
-        type=click.Choice(
-            ("exists", "size", "mtime", "checksum"), case_sensitive=False
-        ),
-        help=(
-            "Specify that only new or modified files should be transferred, "
-            "depending on which setting is provided."
-        ),
-    )(f)
+    return decorator
 
 
 def transfer_recursive_option(f: C) -> C:
@@ -101,31 +87,17 @@ def skip_source_errors_option(f: C) -> C:
     )(f)
 
 
-@t.overload
-def preserve_timestamp_option(f: C) -> C:
-    ...
+def preserve_timestamp_option(*, aliases: tuple[str, ...] = ()) -> t.Callable[[C], C]:
+    def decorator(f: C) -> C:
+        return click.option(
+            "--preserve-timestamp",
+            *aliases,
+            is_flag=True,
+            default=False,
+            help="Preserve file and directory modification times.",
+        )(f)
 
-
-@t.overload
-def preserve_timestamp_option(*, aliases: tuple[str, ...]) -> t.Callable[[C], C]:
-    ...
-
-
-def preserve_timestamp_option(
-    f: C | None = None, *, aliases: tuple[str, ...] = ()
-) -> t.Callable[[C], C] | C:
-    if f is None:
-        return t.cast(
-            t.Callable[[C], C],
-            functools.partial(preserve_timestamp_option, aliases=aliases),
-        )
-    return click.option(
-        "--preserve-timestamp",
-        *aliases,
-        is_flag=True,
-        default=False,
-        help="Preserve file and directory modification times.",
-    )(f)
+    return decorator
 
 
 def verify_checksum_option(f: C) -> C:
@@ -137,28 +109,14 @@ def verify_checksum_option(f: C) -> C:
     )(f)
 
 
-@t.overload
-def encrypt_data_option(f: C) -> C:
-    ...
+def encrypt_data_option(*, aliases: tuple[str, ...] = ()) -> t.Callable[[C], C]:
+    def decorator(f: C) -> C:
+        return click.option(
+            "--encrypt-data",
+            *aliases,
+            is_flag=True,
+            default=False,
+            help="Encrypt data sent through the network.",
+        )(f)
 
-
-@t.overload
-def encrypt_data_option(*, aliases: tuple[str, ...]) -> t.Callable[[C], C]:
-    ...
-
-
-def encrypt_data_option(
-    f: C | None = None, *, aliases: tuple[str, ...] = ()
-) -> t.Callable[[C], C] | C:
-    if f is None:
-        return t.cast(
-            t.Callable[[C], C],
-            functools.partial(encrypt_data_option, aliases=aliases),
-        )
-    return click.option(
-        "--encrypt-data",
-        *aliases,
-        is_flag=True,
-        default=False,
-        help="Encrypt data sent through the network.",
-    )(f)
+    return decorator

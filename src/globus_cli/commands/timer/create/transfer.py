@@ -79,11 +79,11 @@ def resolve_optional_local_time(
     "destination", metavar="DEST_ENDPOINT_ID[:DEST_PATH]", type=ENDPOINT_PLUS_OPTPATH
 )
 @transfer_batch_option
-@sync_level_option
+@sync_level_option()
 @transfer_recursive_option
-@encrypt_data_option
+@encrypt_data_option()
 @verify_checksum_option
-@preserve_timestamp_option
+@preserve_timestamp_option()
 @skip_source_errors_option
 @fail_on_quota_errors_option
 @task_notify_option

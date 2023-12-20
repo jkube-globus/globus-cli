@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime
 import functools
 import textwrap
 import typing as t
@@ -20,9 +21,7 @@ from globus_cli.types import DictType
 C = t.TypeVar("C", bound=t.Union[t.Callable, click.Command])
 
 
-def common_options(
-    f: t.Callable | None = None, *, disable_options: list[str] | None = None
-) -> t.Callable:
+def common_options(*, disable_options: list[str] | None = None) -> t.Callable[[C], C]:
     """
     This is a multi-purpose decorator for applying a "base" set of options
     shared by all commands.
@@ -44,23 +43,24 @@ def common_options(
     """
     if disable_options is None:
         disable_options = []
-    if f is None:
-        return functools.partial(common_options, disable_options=disable_options)
 
-    f = debug_option(f)
-    f = show_server_timing_option(f)
-    f = verbose_option(f)
-    f = click.help_option("-h", "--help")(f)
+    def decorator(f: C) -> C:
+        f = debug_option(f)
+        f = show_server_timing_option(f)
+        f = verbose_option(f)
+        f = click.help_option("-h", "--help")(f)
 
-    # if the format option is being allowed, it needs to be applied to `f`
-    if "format" not in disable_options:
-        f = format_option(f)
+        # if the format option is being allowed, it needs to be applied to `f`
+        if "format" not in disable_options:
+            f = format_option(f)
 
-    # if the --map-http-status option is being allowed, ...
-    if "map_http_status" not in disable_options:
-        f = map_http_status_option(f)
+        # if the --map-http-status option is being allowed, ...
+        if "map_http_status" not in disable_options:
+            f = map_http_status_option(f)
 
-    return f
+        return f
+
+    return decorator
 
 
 def task_notify_option(f: C) -> C:
@@ -79,12 +79,14 @@ def task_notify_option(f: C) -> C:
     )(f)
 
 
-def task_submission_options(f):
+def task_submission_options(f: C) -> C:
     """
     Options shared by both transfer and delete task submission
     """
 
-    def format_deadline_callback(ctx, param, value):
+    def format_deadline_callback(
+        ctx: click.Context, param: click.Parameter, value: datetime.datetime | None
+    ) -> str | None:
         if not value:
             return None
         return value.strftime("%Y-%m-%d %H:%M:%S")
@@ -121,70 +123,69 @@ def task_submission_options(f):
 
 
 def delete_and_rm_options(
-    f: t.Callable | None = None,
     *,
     supports_batch: bool = True,
     default_enable_globs: bool = False,
-):
+) -> t.Callable[[C], C]:
     """
     Options which apply both to `globus delete` and `globus rm`
     """
-    if f is None:
-        return functools.partial(
-            delete_and_rm_options,
-            supports_batch=supports_batch,
-            default_enable_globs=default_enable_globs,
-        )
-    f = click.option("--recursive", "-r", is_flag=True, help="Recursively delete dirs")(
-        f
-    )
-    f = click.option(
-        "--ignore-missing",
-        "-f",
-        is_flag=True,
-        help="Don't throw errors if the file or dir is absent",
-    )(f)
-    f = click.option(
-        "--star-silent",
-        "--unsafe",
-        "star_silent",
-        is_flag=True,
-        help=(
-            'Don\'t prompt when the trailing character is a "*".'
-            + (" Implicit in --batch" if supports_batch else "")
-        ),
-    )(f)
-    f = click.option(
-        "--enable-globs/--no-enable-globs",
-        is_flag=True,
-        default=default_enable_globs,
-        show_default=True,
-        help=(
-            "Enable expansion of *, ?, and [ ] characters in the last "
-            "component of file paths, unless they are escaped with "
-            "a preceding backslash, \\"
-        ),
-    )(f)
-    if supports_batch:
+
+    def decorator(f: C) -> C:
         f = click.option(
-            "--batch",
-            type=click.File("r"),
-            help=textwrap.dedent(
-                """\
-                Accept a batch of paths from a file.
-                Use `-` to read from stdin.
-
-                Uses ENDPOINT_ID as passed on the commandline.
-
-                See documentation on "Batch Input" for more information.
-                """
+            "--recursive", "-r", is_flag=True, help="Recursively delete dirs"
+        )(f)
+        f = click.option(
+            "--ignore-missing",
+            "-f",
+            is_flag=True,
+            help="Don't throw errors if the file or dir is absent",
+        )(f)
+        f = click.option(
+            "--star-silent",
+            "--unsafe",
+            "star_silent",
+            is_flag=True,
+            help=(
+                'Don\'t prompt when the trailing character is a "*".'
+                + (" Implicit in --batch" if supports_batch else "")
             ),
         )(f)
-    return f
+        f = click.option(
+            "--enable-globs/--no-enable-globs",
+            is_flag=True,
+            default=default_enable_globs,
+            show_default=True,
+            help=(
+                "Enable expansion of *, ?, and [ ] characters in the last "
+                "component of file paths, unless they are escaped with "
+                "a preceding backslash, \\"
+            ),
+        )(f)
+        if supports_batch:
+            f = click.option(
+                "--batch",
+                type=click.File("r"),
+                help=textwrap.dedent(
+                    """\
+                    Accept a batch of paths from a file.
+                    Use `-` to read from stdin.
+
+                    Uses ENDPOINT_ID as passed on the commandline.
+
+                    See documentation on "Batch Input" for more information.
+                    """
+                ),
+            )(f)
+        return f
+
+    return decorator
 
 
-def synchronous_task_wait_options(f):
-    def polling_interval_callback(ctx, param, value):
+def synchronous_task_wait_options(f: C) -> C:
+    def polling_interval_callback(
+        ctx: click.Context, param: click.Parameter, value: int | None
+    ) -> int | None:
         if not value:
             return None
 
@@ -195,7 +196,9 @@ def synchronous_task_wait_options(f):
 
         return value
 
-    def exit_code_callback(ctx, param, value):
+    def exit_code_callback(
+        ctx: click.Context, param: click.Parameter, value: int | None
+    ) -> int | None:
         if not value:
             return None
 
@@ -249,13 +252,13 @@ def synchronous_task_wait_options(f):
 
 def security_principal_opts(
     *,
-    allow_anonymous=False,
-    allow_all_authenticated=False,
-    allow_provision=False,
-):
-    def preprocess_security_principals(f):
+    allow_anonymous: bool = False,
+    allow_all_authenticated: bool = False,
+    allow_provision: bool = False,
+) -> t.Callable[[C], C]:
+    def preprocess_security_principals(f: C) -> C:
         @functools.wraps(f)
-        def decorator(*args, **kwargs):
+        def wrapper(*args: t.Any, **kwargs: t.Any) -> t.Any:
             identity = kwargs.pop("identity", None)
             group = kwargs.pop("group", None)
             provision_identity = kwargs.pop("provision_identity", None)
@@ -290,15 +293,15 @@ def security_principal_opts(
 
             return f(*args, **kwargs)
 
-        return decorator
+        return t.cast(C, wrapper)
 
-    def decorate(f: t.Callable) -> t.Callable:
+    def decorate(f: C) -> C:
         # order matters here -- the preprocessor must run after option
         # application, so it has to be applied first
         if isinstance(f, click.Command):
             # if we're decorating a command, put the preprocessor on its
             # callback, not on `f` itself
-            f.callback = preprocess_security_principals(f.callback)
+            f.callback = preprocess_security_principals(t.cast(C, f.callback))
         else:
             # otherwise, we're applying to a function, but other decorators may
             # have been applied to give it params
@@ -352,7 +355,7 @@ def security_principal_opts(
     return decorate
 
 
-def no_local_server_option(f):
+def no_local_server_option(f: C) -> C:
     """
     Option for commands that start auth flows and might need to disable
     the default local server behavior

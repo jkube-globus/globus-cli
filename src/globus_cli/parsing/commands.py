@@ -10,6 +10,7 @@ from __future__ import annotations
 import importlib
 import logging
 import sys
+import typing as t
 from shutil import get_terminal_size
 
 import click
@@ -19,6 +20,8 @@ from globus_cli.termio import env_interactive
 
 from .shared_options import common_options
 from .shell_completion import print_completer_option
+
+C = t.TypeVar("C", bound=t.Union[click.Command, t.Callable[..., t.Any]])
 
 log = logging.getLogger(__name__)
 
@@ -60,7 +63,7 @@ class GlobusCommand(click.Command):
     you will need to manually activate the endpoint. See 'globus endpoint activate'
     for more details."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
         self.adoc_output = kwargs.pop("adoc_output", None)
         self.adoc_examples = kwargs.pop("adoc_examples", None)
         self.globus_disable_opts = kwargs.pop("globus_disable_opts", [])
@@ -84,9 +87,12 @@ class GlobusCommand(click.Command):
                 pass
         super().__init__(*args, **kwargs)
 
-    def invoke(self, ctx):
+    def invoke(self, ctx: click.Context) -> t.Any:
         log.debug("command invoke start")
         try:
+            # this isn't forcing interactive mode, it's just checking to see that
+            # the GLOBUS_CLI_INTERACTIVE value is *valid*
+            env_interactive(raising=True)
             return super().invoke(ctx)
         finally:
             log.debug("command invoke exit")
@@ -125,12 +131,6 @@ class GlobusCommand(click.Command):
             raise
 
 
-class GlobusCommandEnvChecks(GlobusCommand):
-    def invoke(self, ctx):
-        env_interactive(raising=True)
-        return super().invoke(ctx)
-
-
 class GlobusCommandGroup(click.Group):
     """
     This is a click.Group with any customizations which we deem necessary
@@ -144,10 +144,10 @@ class GlobusCommandGroup(click.Group):
 
     def __init__(
         self,
-        *args,
+        *args: t.Any,
         lazy_subcommands: dict[str, tuple[str, str]] | None = None,
-        **kwargs,
-    ):
+        **kwargs: t.Any,
+    ) -> None:
         super().__init__(*args, **kwargs)
         # lazy_subcommands is a map of the form:
         #
@@ -186,7 +186,7 @@ class GlobusCommandGroup(click.Group):
             )
         return cmd_object
 
-    def invoke(self, ctx):
+    def invoke(self, ctx: click.Context) -> t.Any:
         # if no subcommand was given (but, potentially, flags were passed),
         # ctx.protected_args will be empty
         # improves upon the built-in detection given on click.Group by
@@ -208,53 +208,45 @@ class TopLevelGroup(GlobusCommandGroup):
     passes them to a custom error handler.
     """
 
-    def invoke(self, ctx):
+    def invoke(self, ctx: click.Context) -> t.Any:
         try:
             return super().invoke(ctx)
         except Exception:
-            custom_except_hook(sys.exc_info())
+            # mypy thinks that exc_info could be (None, None, None), but... nope. False.
+            custom_except_hook(sys.exc_info())  # type: ignore[arg-type]
 
 
-def main_group(**kwargs):
-    def decorator(f):
-        f = click.group("globus", cls=TopLevelGroup, **kwargs)(f)
-        f = common_options(f)
-        f = print_completer_option(f)
-        return f
+def main_group(**kwargs: t.Any) -> t.Callable[[C], TopLevelGroup]:
+    def decorator(f: C) -> TopLevelGroup:
+        grp = click.group("globus", cls=TopLevelGroup, **kwargs)(f)
+        grp = common_options()(grp)
+        grp = print_completer_option(grp)
+        return grp
 
     return decorator
 
 
-def command(*args, **kwargs):
+def command(*args: t.Any, **kwargs: t.Any) -> t.Callable[[C], GlobusCommand]:
     """
     A helper for decorating commands a-la `click.command`, but pulling the help string
     from `<function>.__doc__` by default.
 
     Also allows the use of custom arguments, which are stored on the command, as in
     "adoc_examples".
-
-    `skip_env_checks` is used to disable environment variable validation prior to
-    running a command, but is ignored when a specific `cls` argument is passed.
     """
     disable_opts = kwargs.pop("disable_options", [])
 
-    def _inner_decorator(func):
-        if "cls" not in kwargs:
-            if kwargs.get("skip_env_checks", False) is True:
-                kwargs["cls"] = GlobusCommand
-            else:
-                kwargs["cls"] = GlobusCommandEnvChecks
-
+    def _inner_decorator(func: C) -> GlobusCommand:
         kwargs["globus_disable_opts"] = disable_opts
 
         return common_options(disable_options=disable_opts)(
-            click.command(*args, **kwargs)(func)
+            click.command(*args, cls=GlobusCommand, **kwargs)(func)
         )
 
     return _inner_decorator
 
 
-def group(*args, **kwargs):
+def group(*args: t.Any, **kwargs: t.Any) -> t.Callable[[C], GlobusCommandGroup]:
     """
     Wrapper over click.group which sets GlobusCommandGroup as the Class
 
@@ -266,9 +258,9 @@ def group(*args, **kwargs):
     """
     disable_opts = kwargs.pop("disable_options", [])
 
-    def inner_decorator(f):
-        f = click.group(*args, cls=GlobusCommandGroup, **kwargs)(f)
-        f = common_options(disable_options=disable_opts)(f)
-        return f
+    def inner_decorator(f: C) -> GlobusCommandGroup:
+        grp = click.group(*args, cls=GlobusCommandGroup, **kwargs)(f)
+        grp = common_options(disable_options=disable_opts)(grp)
+        return grp
 
     return inner_decorator

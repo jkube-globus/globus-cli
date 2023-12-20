@@ -16,7 +16,7 @@ UNIX_FORMAT = "unix"
 F = t.TypeVar("F", bound=t.Union[t.Callable, click.Command])
 
 
-def _setup_logging(level="DEBUG"):
+def _setup_logging(level: str = "DEBUG") -> None:
     conf = {
         "version": 1,
         "formatters": {
@@ -68,7 +68,7 @@ class CommandState:
 
 
 def format_option(f: F) -> F:
-    def callback(ctx, param, value):
+    def callback(ctx: click.Context, param: click.Parameter, value: t.Any) -> None:
         if not value:
             return
 
@@ -80,7 +80,9 @@ def format_option(f: F) -> F:
 
         state.output_format = value.lower()
 
-    def jmespath_callback(ctx, param, value):
+    def jmespath_callback(
+        ctx: click.Context, param: click.Parameter, value: t.Any
+    ) -> None:
         if value is None:
             return
 
@@ -116,7 +118,7 @@ def format_option(f: F) -> F:
 
 
 def debug_option(f: F) -> F:
-    def callback(ctx, param, value):
+    def callback(ctx: click.Context, param: click.Parameter, value: t.Any) -> None:
         if not value or ctx.resilient_parsing:
             # turn off warnings altogether
             _warnings.simplefilter("ignore")
@@ -138,7 +140,7 @@ def debug_option(f: F) -> F:
 
 
 def verbose_option(f: F) -> F:
-    def callback(ctx, param, value):
+    def callback(ctx: click.Context, param: click.Parameter, value: t.Any) -> None:
         # set state verbosity value from option
         state = ctx.ensure_object(CommandState)
         state.verbosity = value
@@ -186,7 +188,7 @@ def verbose_option(f: F) -> F:
 def map_http_status_option(f: F) -> F:
     exit_stat_set = [0, 1] + list(range(50, 100))
 
-    def per_val_callback(ctx, value):
+    def per_val_callback(ctx: click.Context, value: str | None) -> None:
         if value is None:
             return None
         state = ctx.ensure_object(CommandState)
@@ -197,12 +199,12 @@ def map_http_status_option(f: F) -> F:
             # iterate over those pairs, splitting them on `=` signs
             for http_stat, exit_stat in (pair.split("=") for pair in pairs):
                 # "parse" as ints
-                http_stat, exit_stat = int(http_stat), int(exit_stat)
+                http_stat_int, exit_stat_int = int(http_stat), int(exit_stat)
                 # force into the desired range
-                if exit_stat not in exit_stat_set:
+                if exit_stat_int not in exit_stat_set:
                     raise ValueError()
                 # map the status
-                state.http_status_map[http_stat] = exit_stat
+                state.http_status_map[http_stat_int] = exit_stat_int
         # two conditions can cause ValueError: split didn't give right number
         # of args, or results weren't int()-able
         except ValueError:
@@ -212,7 +214,7 @@ def map_http_status_option(f: F) -> F:
                 "0,1,50-99"
             )
 
-    def callback(ctx, param, value):
+    def callback(ctx: click.Context, param: click.Parameter, value: t.Any) -> None:
         """
         Wrap the per-value callback -- multiple=True means that the value is
         always a tuple of given vals.
@@ -233,7 +235,7 @@ def map_http_status_option(f: F) -> F:
 
 
 def show_server_timing_option(f: F) -> F:
-    def callback(ctx, param, value):
+    def callback(ctx: click.Context, param: click.Parameter, value: t.Any) -> None:
         if not value:
             return
         state = ctx.ensure_object(CommandState)

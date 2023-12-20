@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import typing as t
 import uuid
 
 import click
@@ -13,7 +16,7 @@ class EndpointPlusPath(click.ParamType):
 
     name = "endpoint plus path"
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
         # path requirement defaults to True, but can be tweaked by a kwarg
         self.path_required = kwargs.pop("path_required", True)
 
@@ -25,14 +28,14 @@ class EndpointPlusPath(click.ParamType):
         else:
             return tuple[uuid.UUID, str | None]
 
-    def get_metavar(self, param):
+    def get_metavar(self, param: click.Parameter | None) -> str:
         """
         Default metavar for this instance of the type.
         """
         return self.metavar
 
     @property
-    def metavar(self):
+    def metavar(self) -> str:
         """
         Metavar as a property, so that we can make it different if `path_required`
         """
@@ -41,7 +44,12 @@ class EndpointPlusPath(click.ParamType):
         else:
             return "ENDPOINT_ID[:PATH]"
 
-    def convert(self, value, param, ctx):
+    def convert(
+        self,
+        value: tuple[uuid.UUID, str | None] | str,
+        param: click.Parameter | None,
+        ctx: click.Context | None,
+    ) -> tuple[uuid.UUID, str | None]:
         """
         ParamType.convert() is the actual processing method that takes a
         provided parameter and parses it.
