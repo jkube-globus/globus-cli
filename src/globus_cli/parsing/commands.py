@@ -21,7 +21,7 @@ from globus_cli.termio import env_interactive
 from .shared_options import common_options
 from .shell_completion import print_completer_option
 
-C = t.TypeVar("C", bound=t.Union[click.Command | t.Callable[..., t.Any]])
+C = t.TypeVar("C", bound=t.Union[click.Command, t.Callable[..., t.Any]])
 
 log = logging.getLogger(__name__)
 
