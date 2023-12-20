@@ -90,6 +90,9 @@ class GlobusCommand(click.Command):
     def invoke(self, ctx: click.Context) -> t.Any:
         log.debug("command invoke start")
         try:
+            # this isn't forcing interactive mode, it's just checking to see that
+            # the GLOBUS_CLI_INTERACTIVE valude is *valid*
+            env_interactive(raising=True)
             return super().invoke(ctx)
         finally:
             log.debug("command invoke exit")
@@ -126,12 +129,6 @@ class GlobusCommand(click.Command):
                 click.echo("\n" + ctx.get_help(), err=True)
                 ctx.exit(2)
             raise
-
-
-class GlobusCommandEnvChecks(GlobusCommand):
-    def invoke(self, ctx: click.Context) -> t.Any:
-        env_interactive(raising=True)
-        return super().invoke(ctx)
 
 
 class GlobusCommandGroup(click.Group):
@@ -229,32 +226,21 @@ def main_group(**kwargs: t.Any) -> t.Callable[[C], TopLevelGroup]:
     return decorator
 
 
-def command(
-    *args: t.Any, **kwargs: t.Any
-) -> t.Callable[[C], GlobusCommand | GlobusCommandEnvChecks]:
+def command(*args: t.Any, **kwargs: t.Any) -> t.Callable[[C], GlobusCommand]:
     """
     A helper for decorating commands a-la `click.command`, but pulling the help string
     from `<function>.__doc__` by default.
 
     Also allows the use of custom arguments, which are stored on the command, as in
     "adoc_examples".
-
-    `skip_env_checks` is used to disable environment variable validation prior to
-    running a command, but is ignored when a specific `cls` argument is passed.
     """
     disable_opts = kwargs.pop("disable_options", [])
 
-    def _inner_decorator(func: C) -> GlobusCommand | GlobusCommandEnvChecks:
-        if "cls" not in kwargs:
-            if kwargs.get("skip_env_checks", False) is True:
-                kwargs["cls"] = GlobusCommand
-            else:
-                kwargs["cls"] = GlobusCommandEnvChecks
-
+    def _inner_decorator(func: C) -> GlobusCommand:
         kwargs["globus_disable_opts"] = disable_opts
 
-        return common_options(disable_options=disable_opts)(  # type: ignore[no-any-return]  # noqa: E501
-            click.command(*args, **kwargs)(func)
+        return common_options(disable_options=disable_opts)(
+            click.command(*args, cls=GlobusCommand, **kwargs)(func)
         )
 
     return _inner_decorator
