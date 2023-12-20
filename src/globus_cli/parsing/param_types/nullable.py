@@ -8,35 +8,6 @@ import click
 from globus_cli.constants import EXPLICIT_NULL, ExplicitNullType
 
 
-def nullable_multi_callback(null: t.Any = "null") -> t.Callable[..., t.Any]:
-    """
-    A callback which converts multiple=True options as follows:
-    - empty results, [] => None
-    - [<null>,] => []
-    - anything else => passthrough
-
-    This makes the null value explicit, and not setting it results in omission, not
-    clearing.
-
-    The null value used here is tunable. If set to a non-string value when using a
-    string type, like `None`, it means that "there is no null value" because
-    there is no way to pass `[]`
-
-    Note that this will see values after the type conversion has happened.
-    """
-
-    def callback(
-        ctx: click.Context, param: click.Parameter, value: t.Sequence[t.Any] | None
-    ) -> t.Any:
-        if value is None or len(value) == 0:
-            return None
-        if len(value) == 1 and value[0] == null:
-            return []
-        return value
-
-    return callback
-
-
 class StringOrNull(click.ParamType):
     """
     Very similar to a basic string type, but one in which the empty string will

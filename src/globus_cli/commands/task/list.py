@@ -10,7 +10,7 @@ import click
 from globus_sdk.paging import Paginator
 
 from globus_cli.login_manager import LoginManager
-from globus_cli.parsing import AnnotatedOption, command
+from globus_cli.parsing import command
 from globus_cli.termio import Field, display
 from globus_cli.utils import PagingWrapper
 
@@ -141,32 +141,24 @@ globus task list --format=unix --jmespath='DATA[*].[task_id, status]' | \
     type=click.DateTime(),
     callback=_format_date_callback,
     help="Filter results to tasks that were requested after given time.",
-    cls=AnnotatedOption,
-    type_annotation=str,
 )
 @click.option(
     "--filter-requested-before",
     type=click.DateTime(),
     callback=_format_date_callback,
     help="Filter results to tasks that were requested before given time.",
-    cls=AnnotatedOption,
-    type_annotation=str,
 )
 @click.option(
     "--filter-completed-after",
     type=click.DateTime(),
     callback=_format_date_callback,
     help="Filter results to tasks that were completed after given time.",
-    cls=AnnotatedOption,
-    type_annotation=str,
 )
 @click.option(
     "--filter-completed-before",
     type=click.DateTime(),
     callback=_format_date_callback,
     help="Filter results to tasks that were completed before given time.",
-    cls=AnnotatedOption,
-    type_annotation=str,
 )
 @LoginManager.requires_login("transfer")
 def task_list(

@@ -12,14 +12,12 @@ import click
 
 from globus_cli import utils
 from globus_cli.parsing.mutex_group import MutexInfo, mutex_option_group
-from globus_cli.parsing.param_classes import AnnotatedOption
 from globus_cli.parsing.param_types import (
     CommaDelimitedList,
     LocationType,
     StringOrNull,
     UrlOrNull,
 )
-from globus_cli.types import DictType
 
 C = t.TypeVar("C", bound=t.Union[t.Callable, click.Command])
 
@@ -204,8 +202,6 @@ def _apply_endpointish_create_or_update_params(
             type=click.Choice(["force", "disable", "default"], case_sensitive=False),
             callback=_verify_choice_to_dict,
             help=verify_help,
-            type_annotation=DictType[str, bool],
-            cls=AnnotatedOption,
         )
     else:
         decorators["verify"] = click.option(

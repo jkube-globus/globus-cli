@@ -8,7 +8,7 @@ from click.shell_completion import CompletionItem
 
 def _empty_dict_callback(
     ctx: click.Context, param: click.Parameter, value: t.Any
-) -> t.Any:
+) -> dict[str, bool]:
     if value is None:
         return {}
     return value

@@ -14,9 +14,7 @@ from globus_cli.parsing.command_state import (
     show_server_timing_option,
     verbose_option,
 )
-from globus_cli.parsing.param_classes import AnnotatedOption
 from globus_cli.parsing.param_types import NotificationParamType
-from globus_cli.types import DictType
 
 C = t.TypeVar("C", bound=t.Union[t.Callable, click.Command])
 
@@ -74,8 +72,6 @@ def task_notify_option(f: C) -> C:
             "for all event types. Otherwise, use 'succeeded', 'failed', or "
             "'inactive'."
         ),
-        cls=AnnotatedOption,
-        type_annotation=DictType[str, bool],
     )(f)
 
 

@@ -4,7 +4,6 @@ import click
 import globus_sdk
 
 from globus_cli.login_manager.utils import get_current_identity_id
-from globus_cli.parsing import AnnotatedOption
 from globus_cli.termio import Field, formatters
 from globus_cli.types import DATA_CONTAINER_T
 
@@ -35,8 +34,6 @@ identity_id_option = click.option(
     "--identity-id",
     help="User who should own the collection (defaults to the current user)",
     callback=_identity_id_callback,
-    cls=AnnotatedOption,
-    type_annotation=LazyCurrentIdentity,
 )
 
 
