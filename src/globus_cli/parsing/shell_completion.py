@@ -1,6 +1,9 @@
 import os
+import typing as t
 
 import click
+
+C = t.TypeVar("C", bound=t.Union[t.Callable[..., t.Any], click.Command])
 
 # pulled by running `_GLOBUS_COMPLETE=source globus` in a bash shell
 BASH_SHELL_COMPLETER = r"""
@@ -73,8 +76,8 @@ compdef _globus_completion globus;
 """  # noqa: E501
 
 
-def print_completer_option(f):
-    def callback(ctx, param, value):
+def print_completer_option(f: C) -> C:
+    def callback(ctx: click.Context, param: click.Parameter, value: str | None) -> None:
         if not value or ctx.resilient_parsing:
             return
 
@@ -97,7 +100,7 @@ def print_completer_option(f):
 
         click.get_current_context().exit(0)
 
-    def _compopt(flag, value):
+    def _compopt(flag: str, value: str) -> t.Callable[[C], C]:
         return click.option(
             flag,
             hidden=True,
