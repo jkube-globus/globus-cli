@@ -71,7 +71,7 @@ $ globus task wait "$task_id"
 """,
 )
 @task_submission_options
-@delete_and_rm_options
+@delete_and_rm_options()
 @local_user_option
 @click.argument("endpoint_plus_path", type=ENDPOINT_PLUS_OPTPATH)
 @LoginManager.requires_login("transfer")

@@ -219,7 +219,7 @@ class TopLevelGroup(GlobusCommandGroup):
 def main_group(**kwargs: t.Any) -> t.Callable[[C], TopLevelGroup]:
     def decorator(f: C) -> TopLevelGroup:
         grp = click.group("globus", cls=TopLevelGroup, **kwargs)(f)
-        grp = common_options(grp)
+        grp = common_options()(grp)
         grp = print_completer_option(grp)
         return grp
 
