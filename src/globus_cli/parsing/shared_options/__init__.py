@@ -20,9 +20,19 @@ from globus_cli.types import DictType
 C = t.TypeVar("C", bound=t.Union[t.Callable, click.Command])
 
 
+@t.overload
+def common_options(f: C, *, disable_options: list[str] | None = None) -> C:
+    ...
+
+
+@t.overload
+def common_options(*, disable_options: list[str] | None = None) -> t.Callable[[C], C]:
+    ...
+
+
 def common_options(
-    f: t.Callable | None = None, *, disable_options: list[str] | None = None
-) -> t.Callable:
+    f: C | None = None, *, disable_options: list[str] | None = None
+) -> C | t.Callable[[C], C]:
     """
     This is a multi-purpose decorator for applying a "base" set of options
     shared by all commands.
