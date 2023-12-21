@@ -41,7 +41,6 @@ globus ls "${ep_id}:/${dir_to_ls}"
     "--personal",
     is_flag=True,
     default=True,
-    type_annotation=bool,
     help="Use local Globus Connect Personal endpoint (default)",
 )
 def local_id(*, personal: bool) -> None:

@@ -7,15 +7,6 @@ import click
 C = t.TypeVar("C", bound=t.Union[click.BaseCommand, t.Callable])
 
 
-def _eval_annotation(annotation: str) -> type:
-    import uuid
-
-    # globals for this eval are whatever module names were used in
-    # OneUseOption annotations
-    # for now, only 'uuid'
-    return t.cast(type, eval(annotation, {"uuid": uuid}, {}))
-
-
 class OneUseOption(click.Option):
     """
     Overwrites the type_cast_value function inherited from click.Parameter
@@ -26,22 +17,26 @@ class OneUseOption(click.Option):
     def __init__(
         self,
         *args: t.Any,
-        type_annotation: type | str | None = None,
         **kwargs: t.Any,
     ) -> None:
         super().__init__(*args, **kwargs)
-        if type_annotation is None:
-            raise TypeError("OneUseOption requires a type annotation.")
-        self._type_annotation = type_annotation
 
     def has_explicit_annotation(self) -> bool:
         return True
 
     @property
     def type_annotation(self) -> type:
-        if isinstance(self._type_annotation, str):
-            self._type_annotation = _eval_annotation(self._type_annotation)
-        return self._type_annotation
+        from globus_cli.parsing.param_types import EndpointPlusPath
+
+        if self.count:
+            return bool
+
+        if isinstance(self.type, EndpointPlusPath):
+            return self.type.get_type_annotation(self) | None  # type: ignore[return-value]  # noqa: E501
+
+        raise NotImplementedError(
+            "OneUseOption requires a type annotation in this case."
+        )
 
     def type_cast_value(self, ctx: click.Context, value: t.Any) -> t.Any:
         # get the result of a normal type_cast
@@ -72,9 +67,7 @@ class OneUseOption(click.Option):
             )
 
 
-def one_use_option(
-    *args: t.Any, type_annotation: type | str, **kwargs: t.Any
-) -> t.Callable[[C], C]:
+def one_use_option(*args: t.Any, **kwargs: t.Any) -> t.Callable[[C], C]:
     """
     Wrapper of the click.option decorator that replaces any instances of
     the Option class with the custom OneUseOption class
@@ -94,7 +87,6 @@ def one_use_option(
 
     # use our OneUseOption class instead of a normal Option
     kwargs["cls"] = OneUseOption
-    kwargs["type_annotation"] = type_annotation
 
     # if dealing with a flag, switch to a counting option,
     # and then assert if the count is not greater than 1 and cast to a bool
