@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-import typing as t
-
 import click
 from click.shell_completion import CompletionItem
 
 
 def _empty_dict_callback(
-    ctx: click.Context, param: click.Parameter, value: t.Any
+    ctx: click.Context, param: click.Parameter, value: dict[str, bool] | None
 ) -> dict[str, bool]:
     if value is None:
         return {}

@@ -59,7 +59,9 @@ GCP_FIELDS = [Field("Setup Key", "globus_connect_setup_key")]
         "Create a shared endpoint hosted on the given endpoint and path. "
         "Mutually exclusive with --personal and --server."
     ),
-    type_annotation=t.Optional[TupleType[uuid.UUID, str]],  # type: ignore[type-arg]
+    type_annotation=t.Optional[  # type: ignore[arg-type]
+        TupleType[uuid.UUID, str]  # type: ignore[type-arg]
+    ],
 )
 @mutex_option_group("--shared", "--server", "--personal")
 @LoginManager.requires_login("transfer")

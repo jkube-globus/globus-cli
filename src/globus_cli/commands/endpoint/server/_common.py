@@ -4,9 +4,6 @@ import typing as t
 
 import click
 
-from globus_cli.parsing import AnnotatedOption
-from globus_cli.types import TupleType
-
 C = t.TypeVar("C", bound=t.Union[t.Callable[..., t.Any], click.Command])
 
 
@@ -88,14 +85,6 @@ def _server_add_and_update_opts(
         f = click.option(
             f"--{adjective}-data-ports",
             callback=port_range_callback,
-            cls=AnnotatedOption,
-            # mypy flags this as an unexpected number of arguments to a TypeAlias, but
-            # TupleType aliases t.Tuple/tuple which is variadic
-            # TypeVarTuple will make this more possible to support, but it's
-            # "experimental" in mypy at this time
-            type_annotation=t.Optional[
-                TupleType[t.Optional[int], t.Optional[int]]  # type: ignore[type-arg]
-            ],
             help="Indicate to firewall administrators at other sites how to "
             "allow {} traffic {} this server {} their own. Specify as "
             "either 'unspecified', 'unrestricted', or as range of "

@@ -6,7 +6,7 @@ from globus_cli.parsing.param_classes import OneUseOption, one_use_option
 
 def test_one_use_option_multiple_allows_unused(runner):
     @click.command()
-    @click.option("--foo", multiple=True, cls=OneUseOption)
+    @click.option("--foo", multiple=True, cls=OneUseOption, type_annotation=str)
     def testcmd(foo):
         click.echo(foo)
 
@@ -17,7 +17,7 @@ def test_one_use_option_multiple_allows_unused(runner):
 
 def test_one_use_option_multiple_allows_single_use(runner):
     @click.command()
-    @click.option("--foo", multiple=True, cls=OneUseOption)
+    @click.option("--foo", multiple=True, cls=OneUseOption, type_annotation=str)
     def testcmd(foo):
         click.echo(foo)
 
@@ -28,7 +28,7 @@ def test_one_use_option_multiple_allows_single_use(runner):
 
 def test_one_use_option_multiple_rejects_opt_used_twice(runner):
     @click.command()
-    @click.option("--foo", multiple=True, cls=OneUseOption)
+    @click.option("--foo", multiple=True, cls=OneUseOption, type_annotation=str)
     def testcmd(foo):
         click.echo(foo)
 
@@ -39,7 +39,7 @@ def test_one_use_option_multiple_rejects_opt_used_twice(runner):
 
 def test_one_use_option_count_allows_unused(runner):
     @click.command()
-    @click.option("--foo", count=True, cls=OneUseOption)
+    @click.option("--foo", count=True, cls=OneUseOption, type_annotation=str)
     def testcmd(foo):
         click.echo(foo)
 
@@ -50,7 +50,7 @@ def test_one_use_option_count_allows_unused(runner):
 
 def test_one_use_option_count_allows_used_once(runner):
     @click.command()
-    @click.option("--foo", count=True, cls=OneUseOption)
+    @click.option("--foo", count=True, cls=OneUseOption, type_annotation=str)
     def testcmd(foo):
         click.echo(foo)
 
@@ -61,7 +61,7 @@ def test_one_use_option_count_allows_used_once(runner):
 
 def test_one_use_option_count_rejects_opt_used_twice(runner):
     @click.command()
-    @click.option("--foo", count=True, cls=OneUseOption)
+    @click.option("--foo", count=True, cls=OneUseOption, type_annotation=str)
     def testcmd(foo):
         click.echo(foo)
 
@@ -72,7 +72,7 @@ def test_one_use_option_count_rejects_opt_used_twice(runner):
 
 def test_one_use_option_fails_if_neither_count_nor_multiple(runner):
     @click.command()
-    @click.option("--foo", cls=OneUseOption)
+    @click.option("--foo", cls=OneUseOption, type_annotation=str)
     def testcmd(foo):
         click.echo(foo)
 
@@ -86,9 +86,9 @@ def test_one_use_option_fails_if_neither_count_nor_multiple(runner):
 @pytest.mark.parametrize("kwargs", ({"multiple": True}, {"count": True}))
 def test_one_use_option_decorator_rejects_params(kwargs):
     with pytest.raises(ValueError, match="cannot be used with multiple or count"):
-        one_use_option("--foo", **kwargs)
+        one_use_option("--foo", type_annotation=str, **kwargs)
 
 
 def test_one_use_option_decorator_rejects_alternate_cls():
     with pytest.raises(ValueError, match="cannot overwrite cls"):
-        one_use_option("--foo", cls=click.Option)
+        one_use_option("--foo", cls=click.Option, type_annotation=str)

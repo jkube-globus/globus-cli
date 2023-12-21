@@ -7,39 +7,30 @@ import click
 C = t.TypeVar("C", bound=t.Union[click.BaseCommand, t.Callable])
 
 
-class _SENTINEL:
-    pass
-
-
-class AnnotatedOption(click.Option):
-    def __init__(
-        self,
-        *args: t.Any,
-        type_annotation: type = _SENTINEL,
-        **kwargs: t.Any,
-    ) -> None:
-        super().__init__(*args, **kwargs)
-        self._type_annotation = type_annotation
-
-    def has_explicit_annotation(self) -> bool:
-        if self._type_annotation == _SENTINEL:
-            return False
-        return True
-
-    @property
-    def type_annotation(self) -> type:
-        if self._type_annotation == _SENTINEL:
-            raise ValueError("cannot get annotation from option when it is not set")
-
-        return self._type_annotation
-
-
-class OneUseOption(AnnotatedOption):
+class OneUseOption(click.Option):
     """
     Overwrites the type_cast_value function inherited from click.Parameter
     to assert an option was only used once, and then converts it back
     to the original value type.
     """
+
+    def __init__(
+        self,
+        *args: t.Any,
+        type_annotation: type | None = None,
+        **kwargs: t.Any,
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        if type_annotation is None:
+            raise TypeError("OneUseOption requires a type annotation.")
+        self._type_annotation = type_annotation
+
+    def has_explicit_annotation(self) -> bool:
+        return True
+
+    @property
+    def type_annotation(self) -> type:
+        return self._type_annotation
 
     def type_cast_value(self, ctx: click.Context, value: t.Any) -> t.Any:
         # get the result of a normal type_cast
@@ -70,7 +61,9 @@ class OneUseOption(AnnotatedOption):
             )
 
 
-def one_use_option(*args: t.Any, **kwargs: t.Any) -> t.Callable[[C], C]:
+def one_use_option(
+    *args: t.Any, type_annotation: type, **kwargs: t.Any
+) -> t.Callable[[C], C]:
     """
     Wrapper of the click.option decorator that replaces any instances of
     the Option class with the custom OneUseOption class
@@ -90,6 +83,7 @@ def one_use_option(*args: t.Any, **kwargs: t.Any) -> t.Callable[[C], C]:
 
     # use our OneUseOption class instead of a normal Option
     kwargs["cls"] = OneUseOption
+    kwargs["type_annotation"] = type_annotation
 
     # if dealing with a flag, switch to a counting option,
     # and then assert if the count is not greater than 1 and cast to a bool

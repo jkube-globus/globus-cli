@@ -5,7 +5,7 @@ import click
 
 def emptyable_opt_list_callback(
     ctx: click.Context, param: click.Parameter, value: tuple[str, ...]
-) -> list[str, ...] | None:
+) -> list[str] | None:
     """
     A callback which converts multiple=True options as follows:
     - empty results, () => None
@@ -16,4 +16,4 @@ def emptyable_opt_list_callback(
         return None
     if value == ("",):
         return []
-    return value
+    return list(value)
