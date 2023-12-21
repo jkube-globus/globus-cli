@@ -13,7 +13,7 @@ def _eval_annotation(annotation: str) -> type:
     # globals for this eval are whatever module names were used in
     # OneUseOption annotations
     # for now, only 'uuid'
-    return eval(annotation, {"uuid": uuid}, {})
+    return t.cast(type, eval(annotation, {"uuid": uuid}, {}))
 
 
 class OneUseOption(click.Option):
@@ -73,7 +73,7 @@ class OneUseOption(click.Option):
 
 
 def one_use_option(
-    *args: t.Any, type_annotation: type, **kwargs: t.Any
+    *args: t.Any, type_annotation: type | str, **kwargs: t.Any
 ) -> t.Callable[[C], C]:
     """
     Wrapper of the click.option decorator that replaces any instances of
