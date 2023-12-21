@@ -7,6 +7,15 @@ import click
 C = t.TypeVar("C", bound=t.Union[click.BaseCommand, t.Callable])
 
 
+def _eval_annotation(annotation: str) -> type:
+    import uuid
+
+    # globals for this eval are whatever module names were used in
+    # OneUseOption annotations
+    # for now, only 'uuid'
+    return eval(annotation, {"uuid": uuid}, {})
+
+
 class OneUseOption(click.Option):
     """
     Overwrites the type_cast_value function inherited from click.Parameter
@@ -17,7 +26,7 @@ class OneUseOption(click.Option):
     def __init__(
         self,
         *args: t.Any,
-        type_annotation: type | None = None,
+        type_annotation: type | str | None = None,
         **kwargs: t.Any,
     ) -> None:
         super().__init__(*args, **kwargs)
@@ -30,6 +39,8 @@ class OneUseOption(click.Option):
 
     @property
     def type_annotation(self) -> type:
+        if isinstance(self._type_annotation, str):
+            self._type_annotation = _eval_annotation(self._type_annotation)
         return self._type_annotation
 
     def type_cast_value(self, ctx: click.Context, value: t.Any) -> t.Any:
