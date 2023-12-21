@@ -3,7 +3,6 @@ from __future__ import annotations
 import click
 import pytest
 
-import globus_cli.parsing
 from globus_cli.reflect import iter_all_commands
 from globus_cli.types import JsonValue
 
@@ -31,24 +30,6 @@ _ALL_COMMANDS_TO_TEST: tuple[tuple[str, str], ...] = (
 def _command_id_fn(val):
     assert isinstance(val, click.Command)
     return val.callback.__module__
-
-
-_ALL_PARSING_ATTRS = {
-    attrname: getattr(globus_cli.parsing, attrname)
-    for attrname in globus_cli.parsing.__all__
-}
-_ALL_CUSTOM_PARAM_TYPES = (
-    getattr(globus_cli.parsing, attrname)
-    for attrname, attrval in _ALL_PARSING_ATTRS.items()
-    if isinstance(attrval, type) and issubclass(attrval, click.ParamType)
-)
-
-
-@pytest.mark.parametrize(
-    "param_type", _ALL_CUSTOM_PARAM_TYPES, ids=lambda x: x.__name__
-)
-def test_custom_param_types_are_annotated(param_type):
-    assert isinstance(param_type, click_type_test.AnnotatedParamType)
 
 
 @pytest.mark.parametrize("command", _ALL_COMMANDS_TO_TEST, ids=_command_id_fn)

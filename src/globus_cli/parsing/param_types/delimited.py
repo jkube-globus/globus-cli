@@ -22,9 +22,6 @@ class CommaDelimitedList(click.ParamType):
         self.convert_values = convert_values
         self.choices = list(choices) if choices is not None else None
 
-    def get_type_annotation(self, param: click.Parameter) -> type:
-        return list[str]
-
     def get_metavar(self, param: click.Parameter) -> str:
         if self.choices is not None:
             return "{" + ",".join(self.choices) + "}"

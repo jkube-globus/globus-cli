@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import typing as t
 from urllib.parse import urlparse
 
 import click
@@ -14,15 +13,12 @@ class StringOrNull(click.ParamType):
     be converted into an EXPLICIT_NULL
     """
 
-    def get_type_annotation(self, param: click.Parameter) -> type:
-        return t.cast(type, str | ExplicitNullType)
-
     def get_metavar(self, param: click.Parameter) -> str:
         return "TEXT"
 
     def convert(
-        self, value: t.Any, param: click.Parameter | None, ctx: click.Context | None
-    ) -> t.Any:
+        self, value: str, param: click.Parameter | None, ctx: click.Context | None
+    ) -> str | ExplicitNullType:
         if value == "":
             return EXPLICIT_NULL
         else:
@@ -39,8 +35,8 @@ class UrlOrNull(StringOrNull):
         return "TEXT"
 
     def convert(
-        self, value: t.Any, param: click.Parameter | None, ctx: click.Context | None
-    ) -> t.Any:
+        self, value: str, param: click.Parameter | None, ctx: click.Context | None
+    ) -> str | ExplicitNullType:
         if value == "":
             return EXPLICIT_NULL
         else:

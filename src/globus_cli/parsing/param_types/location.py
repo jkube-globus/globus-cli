@@ -13,14 +13,9 @@ class LocationType(click.ParamType):
 
     name = "LATITUDE,LONGITUDE"
 
-    def get_type_annotation(self, param: click.Parameter) -> type:
-        # mypy does not recognize this as a valid usage at runtime
-        # ignore for now
-        return str
-
     def convert(
         self, value: t.Any, param: click.Parameter | None, ctx: click.Context | None
-    ) -> t.Any:
+    ) -> str:
         match_result = re.match(r"^([^,]+),([^,]+)$", value)
         if not match_result:
             self.fail(
