@@ -40,7 +40,7 @@ def update_command(
     *,
     permissions: Literal["r", "rw"],
     rule_id: str,
-    endpoint_id: uuid.UUID
+    endpoint_id: uuid.UUID,
 ) -> None:
     """
     Update an existing access control rule's permissions.
