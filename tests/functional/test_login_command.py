@@ -20,7 +20,7 @@ def test_login_validates_token(
     disable_login_manager_validate_token.undo()
 
     with mock.patch("globus_cli.login_manager.manager.internal_auth_client") as m:
-        ac = mock.MagicMock(spec=globus_sdk.NativeAppAuthClient)
+        ac = mock.MagicMock(spec=globus_sdk.ConfidentialAppAuthClient)
         m.return_value = ac
 
         run_line("globus login")
@@ -28,8 +28,12 @@ def test_login_validates_token(
         by_rs = mock_login_token_response.by_resource_server
         a_rt = by_rs["auth.globus.org"]["refresh_token"]
         t_rt = by_rs["transfer.api.globus.org"]["refresh_token"]
-        ac.oauth2_validate_token.assert_any_call(a_rt)
-        ac.oauth2_validate_token.assert_any_call(t_rt)
+        ac.post.assert_any_call(
+            "/v2/oauth2/token/validate", data={"token": a_rt}, encoding="form"
+        )
+        ac.post.assert_any_call(
+            "/v2/oauth2/token/validate", data={"token": t_rt}, encoding="form"
+        )
 
 
 class MockToken:
