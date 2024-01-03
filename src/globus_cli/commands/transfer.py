@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import datetime
 import sys
 import typing as t
 import uuid
@@ -234,7 +233,7 @@ def transfer_command(
     submission_id: str | None,
     dry_run: bool,
     delete: bool,
-    deadline: datetime.datetime | None,
+    deadline: str | None,
     skip_activation_check: bool,
     notify: dict[str, bool],
     perf_cc: int | None,

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import datetime
 import typing as t
 import uuid
 
@@ -87,7 +86,7 @@ def delete_command(
     label: str | None,
     submission_id: str | None,
     dry_run: bool,
-    deadline: datetime.datetime | None,
+    deadline: str | None,
     skip_activation_check: bool,
     notify: dict[str, bool],
     local_user: str | None,

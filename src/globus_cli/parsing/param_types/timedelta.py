@@ -33,7 +33,7 @@ class TimedeltaType(click.ParamType):
 
     name = "TIMEDELTA"
 
-    def __init__(self, *, convert_to_seconds: bool = True):
+    def __init__(self, *, convert_to_seconds: bool = True) -> None:
         self._convert_to_seconds = convert_to_seconds
 
     def get_type_annotation(self, param: click.Parameter) -> type:

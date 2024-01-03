@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import typing as t
 
 import click
@@ -18,7 +20,7 @@ def deprecated_verify_option(f: F) -> F:
                 hidden=True,
                 is_flag=True,
                 default=None,
-                callback=_warning_callback,
+                callback=_deprecated_verify_warning_callback,
             ),
             mutex_option_group(
                 MutexInfo("--disable-verify", present=lambda val: val is not None),
@@ -28,9 +30,9 @@ def deprecated_verify_option(f: F) -> F:
     )
 
 
-def _warning_callback(
-    ctx: click.Context, param: click.Parameter, value: t.Any
-) -> t.Any:
+def _deprecated_verify_warning_callback(
+    ctx: click.Context, param: click.Parameter, value: bool | None
+) -> bool | None:
     if value is not None:
         print_command_hint(
             """\

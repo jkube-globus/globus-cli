@@ -7,39 +7,36 @@ import click
 C = t.TypeVar("C", bound=t.Union[click.BaseCommand, t.Callable])
 
 
-class _SENTINEL:
-    pass
-
-
-class AnnotatedOption(click.Option):
-    def __init__(
-        self,
-        *args: t.Any,
-        type_annotation: type = _SENTINEL,
-        **kwargs: t.Any,
-    ) -> None:
-        super().__init__(*args, **kwargs)
-        self._type_annotation = type_annotation
-
-    def has_explicit_annotation(self) -> bool:
-        if self._type_annotation == _SENTINEL:
-            return False
-        return True
-
-    @property
-    def type_annotation(self) -> type:
-        if self._type_annotation == _SENTINEL:
-            raise ValueError("cannot get annotation from option when it is not set")
-
-        return self._type_annotation
-
-
-class OneUseOption(AnnotatedOption):
+class OneUseOption(click.Option):
     """
     Overwrites the type_cast_value function inherited from click.Parameter
     to assert an option was only used once, and then converts it back
     to the original value type.
     """
+
+    def __init__(
+        self,
+        *args: t.Any,
+        **kwargs: t.Any,
+    ) -> None:
+        super().__init__(*args, **kwargs)
+
+    def has_explicit_annotation(self) -> bool:
+        return True
+
+    @property
+    def type_annotation(self) -> type:
+        from globus_cli.parsing.param_types import EndpointPlusPath
+
+        if self.count:
+            return bool
+
+        if isinstance(self.type, EndpointPlusPath):
+            return self.type.get_type_annotation(self) | None  # type: ignore[return-value]  # noqa: E501
+
+        raise NotImplementedError(
+            "OneUseOption requires a type annotation in this case."
+        )
 
     def type_cast_value(self, ctx: click.Context, value: t.Any) -> t.Any:
         # get the result of a normal type_cast

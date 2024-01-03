@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import sys
-import typing as t
 import uuid
 
 from globus_cli.constants import ExplicitNullType
@@ -15,7 +14,6 @@ from globus_cli.parsing import (
     one_use_option,
 )
 from globus_cli.termio import Field, TextMode, display, print_command_hint
-from globus_cli.types import TupleType
 
 from ._common import validate_endpoint_create_and_update_params
 
@@ -36,7 +34,6 @@ GCP_FIELDS = [Field("Setup Key", "globus_connect_setup_key")]
 @one_use_option(
     "--personal",
     is_flag=True,
-    type_annotation=bool,
     help=(
         "Create a Globus Connect Personal endpoint. "
         "Mutually exclusive with --server and --shared."
@@ -45,7 +42,6 @@ GCP_FIELDS = [Field("Setup Key", "globus_connect_setup_key")]
 @one_use_option(
     "--server",
     is_flag=True,
-    type_annotation=bool,
     help=(
         "Create a Globus Connect Server endpoint. "
         "Mutually exclusive with --personal and --shared."
@@ -59,7 +55,6 @@ GCP_FIELDS = [Field("Setup Key", "globus_connect_setup_key")]
         "Create a shared endpoint hosted on the given endpoint and path. "
         "Mutually exclusive with --personal and --server."
     ),
-    type_annotation=t.Optional[TupleType[uuid.UUID, str]],  # type: ignore[type-arg]
 )
 @mutex_option_group("--shared", "--server", "--personal")
 @LoginManager.requires_login("transfer")

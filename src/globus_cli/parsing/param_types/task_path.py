@@ -87,17 +87,12 @@ class TaskPath(click.ParamType):
         # the original path, as consumed before processing
         self.orig_path: str | None = None
 
-    def get_type_annotation(self, param: click.Parameter) -> type:
-        return TaskPath
-
     def convert(
         self,
         value: str | TaskPath,
         param: click.Parameter | None,
         ctx: click.Context | None,
-    ) -> str | TaskPath | None:
-        if not ctx or ctx.resilient_parsing:
-            return None
+    ) -> TaskPath:
         if isinstance(value, TaskPath):
             return value
 

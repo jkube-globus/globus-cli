@@ -13,16 +13,6 @@ if sys.version_info >= (3, 10):
 else:
     from typing_extensions import TypeAlias
 
-# runtime usable types (see AnnotatedOption for a use-case)
-if sys.version_info >= (3, 9):
-    DictType = dict
-    ListType = list
-    TupleType = tuple
-else:
-    DictType = t.Dict
-    ListType = t.List
-    TupleType = t.Tuple
-
 if sys.version_info >= (3, 8):
     from typing import Literal
 else:

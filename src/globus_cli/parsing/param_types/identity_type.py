@@ -53,9 +53,6 @@ class IdentityType(click.ParamType):
         self.allow_domains = allow_domains
         self.allow_b32_usernames = allow_b32_usernames
 
-    def get_type_annotation(self, param: click.Parameter) -> type:
-        return ParsedIdentity
-
     def convert(
         self, value: str, param: click.Parameter | None, ctx: click.Context | None
     ) -> ParsedIdentity:

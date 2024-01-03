@@ -8,7 +8,7 @@ from .identity_type import IdentityType, ParsedIdentity
 from .json_strorfile import JSONStringOrFile, ParsedJSONData
 from .location import LocationType
 from .notify_param import NotificationParamType
-from .nullable import StringOrNull, UrlOrNull, nullable_multi_callback
+from .nullable import StringOrNull, UrlOrNull
 from .task_path import TaskPath
 from .timedelta import TimedeltaType
 
@@ -28,5 +28,4 @@ __all__ = (
     "TaskPath",
     "TimedeltaType",
     "UrlOrNull",
-    "nullable_multi_callback",
 )

@@ -11,16 +11,14 @@ from globus_cli.constants import ExplicitNullType
 from globus_cli.endpointish import EntityType
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import (
-    AnnotatedOption,
     JSONStringOrFile,
     ParsedJSONData,
     collection_id_arg,
     command,
+    emptyable_opt_list_callback,
     endpointish_params,
-    nullable_multi_callback,
 )
 from globus_cli.termio import Field, TextMode, display
-from globus_cli.types import ListType
 
 _MULTI_USE_OPTION_STR = "Give this option multiple times in a single command"
 
@@ -95,27 +93,23 @@ class _FullDataField(Field):
     "--sharing-user-allow",
     "sharing_users_allow",
     multiple=True,
-    callback=nullable_multi_callback(""),
+    callback=emptyable_opt_list_callback,
     help=(
         "Connector-specific username allowed to create guest collections."
         f"{_MULTI_USE_OPTION_STR} to allow multiple users. "
         'Set a value of "" to clear this'
     ),
-    cls=AnnotatedOption,
-    type_annotation=t.Union[ListType[str], None, ExplicitNullType],
 )
 @click.option(
     "--sharing-user-deny",
     "sharing_users_deny",
     multiple=True,
-    callback=nullable_multi_callback(""),
+    callback=emptyable_opt_list_callback,
     help=(
         "Connector-specific username denied permission to create guest "
         f"collections. {_MULTI_USE_OPTION_STR} to deny multiple users. "
         'Set a value of "" to clear this'
     ),
-    cls=AnnotatedOption,
-    type_annotation=t.Union[ListType[str], None, ExplicitNullType],
 )
 @LoginManager.requires_login("auth", "transfer")
 def collection_update(
@@ -141,8 +135,8 @@ def collection_update(
     enable_https: bool | None,
     user_message: str | None | ExplicitNullType,
     user_message_link: str | None | ExplicitNullType,
-    sharing_users_allow: list[str] | None | ExplicitNullType,
-    sharing_users_deny: list[str] | None | ExplicitNullType,
+    sharing_users_allow: list[str] | None,
+    sharing_users_deny: list[str] | None,
 ) -> None:
     """
     Update a Mapped or Guest Collection

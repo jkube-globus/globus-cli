@@ -14,9 +14,7 @@ from globus_cli.parsing.command_state import (
     show_server_timing_option,
     verbose_option,
 )
-from globus_cli.parsing.param_classes import AnnotatedOption
 from globus_cli.parsing.param_types import NotificationParamType
-from globus_cli.types import DictType
 
 C = t.TypeVar("C", bound=t.Union[t.Callable, click.Command])
 
@@ -74,8 +72,6 @@ def task_notify_option(f: C) -> C:
             "for all event types. Otherwise, use 'succeeded', 'failed', or "
             "'inactive'."
         ),
-        cls=AnnotatedOption,
-        type_annotation=DictType[str, bool],
     )(f)
 
 
@@ -184,11 +180,8 @@ def delete_and_rm_options(
 
 def synchronous_task_wait_options(f: C) -> C:
     def polling_interval_callback(
-        ctx: click.Context, param: click.Parameter, value: int | None
-    ) -> int | None:
-        if not value:
-            return None
-
+        ctx: click.Context, param: click.Parameter, value: int
+    ) -> int:
         if value < 1:
             raise click.UsageError(
                 f"--polling-interval={value} was less than minimum of 1"
@@ -197,11 +190,8 @@ def synchronous_task_wait_options(f: C) -> C:
         return value
 
     def exit_code_callback(
-        ctx: click.Context, param: click.Parameter, value: int | None
-    ) -> int | None:
-        if not value:
-            return None
-
+        ctx: click.Context, param: click.Parameter, value: int
+    ) -> int:
         exit_stat_set = [0, 1] + list(range(50, 100))
         if value not in exit_stat_set:
             raise click.UsageError("--timeout-exit-code must have a value in 0,1,50-99")

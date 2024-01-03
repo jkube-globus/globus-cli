@@ -1,6 +1,6 @@
 from .commands import command, group, main_group
 from .mutex_group import MutexInfo, mutex_option_group
-from .param_classes import AnnotatedOption, one_use_option
+from .param_classes import one_use_option
 from .param_types import (
     ENDPOINT_PLUS_OPTPATH,
     ENDPOINT_PLUS_REQPATH,
@@ -15,8 +15,8 @@ from .param_types import (
     TaskPath,
     TimedeltaType,
     UrlOrNull,
-    nullable_multi_callback,
 )
+from .shared_callbacks import emptyable_opt_list_callback
 from .shared_options import (
     delete_and_rm_options,
     local_user_option,
@@ -50,8 +50,6 @@ __all__ = [
     "group",
     "main_group",
     "one_use_option",
-    # param classes
-    "AnnotatedOption",
     # param types
     "ENDPOINT_PLUS_OPTPATH",
     "ENDPOINT_PLUS_REQPATH",
@@ -68,7 +66,6 @@ __all__ = [
     "TimedeltaType",
     "UrlOrNull",
     "mutex_option_group",
-    "nullable_multi_callback",
     "one_use_option",
     # shared options
     "collection_id_arg",
@@ -91,4 +88,6 @@ __all__ = [
     "verify_checksum_option",
     "endpointish_params",
     "local_user_option",
+    # shared callbacks
+    "emptyable_opt_list_callback",
 ]
