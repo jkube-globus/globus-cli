@@ -1,0 +1,9 @@
+[flake8]  # black and isort compatible rules
+exclude = .git,.tox,__pycache__,.eggs,dist,venv,.venv*,venv27,virtualenv,adoc,build
+max-line-length = 88
+ignore = W503,W504,E203
+
+[flake8:local-plugins]
+extension =
+    CLI = globus_cli_flake8:Plugin
+paths = ./src/globus_cli/
