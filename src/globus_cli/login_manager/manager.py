@@ -87,7 +87,9 @@ class LoginManager:
     def _validate_token(self, token: str) -> bool:
         auth_client = internal_auth_client()
         try:
-            res = auth_client.oauth2_validate_token(token)
+            res = auth_client.post(
+                "/v2/oauth2/token/validate", data={"token": token}, encoding="form"
+            )
         # if the instance client is invalid, an AuthAPIError will be raised
         except globus_sdk.AuthAPIError:
             return False
