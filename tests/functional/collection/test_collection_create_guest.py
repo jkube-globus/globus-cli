@@ -228,3 +228,44 @@ def test_guest_collection_create__when_session_times_out_against_ha_mapped_colle
 
     assert "Session timeout detected; Re-authentication required." in result.stderr
     assert f"globus login --gcs {endpoint_id} --force" in result.stderr
+
+
+def test_guest_collection_create__when_gcs_emits_unrecognized_error(
+    run_line,
+    mock_user_data,
+    add_gcs_login,
+):
+    meta = load_response_set("cli.collection_operations").metadata
+    mapped_collection_id = meta["mapped_collection_id"]
+    display_name = meta["guest_display_name"]
+    gcs_hostname = meta["gcs_hostname"]
+    endpoint_id = meta["endpoint_id"]
+    add_gcs_login(endpoint_id)
+
+    create_guest_collection_route = f"https://{gcs_hostname}/api/collections"
+    responses.replace(
+        "POST",
+        create_guest_collection_route,
+        status=403,
+        json={
+            "DATA_TYPE": "result#1.0.0",
+            "code": "permission_denied",
+            "detail": "oh noez!",
+            "has_next_page": False,
+            "http_response_code": 403,
+            "message": "Oh noez! You must authenticate much better!",
+        },
+    )
+
+    get_endpoint_route = (
+        f"{get_service_url('transfer')}v0.10/endpoint/{mapped_collection_id}"
+    )
+    get_endpoint_resp = requests.get(get_endpoint_route).json()
+    get_endpoint_resp["high_assurance"] = True
+    responses.replace("GET", get_endpoint_route, json=get_endpoint_resp)
+
+    params = f"{mapped_collection_id} /home/ '{display_name}'"
+    result = run_line(f"globus collection create guest {params}", assert_exit_code=1)
+
+    assert "Session timeout detected" not in result.stderr
+    assert "Oh noez! You must authenticate much better!" in result.stderr
