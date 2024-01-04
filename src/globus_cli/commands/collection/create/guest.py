@@ -197,7 +197,11 @@ def _is_session_timeout_error(e: globus_sdk.GCSAPIError) -> bool:
     Detect session timeouts related to HA collections.
     This is a hacky workaround until we have better GARE support across the CLI.
     """
-    detail_type = getattr(e, "detail", {}).get("DATA_TYPE")
+    detail = getattr(e, "detail", {})
+    if not isinstance(detail, dict):
+        return False
+
+    detail_type = detail.get("DATA_TYPE")
     return (
         e.http_status == 403
         and isinstance(detail_type, str)
