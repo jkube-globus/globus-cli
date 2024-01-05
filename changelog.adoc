@@ -2,6 +2,33 @@
 
 // scriv-insert-here
 
+== 3.23.0 (2024-01-05)
+
+Bugfixes:
+
+* Fix the display of timer schedules.
+
+* Fix the error handling when `globus gcs collection create guest` encounters a
+  non-session error.
+
+Enhancements:
+
+* Add `globus gcs collection create mapped` as a new command for creating
+  mapped collections
+
+* Added a new command `globus gcs endpoint set-subscription-id` which allows
+  subscription managers and endpoint admins to modify the subscription ID for a
+  GCS endpoint.
+
+* Added a new command `globus gcp set-subscription-id` which allows subscription
+  managers and collection admins to modify the subscription ID for a GCP collection.
+
+Other:
+
+* User timers are now referred to as "timers" rather than as "jobs".
+  For example, the output of `globus timer list` now shows "Timer ID"
+  instead of "Job ID".
+
 == 3.22.0 (2023-12-11)
 
 Enhancements:
