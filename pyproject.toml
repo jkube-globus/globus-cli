@@ -49,7 +49,7 @@ test = [
     "coverage>=7",
     "pytest>=7",
     "pytest-xdist<4",
-    "pytest-timeout<2",
+    "pytest-timeout<3",
     "click-type-test==0.0.7;python_version>='3.10'",
     "responses==0.23.3",
     # loading test fixture data
