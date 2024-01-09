@@ -50,7 +50,7 @@ test = [
     "pytest-xdist<4",
     "pytest-timeout<3",
     "click-type-test==0.0.7;python_version>='3.10'",
-    "responses==0.23.3",
+    "responses==0.24.1",
     # loading test fixture data
     "ruamel.yaml==0.18.5",
     # Python 3.12 needs setuptools.
