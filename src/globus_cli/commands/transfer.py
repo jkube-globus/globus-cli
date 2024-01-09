@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 import typing as t
 import uuid
 
@@ -23,11 +22,6 @@ from globus_cli.parsing import (
     verify_checksum_option,
 )
 from globus_cli.termio import Field, TextMode, display
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 
 @command(
@@ -217,7 +211,7 @@ def transfer_command(
     login_manager: LoginManager,
     *,
     batch: t.TextIO | None,
-    sync_level: Literal["exists", "size", "mtime", "checksum"] | None,
+    sync_level: t.Literal["exists", "size", "mtime", "checksum"] | None,
     recursive: bool | None,
     source: tuple[uuid.UUID, str | None],
     destination: tuple[uuid.UUID, str | None],
@@ -225,7 +219,7 @@ def transfer_command(
     external_checksum: str | None,
     skip_source_errors: bool,
     fail_on_quota_errors: bool,
-    filter_rules: list[tuple[Literal["include", "exclude"], str]],
+    filter_rules: list[tuple[t.Literal["include", "exclude"], str]],
     label: str | None,
     preserve_timestamp: bool,
     verify_checksum: bool,

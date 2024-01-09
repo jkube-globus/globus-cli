@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import sys
+import typing as t
 import uuid
 
 from globus_cli.constants import ExplicitNullType
@@ -16,11 +16,6 @@ from globus_cli.parsing import (
 from globus_cli.termio import Field, TextMode, display, print_command_hint
 
 from ._common import validate_endpoint_create_and_update_params
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 COMMON_FIELDS = [Field("Message", "message"), Field("Endpoint ID", "id")]
 
@@ -81,7 +76,7 @@ def endpoint_create(
     max_parallelism: int | None,
     myproxy_dn: str | None,
     myproxy_server: str | None,
-    network_use: Literal["normal", "minimal", "aggressive", "custom"] | None,
+    network_use: t.Literal["normal", "minimal", "aggressive", "custom"] | None,
     oauth_server: str | None,
     organization: str | None | ExplicitNullType,
     preferred_concurrency: int | None,

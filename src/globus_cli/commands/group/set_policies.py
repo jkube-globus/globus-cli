@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import sys
+import typing as t
 import uuid
 
 import click
@@ -10,11 +10,6 @@ from globus_cli.parsing import CommaDelimitedList, command
 from globus_cli.termio import display
 
 from ._common import MEMBERSHIP_FIELDS, group_id_arg
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 
 @click.option(
@@ -70,8 +65,8 @@ def group_set_policies(
     group_id: uuid.UUID,
     high_assurance: bool | None,
     authentication_timeout: int | None,
-    visibility: Literal["authenticated", "private"] | None,
-    members_visibility: Literal["members", "managers"] | None,
+    visibility: t.Literal["authenticated", "private"] | None,
+    members_visibility: t.Literal["members", "managers"] | None,
     join_requests: bool | None,
     signup_fields: list[str] | None,
 ) -> None:

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import sys
+import typing as t
 
 import click
 from globus_sdk.paging import Paginator
@@ -9,11 +9,6 @@ from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import ColonDelimitedChoiceTuple, command
 from globus_cli.termio import Field, display, formatters
 from globus_cli.utils import PagingWrapper
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 ROLE_TYPES = ("flow_viewer", "flow_starter", "flow_administrator", "flow_owner")
 ORDER_BY_FIELDS = (
@@ -77,19 +72,19 @@ def list_command(
     login_manager: LoginManager,
     *,
     filter_role: (
-        Literal["flow_viewer", "flow_starter", "flow_administrator", "flow_owner"]
+        t.Literal["flow_viewer", "flow_starter", "flow_administrator", "flow_owner"]
         | None
     ),
     orderby: tuple[
         tuple[
-            Literal[
+            t.Literal[
                 "id",
                 "scope_string",
                 "title",
                 "created_at",
                 "updated_at",
             ],
-            Literal["ASC", "DESC"],
+            t.Literal["ASC", "DESC"],
         ],
         ...,
     ],

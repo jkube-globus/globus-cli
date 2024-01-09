@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 import typing as t
 import uuid
 from textwrap import dedent
@@ -12,16 +11,11 @@ from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
 from globus_cli.termio import TextMode, display
 
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
-
 
 def _spec_to_matches(
     server_list: globus_sdk.IterableTransferResponse,
     server_spec: str,
-    mode: Literal["uri", "hostname", "hostname_port"],
+    mode: t.Literal["uri", "hostname", "hostname_port"],
 ) -> list[t.Mapping[str, t.Any]]:
     """
     mode is in {uri, hostname, hostname_port}
@@ -47,7 +41,7 @@ def _spec_to_matches(
     return [server_doc for server_doc in server_list if match(server_doc)]
 
 
-def _detect_mode(server: str) -> Literal["id", "uri", "hostname", "hostname_port"]:
+def _detect_mode(server: str) -> t.Literal["id", "uri", "hostname", "hostname_port"]:
     try:
         int(server)
         return "id"

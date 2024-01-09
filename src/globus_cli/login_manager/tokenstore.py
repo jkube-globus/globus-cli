@@ -9,11 +9,6 @@ import globus_sdk
 from .client_login import get_client_login, is_client_login
 from .scopes import CURRENT_SCOPE_CONTRACT_VERSION
 
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
-
 if t.TYPE_CHECKING:
     from globus_sdk.tokenstorage import SQLiteAdapter
 
@@ -213,7 +208,7 @@ def delete_templated_client() -> None:
 
 
 def store_well_known_config(
-    name: Literal["auth_client_data", "auth_user_data", "scope_contract_versions"],
+    name: t.Literal["auth_client_data", "auth_user_data", "scope_contract_versions"],
     data: dict[str, t.Any],
     *,
     adapter: SQLiteAdapter | None = None,
@@ -224,17 +219,17 @@ def store_well_known_config(
 
 @t.overload
 def read_well_known_config(
-    name: Literal["auth_client_data", "auth_user_data", "scope_contract_versions"],
+    name: t.Literal["auth_client_data", "auth_user_data", "scope_contract_versions"],
     *,
     adapter: SQLiteAdapter | None = None,
-    allow_null: Literal[False],
+    allow_null: t.Literal[False],
 ) -> dict[str, t.Any]:
     ...
 
 
 @t.overload
 def read_well_known_config(
-    name: Literal["auth_client_data", "auth_user_data", "scope_contract_versions"],
+    name: t.Literal["auth_client_data", "auth_user_data", "scope_contract_versions"],
     *,
     adapter: SQLiteAdapter | None = None,
     allow_null: bool = True,
@@ -243,7 +238,7 @@ def read_well_known_config(
 
 
 def read_well_known_config(
-    name: Literal["auth_client_data", "auth_user_data", "scope_contract_versions"],
+    name: t.Literal["auth_client_data", "auth_user_data", "scope_contract_versions"],
     *,
     adapter: SQLiteAdapter | None = None,
     allow_null: bool = True,
@@ -264,7 +259,7 @@ def read_well_known_config(
 
 
 def remove_well_known_config(
-    name: Literal["auth_client_data", "auth_user_data", "scope_contract_versions"],
+    name: t.Literal["auth_client_data", "auth_user_data", "scope_contract_versions"],
     *,
     adapter: SQLiteAdapter | None = None,
 ) -> None:

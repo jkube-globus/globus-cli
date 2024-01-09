@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import datetime
-import sys
 import typing as t
 import uuid
 
@@ -30,11 +29,6 @@ from globus_cli.parsing import (
 from globus_cli.termio import Field, TextMode, display, formatters
 
 from .._common import DATETIME_FORMATS, ScheduleFormatter
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 if t.TYPE_CHECKING:
     from globus_cli.services.auth import CustomAuthClient
@@ -128,7 +122,7 @@ def transfer_command(
     label: str | None,
     stop_after_date: datetime.datetime | None,
     stop_after_runs: int | None,
-    sync_level: Literal["exists", "size", "mtime", "checksum"] | None,
+    sync_level: t.Literal["exists", "size", "mtime", "checksum"] | None,
     encrypt_data: bool,
     verify_checksum: bool,
     preserve_timestamp: bool,

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 import typing as t
 import uuid
 
@@ -15,11 +14,6 @@ from globus_cli.parsing import (
     mutex_option_group,
 )
 from globus_cli.termio import Field, display, formatters, is_verbose, outformat_is_text
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 # Transfer supports all file fields, so this list is missing 'link_target'
 #
@@ -179,7 +173,7 @@ def ls_command(
     show_hidden: bool,
     orderby: tuple[
         tuple[
-            Literal[
+            t.Literal[
                 "group",
                 "last_modified",
                 "name",
@@ -188,7 +182,7 @@ def ls_command(
                 "type",
                 "user",
             ],
-            Literal["ASC", "DESC"],
+            t.Literal["ASC", "DESC"],
         ],
         ...,
     ],

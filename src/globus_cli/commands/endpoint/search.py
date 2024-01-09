@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import sys
+import typing as t
 
 import click
 from globus_sdk.paging import Paginator
@@ -9,11 +9,6 @@ from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
 from globus_cli.termio import display
 from globus_cli.utils import PagingWrapper
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 
 @command(
@@ -81,7 +76,7 @@ def endpoint_search(
     filter_fulltext: str | None,
     limit: int,
     filter_owner_id: str | None,
-    filter_scope: Literal[
+    filter_scope: t.Literal[
         "all",
         "administered-by-me",
         "my-endpoints",

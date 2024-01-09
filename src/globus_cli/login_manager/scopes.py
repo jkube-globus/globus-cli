@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 import typing as t
 
 from globus_sdk.scopes import (
@@ -15,11 +14,6 @@ from globus_sdk.scopes import (
 )
 
 from globus_cli.types import ServiceNameLiteral
-
-if sys.version_info >= (3, 8):
-    from typing import Final, TypedDict
-else:
-    from typing_extensions import Final, TypedDict
 
 TRANSFER_AP_SCOPE_STR: str = (
     "https://auth.globus.org/scopes/actions.globus.org/transfer/transfer"
@@ -48,7 +42,7 @@ def compute_timer_scope(
 TIMER_SCOPE_WITH_DEPENDENCIES = compute_timer_scope()
 
 
-class _ServiceRequirement(TypedDict):
+class _ServiceRequirement(t.TypedDict):
     min_contract_version: int
     resource_server: str
     nice_server_name: str
@@ -131,4 +125,4 @@ CLI_SCOPE_REQUIREMENTS = _CLIScopeRequirements()
 # version we were at when we got a token
 # it should be the max of the version numbers required by the various different
 # services
-CURRENT_SCOPE_CONTRACT_VERSION: Final[int] = 1
+CURRENT_SCOPE_CONTRACT_VERSION: t.Final[int] = 1

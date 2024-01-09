@@ -1,17 +1,11 @@
 from __future__ import annotations
 
-import sys
 import typing as t
 import uuid
 
 import globus_sdk
 import globus_sdk.scopes
 from globus_sdk.experimental.scope_parser import Scope
-
-if sys.version_info >= (3, 8):
-    from typing import Literal, TypedDict
-else:
-    from typing_extensions import Literal, TypedDict
 
 
 def _is_uuid(s: str) -> bool:
@@ -22,7 +16,7 @@ def _is_uuid(s: str) -> bool:
         return False
 
 
-class GetIdentitiesKwargs(TypedDict, total=False):
+class GetIdentitiesKwargs(t.TypedDict, total=False):
     provision: bool
     usernames: str
     ids: str
@@ -33,7 +27,7 @@ class CustomAuthClient(globus_sdk.AuthClient):
         self,
         id_name: str | None = None,
         id_id: str | None = None,
-        field: Literal["id", "username"] = "id",
+        field: t.Literal["id", "username"] = "id",
         provision: bool = False,
     ) -> str | None:
         assert (id_name or id_id) and not (id_name and id_id)
@@ -68,7 +62,7 @@ class CustomAuthClient(globus_sdk.AuthClient):
 
     @t.overload
     def maybe_lookup_identity_id(
-        self, identity_name: str, provision: Literal[True]
+        self, identity_name: str, provision: t.Literal[True]
     ) -> str:
         ...
 

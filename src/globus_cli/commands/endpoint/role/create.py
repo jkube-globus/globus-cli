@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import sys
+import typing as t
 import uuid
 
 import click
@@ -8,11 +8,6 @@ import click
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg, security_principal_opts
 from globus_cli.termio import display
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 
 @command(
@@ -47,7 +42,7 @@ $ globus endpoint role create 'aa752cea-8222-5bc8-acd9-555b090c0ccb' \
 def role_create(
     login_manager: LoginManager,
     *,
-    role: Literal[
+    role: t.Literal[
         "administrator", "access_manager", "activity_manager", "activity_monitor"
     ],
     principal: tuple[str, str],

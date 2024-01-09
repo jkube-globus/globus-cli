@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import sys
+import typing as t
 import uuid
 
 import click
@@ -8,11 +8,6 @@ import click
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import ENDPOINT_PLUS_REQPATH, command, security_principal_opts
 from globus_cli.termio import Field, TextMode, display
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 
 @command(
@@ -60,7 +55,7 @@ def create_command(
     login_manager: LoginManager,
     *,
     principal: tuple[str, str],
-    permissions: Literal["r", "rw"],
+    permissions: t.Literal["r", "rw"],
     endpoint_plus_path: tuple[uuid.UUID, str | None],
     notify_email: str | None,
     notify_message: str | None,
