@@ -1,4 +1,4 @@
-import sys
+import typing as t
 import uuid
 
 import click
@@ -6,11 +6,6 @@ import click
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
 from globus_cli.termio import TextMode, display
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 
 @command(
@@ -38,7 +33,7 @@ $ globus endpoint permission update $ep_id $rule_id --permissions r
 def update_command(
     login_manager: LoginManager,
     *,
-    permissions: Literal["r", "rw"],
+    permissions: t.Literal["r", "rw"],
     rule_id: str,
     endpoint_id: uuid.UUID,
 ) -> None:

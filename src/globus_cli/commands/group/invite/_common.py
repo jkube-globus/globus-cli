@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 import typing as t
 import uuid
 
@@ -13,14 +12,9 @@ if t.TYPE_CHECKING:
 
     from globus_cli.services.auth import CustomAuthClient
 
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
-
 
 def get_invite_formatter(
-    case: Literal["accept", "decline"]
+    case: t.Literal["accept", "decline"]
 ) -> t.Callable[[globus_sdk.GlobusHTTPResponse], None]:
     action_word = "Accepted" if case == "accept" else "Declined"
 
@@ -39,7 +33,7 @@ def get_invite_formatter(
 def build_invite_actions(
     auth_client: CustomAuthClient,
     groups_client: globus_sdk.GroupsClient,
-    action: Literal["accept", "decline"],
+    action: t.Literal["accept", "decline"],
     group_id: uuid.UUID,
     identity: ParsedIdentity | None,
 ) -> dict[str, list[dict[str, str]]]:

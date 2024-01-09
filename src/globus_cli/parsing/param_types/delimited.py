@@ -1,14 +1,8 @@
 from __future__ import annotations
 
-import sys
 import typing as t
 
 import click
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 
 class CommaDelimitedList(click.ParamType):
@@ -88,7 +82,7 @@ class ColonDelimitedChoiceTuple(click.Choice):
         unzipped_choices = zip(*self.unpacked_choices)
 
         # each tuple of choices becomes a Literal
-        literals = [Literal[choices] for choices in unzipped_choices]
+        literals = [t.Literal[choices] for choices in unzipped_choices]
 
         # runtime calls to __class_getitem__ require a single tuple argument
         # so we explicitly `tuple(...)` to get the right data shape

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 import typing as t
 import uuid
 
@@ -10,11 +9,6 @@ from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
 from globus_cli.termio import Field, TextMode, display, formatters
 
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
-
 
 class ChoiceSlugified(click.Choice):
     """
@@ -23,7 +17,7 @@ class ChoiceSlugified(click.Choice):
     """
 
     def get_type_annotation(self, param: click.Parameter) -> type:
-        return t.cast(type, Literal[tuple(self._slugify(c) for c in self.choices)])
+        return t.cast(type, t.Literal[tuple(self._slugify(c) for c in self.choices)])
 
     def convert(
         self, value: t.Any, param: click.Parameter | None, ctx: click.Context | None
@@ -95,7 +89,7 @@ def collection_list(
     endpoint_id: uuid.UUID,
     include_private_policies: bool,
     filters: tuple[
-        Literal[
+        t.Literal[
             "mapped_collections", "guest_collections", "managed_by_me", "created_by_me"
         ],
         ...,

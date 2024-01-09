@@ -1,12 +1,6 @@
 from __future__ import annotations
 
-import sys
 import typing as t
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 import click
 
@@ -38,10 +32,10 @@ class endpointish_params:
     def create(
         cls,
         *,
-        name: Literal["endpoint", "collection"],
-        display_name_style: Literal["argument", "option"] = "argument",
-        keyword_style: Literal["string", "list"] = "list",
-        verify_style: Literal["flag", "choice"] = "choice",
+        name: t.Literal["endpoint", "collection"],
+        display_name_style: t.Literal["argument", "option"] = "argument",
+        keyword_style: t.Literal["string", "list"] = "list",
+        verify_style: t.Literal["flag", "choice"] = "choice",
         add_legacy_params: bool = False,
         skip: tuple[str, ...] = (),
     ) -> t.Callable[[C], C]:
@@ -62,10 +56,10 @@ class endpointish_params:
     def update(
         cls,
         *,
-        name: Literal["endpoint", "collection"],
-        display_name_style: Literal["argument", "option"] = "option",
-        keyword_style: Literal["string", "list"] = "list",
-        verify_style: Literal["flag", "choice"] = "choice",
+        name: t.Literal["endpoint", "collection"],
+        display_name_style: t.Literal["argument", "option"] = "option",
+        keyword_style: t.Literal["string", "list"] = "list",
+        verify_style: t.Literal["flag", "choice"] = "choice",
         add_legacy_params: bool = False,
         skip: tuple[str, ...] = (),
     ) -> t.Callable[[C], C]:
@@ -86,7 +80,7 @@ class endpointish_params:
 
 def _apply_endpointish_create_or_update_params(
     f: C,
-    name: Literal["endpoint", "collection"],
+    name: t.Literal["endpoint", "collection"],
     *,
     public_default: bool | None = True,
     display_name_style: str,

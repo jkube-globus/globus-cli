@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import sys
+import typing as t
 import uuid
 
 import click
@@ -10,11 +10,6 @@ from globus_cli.parsing import command
 from globus_cli.termio import Field, TextMode, display
 
 from ..._common import index_id_arg, resolved_principals_field
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 
 @command("create")
@@ -39,7 +34,7 @@ def create_command(
     index_id: uuid.UUID,
     role_name: str,
     principal: str,
-    principal_type: Literal["identity", "group"] | None,
+    principal_type: t.Literal["identity", "group"] | None,
 ) -> None:
     """
     Create a role (requires admin or owner)

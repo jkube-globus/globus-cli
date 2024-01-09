@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import sys
+import typing as t
 import uuid
 
 import click
@@ -17,11 +17,6 @@ from globus_cli.parsing import (
 from globus_cli.termio import TextMode, display
 
 from ._common import validate_endpoint_create_and_update_params
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 
 @command("update")
@@ -58,7 +53,7 @@ def endpoint_update(
     max_parallelism: int | None,
     myproxy_dn: str | None,
     myproxy_server: str | None,
-    network_use: Literal["normal", "minimal", "aggressive", "custom"] | None,
+    network_use: t.Literal["normal", "minimal", "aggressive", "custom"] | None,
     no_default_directory: bool | None,
     oauth_server: str | None,
     organization: str | None | ExplicitNullType,

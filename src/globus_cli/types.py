@@ -13,11 +13,6 @@ if sys.version_info >= (3, 10):
 else:
     from typing_extensions import TypeAlias
 
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
-
 # all imports from globus_cli modules done here are done under TYPE_CHECKING
 # in order to ensure that the use of type annotations never introduces circular
 # imports at runtime
@@ -43,6 +38,6 @@ JsonValue: TypeAlias = t.Union[
 ]
 
 
-ServiceNameLiteral: TypeAlias = Literal[
+ServiceNameLiteral: TypeAlias = t.Literal[
     "auth", "transfer", "groups", "search", "timer", "flows"
 ]

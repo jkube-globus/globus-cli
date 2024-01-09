@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import collections.abc
 import datetime
-import sys
 import typing as t
 import uuid
 
@@ -13,11 +12,6 @@ from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
 from globus_cli.termio import Field, display
 from globus_cli.utils import PagingWrapper
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 
 def _format_date_callback(
@@ -166,8 +160,8 @@ def task_list(
     *,
     limit: int,
     filter_task_id: tuple[uuid.UUID, ...],
-    filter_type: Literal["TRANSFER", "DELETE"] | None,
-    filter_status: tuple[Literal["ACTIVE", "INACTIVE", "FAILED", "SUCCEEDED"], ...],
+    filter_type: t.Literal["TRANSFER", "DELETE"] | None,
+    filter_status: tuple[t.Literal["ACTIVE", "INACTIVE", "FAILED", "SUCCEEDED"], ...],
     filter_label: tuple[str, ...],
     filter_not_label: tuple[str, ...],
     inexact: bool,

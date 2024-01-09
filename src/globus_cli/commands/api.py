@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import sys
 import typing as t
 import uuid
 from collections import defaultdict
@@ -15,11 +14,6 @@ from globus_cli.login_manager.scopes import CLI_SCOPE_REQUIREMENTS
 from globus_cli.parsing import command, endpoint_id_arg, group, mutex_option_group
 from globus_cli.termio import display
 from globus_cli.types import ServiceNameLiteral
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 C = t.TypeVar("C", bound=t.Union[t.Callable, click.Command])
 
@@ -255,13 +249,13 @@ def _service_command_params(cmd: C) -> C:
 def _execute_service_command(
     client: globus_sdk.BaseClient,
     *,
-    method: Literal["HEAD", "GET", "PUT", "POST", "PATCH", "DELETE"],
+    method: t.Literal["HEAD", "GET", "PUT", "POST", "PATCH", "DELETE"],
     path: str,
     query_param: tuple[tuple[str, str], ...],
     header: tuple[tuple[str, str], ...],
     body: str | None,
     body_file: t.TextIO | None,
-    content_type: Literal["json", "form", "text", "none", "auto"],
+    content_type: t.Literal["json", "form", "text", "none", "auto"],
     allow_errors: bool,
     allow_redirects: bool,
     no_retry: bool,
@@ -356,7 +350,7 @@ def api_command() -> None:
 
 # note: this must be written as a separate call and not inlined into the loop body
 # this ensures that it acts as a closure over 'service_name'
-def build_command(service_name: ServiceNameLiteral | Literal["gcs"]) -> click.Command:
+def build_command(service_name: ServiceNameLiteral | t.Literal["gcs"]) -> click.Command:
     helptext = f"""\
 Make API calls to Globus {service_name.title()}
 
@@ -377,13 +371,13 @@ sends a 'GET' request to '{_get_url(service_name)}foo/bar'
         def service_command(
             login_manager: LoginManager,
             *,
-            method: Literal["HEAD", "GET", "PUT", "POST", "PATCH", "DELETE"],
+            method: t.Literal["HEAD", "GET", "PUT", "POST", "PATCH", "DELETE"],
             path: str,
             query_param: tuple[tuple[str, str], ...],
             header: tuple[tuple[str, str], ...],
             body: str | None,
             body_file: t.TextIO | None,
-            content_type: Literal["json", "form", "text", "none", "auto"],
+            content_type: t.Literal["json", "form", "text", "none", "auto"],
             allow_errors: bool,
             allow_redirects: bool,
             no_retry: bool,
@@ -419,13 +413,13 @@ sends a 'GET' request to '{_get_url(service_name)}foo/bar'
             login_manager: LoginManager,
             *,
             endpoint_id: uuid.UUID,
-            method: Literal["HEAD", "GET", "PUT", "POST", "PATCH", "DELETE"],
+            method: t.Literal["HEAD", "GET", "PUT", "POST", "PATCH", "DELETE"],
             path: str,
             query_param: tuple[tuple[str, str], ...],
             header: tuple[tuple[str, str], ...],
             body: str | None,
             body_file: t.TextIO | None,
-            content_type: Literal["json", "form", "text", "none", "auto"],
+            content_type: t.Literal["json", "form", "text", "none", "auto"],
             allow_errors: bool,
             allow_redirects: bool,
             no_retry: bool,

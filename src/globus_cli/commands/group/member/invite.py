@@ -1,4 +1,4 @@
-import sys
+import typing as t
 import uuid
 
 import click
@@ -8,11 +8,6 @@ from globus_cli.parsing import IdentityType, ParsedIdentity, command
 from globus_cli.termio import Field, TextMode, display
 
 from .._common import group_id_arg
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 INVITED_USER_FIELDS = [
     Field("Group ID", "group_id"),
@@ -43,7 +38,7 @@ def member_invite(
     group_id: uuid.UUID,
     user: ParsedIdentity,
     provision_identity: bool,
-    role: Literal["member", "manager", "admin"],
+    role: t.Literal["member", "manager", "admin"],
 ) -> None:
     """
     Invite a user to a group.

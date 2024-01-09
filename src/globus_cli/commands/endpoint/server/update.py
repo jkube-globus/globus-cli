@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import sys
+import typing as t
 import uuid
 
 from globus_cli.login_manager import LoginManager
@@ -8,11 +8,6 @@ from globus_cli.parsing import command, endpoint_id_arg
 from globus_cli.termio import TextMode, display
 
 from ._common import server_id_arg, server_update_opts
-
-if sys.version_info >= (3, 8):
-    from typing import Literal
-else:
-    from typing_extensions import Literal
 
 
 @command(
@@ -40,7 +35,7 @@ def server_update(
     server_id: str,
     subject: str | None,
     port: int | None,
-    scheme: Literal["gsiftp", "ftp"] | None,
+    scheme: t.Literal["gsiftp", "ftp"] | None,
     hostname: str | None,
     incoming_data_ports: tuple[int | None, int | None] | None,
     outgoing_data_ports: tuple[int | None, int | None] | None,
