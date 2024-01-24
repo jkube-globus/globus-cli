@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import datetime
+import email.utils
 import typing as t
 
 import click
 import globus_sdk
+import jwt
 from globus_sdk.scopes import MutableScope
 
 from .tokenstore import (
@@ -119,17 +122,39 @@ def exchange_code_and_store(
     """
     adapter = token_storage_adapter()
     tkn = auth_client.oauth2_exchange_code_for_tokens(auth_code)
-    # use a leeway of 64s
+
+    # use a leeway of 300s
     #
-    # this value was arrived at by mixing:
+    # valuable inputs to this number:
     # - expected clock drift per day (6s for a bad clock)
     # - Windows time sync interval (64s)
     # - Windows' stated goal of meeting the Kerberos 5 clock skew requirement (5m)
     # - ntp panic threshold (1000s of drift)
     # - the knowledge that VM clocks typically run slower and may skew significantly
-    # - a dash of guesswork
-    # - rounding the nearest power of 2
-    sub_new = tkn.decode_id_token(jwt_params={"leeway": 64})["sub"]
+    #
+    # NTP panic is probably extreme -- if the system is in that state, we should
+    # probably not consider the clock to be okay
+    #
+    # Windows sync interval of 64s led us to use 64s as the leeway in the past, but
+    # we still saw at least one user run into this, which made us consider increasing it
+    #
+    # The Kerberos 5 requirement is therefore a winning choice. It's another authn
+    # system's decision about un/acceptable skew, and therefore a good outside boundary
+    # for what's likely to be seen in the wild on "normal" systems.
+    try:
+        sub_new = tkn.decode_id_token(jwt_params={"leeway": 300})["sub"]
+    except jwt.exceptions.ImmatureSignatureError:
+        # when an error is encountered, check for significant clock skew vs the
+        # response's "Date" header
+        response_delta = _response_clock_delta(tkn)
+        if response_delta:
+            click.echo(
+                "WARNING: The server response dated itself "
+                f"{response_delta:.2f} seconds out of sync with the local clock. "
+                "This may indicate a clock skew problem.",
+                err=True,
+            )
+        raise
     auth_user_data = read_well_known_config("auth_user_data")
     if auth_user_data and sub_new != auth_user_data.get("sub"):
         try:
@@ -147,3 +172,26 @@ def exchange_code_and_store(
     if not auth_user_data:
         store_well_known_config("auth_user_data", {"sub": sub_new})
     adapter.store(tkn)
+
+
+def _response_clock_delta(response: globus_sdk.GlobusHTTPResponse) -> float | None:
+    """
+    Get the "Date" header from a GlobusHTTPResponse, parse it as a datetime, and then
+    compare that against the current time. Return the delta in seconds.
+
+    If the "Date" cannot be parsed or isn't present, return None.
+
+    This uses `email.utils` to parse the date, which is the stdlib's available RFC 2822
+    parser.
+    """
+    now = datetime.datetime.now(tz=datetime.timezone.utc)
+
+    response_date_str = response.headers.get("Date")
+    if not response_date_str:  # not present
+        return None
+
+    response_date = email.utils.parsedate_to_datetime(response_date_str)
+    if not response_date:  # failed to parse
+        return None
+
+    return abs((now - response_date).total_seconds())
