@@ -191,8 +191,9 @@ def _response_clock_delta(response: globus_sdk.GlobusHTTPResponse) -> float | No
     if not response_date_str:  # not present
         return None
 
-    response_date = email.utils.parsedate_to_datetime(response_date_str)
-    if not response_date:  # failed to parse
+    try:
+        response_date = email.utils.parsedate_to_datetime(response_date_str)
+    except ValueError:  # failed to parse
         return None
 
     return abs((now - response_date).total_seconds())
