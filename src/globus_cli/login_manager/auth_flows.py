@@ -119,7 +119,7 @@ def exchange_code_and_store(
     as, so to secure incremental auth flows, if the new tokens don't match the previous
     identity we revoke them and instruct the user to logout before continuing.
     """
-    import jwt
+    import jwt.exceptions
 
     adapter = token_storage_adapter()
     tkn = auth_client.oauth2_exchange_code_for_tokens(auth_code)
