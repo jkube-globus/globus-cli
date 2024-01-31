@@ -30,7 +30,7 @@ def test_comma_delimited_list_help_with_choices(runner):
     "add_args, expect_output",
     (
         # absent, it returns None
-        ([], ("nil\n")),
+        ([], "nil\n"),
         # given empty string (this is ambiguous!) returns empty array
         (["--foo", ""], "0\n"),
         # given one or more values, it listifies them
