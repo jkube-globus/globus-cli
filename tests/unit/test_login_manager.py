@@ -1,3 +1,4 @@
+import datetime
 import re
 import sys
 import typing as t
@@ -6,6 +7,7 @@ from unittest import mock
 
 import globus_sdk
 import globus_sdk.scopes
+import jwt
 import pytest
 
 from globus_cli.login_manager import (
@@ -13,6 +15,7 @@ from globus_cli.login_manager import (
     MissingLoginError,
     compute_timer_scope,
 )
+from globus_cli.login_manager.auth_flows import exchange_code_and_store
 from globus_cli.login_manager.context import LoginContext
 from globus_cli.login_manager.scopes import (
     CLI_SCOPE_REQUIREMENTS,
@@ -341,3 +344,76 @@ def test_cli_scope_requirements_min_contract_version_matches_current():
         req["min_contract_version"] for req in CLI_SCOPE_REQUIREMENTS.values()
     )
     assert CURRENT_SCOPE_CONTRACT_VERSION == expect_current_scope_contract_version
+
+
+def test_immature_signature_during_jwt_decode_emits_clock_skew_notice(
+    capsys,
+    monkeypatch,
+    test_token_storage,
+):
+    """
+    Test the `exchange_code_and_store` behavior when the id_token decoding fails
+    due to clock skew.
+
+    This should result in a clear error emitted to stderr.
+    """
+    mock_token_response = mock.Mock()
+    mock_token_response.decode_id_token = mock.Mock(
+        side_effect=jwt.exceptions.ImmatureSignatureError("test")
+    )
+    mock_token_response.headers = {
+        "Date": (
+            datetime.datetime.now(tz=datetime.timezone.utc)
+            + datetime.timedelta(seconds=300)
+        ).strftime("%a, %d %b %Y %H:%M:%S %Z")
+    }
+
+    mock_auth_client = mock.MagicMock(spec=globus_sdk.NativeAppAuthClient)
+    mock_auth_client.oauth2_exchange_code_for_tokens = mock.Mock(
+        return_value=mock_token_response
+    )
+
+    with pytest.raises(jwt.exceptions.ImmatureSignatureError):
+        exchange_code_and_store(mock_auth_client, "bogus_code")
+
+    stderr = capsys.readouterr().err
+    assert "out of sync with the local clock" in stderr
+    assert "This may indicate a clock skew problem." in stderr
+
+
+@pytest.mark.parametrize("date_parse_fail_modality", ("missing", "invalid", "emptystr"))
+def test_immature_signature_during_jwt_decode_skips_notice_if_date_cannot_parse(
+    capsys,
+    monkeypatch,
+    test_token_storage,
+    date_parse_fail_modality,
+):
+    """
+    Test the `exchange_code_and_store` behavior when the id_token decoding fails
+    due to clock skew.
+
+    This should result in a clear error emitted to stderr.
+    """
+    mock_token_response = mock.Mock()
+    mock_token_response.decode_id_token = mock.Mock(
+        side_effect=jwt.exceptions.ImmatureSignatureError("test")
+    )
+    if date_parse_fail_modality == "missing":
+        mock_token_response.headers = {}
+    elif date_parse_fail_modality == "invalid":
+        mock_token_response.headers = {"Date": "1970-01-01 00:00:00 GMT"}
+    elif date_parse_fail_modality == "emptystr":
+        mock_token_response.headers = {"Date": ""}
+    else:
+        raise NotImplementedError
+
+    mock_auth_client = mock.MagicMock(spec=globus_sdk.NativeAppAuthClient)
+    mock_auth_client.oauth2_exchange_code_for_tokens = mock.Mock(
+        return_value=mock_token_response
+    )
+
+    with pytest.raises(jwt.exceptions.ImmatureSignatureError):
+        exchange_code_and_store(mock_auth_client, "bogus_code")
+
+    stderr = capsys.readouterr().err
+    assert "This may indicate a clock skew problem." not in stderr
