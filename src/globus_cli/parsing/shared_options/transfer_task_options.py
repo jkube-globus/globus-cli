@@ -94,7 +94,10 @@ def preserve_timestamp_option(*, aliases: tuple[str, ...] = ()) -> t.Callable[[C
             *aliases,
             is_flag=True,
             default=False,
-            help="Preserve file and directory modification times.",
+            help=(
+                "Preserve file modification times. "
+                "Directory modification times are not preserved."
+            ),
         )(f)
 
     return decorator
