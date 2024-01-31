@@ -42,9 +42,9 @@ def test_v2_json_string_or_file(runner, tmpdir):
     valid_file = tmpdir.mkdir("valid").join("file1.json")
     valid_file.write('{"foo": 1}\n')
     result = runner.invoke(foo, ["--bar", "file:" + str(valid_file)])
-    assert result.output == (f'filename: {valid_file}\ndata: {{"foo": 1}}\n')
+    assert result.output == f'filename: {valid_file}\ndata: {{"foo": 1}}\n'
     result = runner.invoke(foo, ["--bar", str(valid_file)])
-    assert result.output == (f'filename: {valid_file}\ndata: {{"foo": 1}}\n')
+    assert result.output == f'filename: {valid_file}\ndata: {{"foo": 1}}\n'
 
     # given the path to a file with invalid JSON, it raises an error
     invalid_file = tmpdir.mkdir("invalid").join("file1.json")

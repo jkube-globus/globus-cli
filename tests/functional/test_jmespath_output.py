@@ -65,6 +65,6 @@ def test_jmespath_invalid_expression_error(run_line):
     that it gives a JMESPath ParseError.
     """
     result = run_line(
-        ("globus endpoint search 'Tutorial' --jmespath '{}'"), assert_exit_code=1
+        "globus endpoint search 'Tutorial' --jmespath '{}'", assert_exit_code=1
     )
     assert "ParseError:" in result.stderr

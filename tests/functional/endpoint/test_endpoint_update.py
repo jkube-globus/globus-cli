@@ -170,7 +170,7 @@ def test_invalid_gcs_only_options(run_line, ep_type):
     ]
     for opt in options:
         result = run_line(
-            (f"globus endpoint update {epid} {opt} "),
+            f"globus endpoint update {epid} {opt} ",
             assert_exit_code=2,
         )
         assert "Globus Connect Server" in result.stderr
@@ -193,7 +193,7 @@ def test_invalid_managed_only_options(run_line):
     ]
     for opt in options:
         result = run_line(
-            (f"globus endpoint update {epid} {opt} "),
+            f"globus endpoint update {epid} {opt} ",
             assert_exit_code=2,
         )
         assert "managed endpoints" in result.stderr

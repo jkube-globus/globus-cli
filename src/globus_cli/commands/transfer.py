@@ -157,7 +157,7 @@ fi
     "--checksum-algorithm",
     default=None,
     show_default=True,
-    help=("Specify an algorithm for --external-checksum or --verify-checksum"),
+    help="Specify an algorithm for --external-checksum or --verify-checksum",
 )
 @click.option(
     "--include",

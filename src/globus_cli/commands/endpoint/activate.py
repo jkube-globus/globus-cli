@@ -37,7 +37,7 @@ from globus_cli.termio import TextMode, display
 @click.option(
     "--myproxy-username",
     "-U",
-    help=("Give a username to use with --myproxy"),
+    help="Give a username to use with --myproxy",
 )
 @click.option("--myproxy-password", "-P", hidden=True)
 @click.option(
