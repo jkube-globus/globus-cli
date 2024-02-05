@@ -7,6 +7,7 @@ format an exception.
 Define an except hook per exception type that we want to treat specially,
 generally types of SDK errors, and dispatch onto that set of hooks.
 """
+
 from __future__ import annotations
 
 import sys

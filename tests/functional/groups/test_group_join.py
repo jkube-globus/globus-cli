@@ -26,34 +26,36 @@ def _register_invitation_responses():
             "service": "groups",
             "path": f"/groups/{group_id}",
             "method": "POST",
-            "json": {
-                action: [
-                    {
-                        "group_id": group_id,
-                        "identity_id": identity_id,
-                        "username": username,
-                        "role": "member",
-                        "status": "active",
-                    }
-                ]
-            }
-            if success
-            else {
-                action: [],
-                "errors": {
+            "json": (
+                {
                     action: [
                         {
-                            "code": "ERROR_ERROR_IT_IS_AN_ERROR",
+                            "group_id": group_id,
                             "identity_id": identity_id,
-                            **(
-                                {"detail": "Domo arigato, Mr. Roboto"}
-                                if error_detail_present
-                                else {}
-                            ),
+                            "username": username,
+                            "role": "member",
+                            "status": "active",
                         }
                     ]
-                },
-            },
+                }
+                if success
+                else {
+                    action: [],
+                    "errors": {
+                        action: [
+                            {
+                                "code": "ERROR_ERROR_IT_IS_AN_ERROR",
+                                "identity_id": identity_id,
+                                **(
+                                    {"detail": "Domo arigato, Mr. Roboto"}
+                                    if error_detail_present
+                                    else {}
+                                ),
+                            }
+                        ]
+                    },
+                }
+            ),
             "metadata": _common_metadata,
         }
 

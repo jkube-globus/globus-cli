@@ -5,6 +5,7 @@ All customizations that apply specifically to the main command go here as well.
 Ultimately, `globus_cli.parsing` will export only the decorators defined here,
 and all other components will be hidden internals.
 """
+
 from __future__ import annotations
 
 import importlib

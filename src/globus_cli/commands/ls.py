@@ -255,10 +255,10 @@ def ls_command(
         if filter_val:
             ls_params["filter"] = [{"type": "dir"}, {"name": filter_val}]
 
-        res: (
-            IterableTransferResponse | RecursiveLsResponse
-        ) = transfer_client.recursive_operation_ls(
-            endpoint_id, ls_params, depth=recursive_depth_limit
+        res: IterableTransferResponse | RecursiveLsResponse = (
+            transfer_client.recursive_operation_ls(
+                endpoint_id, ls_params, depth=recursive_depth_limit
+            )
         )
     else:
         # format filter_val into a simple filter clause which operates on name

@@ -12,6 +12,7 @@ introspection and other niceties.
 Think of it as a TransferClient.get_endpoint call + a location to cache the result + any
 decoration we might want for this.
 """
+
 from .endpointish import Endpointish
 from .entity_type import EntityType
 from .errors import ExpectedCollectionError, ExpectedEndpointError, WrongEntityTypeError

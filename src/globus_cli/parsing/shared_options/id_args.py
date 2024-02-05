@@ -7,6 +7,7 @@ Basic usage:
 >>> def command_func(endpoint_id: uuid.UUID):
 >>>     ...
 """
+
 import typing as t
 
 import click

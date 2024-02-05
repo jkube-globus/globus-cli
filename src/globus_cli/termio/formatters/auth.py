@@ -48,8 +48,7 @@ class PrincipalFormatter(FieldFormatter[t.Tuple[str, str]]):
     # the base PrincipalFormatter cannot be instantiated because parse() is variable
     # by the exact type of data being read
     @abc.abstractmethod
-    def parse(self, value: t.Any) -> tuple[str, str]:
-        ...
+    def parse(self, value: t.Any) -> tuple[str, str]: ...
 
     def add_item(self, value: t.Any) -> None:
         try:
