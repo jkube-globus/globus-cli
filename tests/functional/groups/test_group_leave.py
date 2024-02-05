@@ -107,63 +107,67 @@ def _register_invitation_responses():
             "service": "groups",
             "path": f"/groups/{group_id}",
             "method": "POST",
-            "json": {
-                "leave": [
-                    {
-                        "group_id": group_id,
-                        "identity_id": iid,
-                        "username": username,
-                        "role": "member",
-                        "status": "active",
-                    }
-                    for iid in identities
-                ]
-            }
-            if status == "success"
-            else {
-                "leave": [],
-                "errors": {
+            "json": (
+                {
                     "leave": [
                         {
-                            "code": "ERROR_ERROR_IT_IS_AN_ERROR",
+                            "group_id": group_id,
                             "identity_id": iid,
-                            **(
-                                {"detail": "Domo arigato, Mr. Roboto"}
-                                if error_detail_present
-                                else {}
-                            ),
+                            "username": username,
+                            "role": "member",
+                            "status": "active",
                         }
                         for iid in identities
                     ]
-                },
-            }
-            if status == "error"
-            else {
-                "leave": [
+                }
+                if status == "success"
+                else (
                     {
-                        "group_id": group_id,
-                        "identity_id": iid,
-                        "username": username,
-                        "role": "member",
-                        "status": "active",
+                        "leave": [],
+                        "errors": {
+                            "leave": [
+                                {
+                                    "code": "ERROR_ERROR_IT_IS_AN_ERROR",
+                                    "identity_id": iid,
+                                    **(
+                                        {"detail": "Domo arigato, Mr. Roboto"}
+                                        if error_detail_present
+                                        else {}
+                                    ),
+                                }
+                                for iid in identities
+                            ]
+                        },
                     }
-                    for iid in identities
-                    if iid != identity_id
-                ],
-                "errors": {
-                    "leave": [
-                        {
-                            "code": "ERROR_ERROR_IT_IS_AN_ERROR",
-                            "identity_id": identity_id,
-                            **(
-                                {"detail": "Domo arigato, Mr. Roboto"}
-                                if error_detail_present
-                                else {}
-                            ),
-                        }
-                    ]
-                },
-            },
+                    if status == "error"
+                    else {
+                        "leave": [
+                            {
+                                "group_id": group_id,
+                                "identity_id": iid,
+                                "username": username,
+                                "role": "member",
+                                "status": "active",
+                            }
+                            for iid in identities
+                            if iid != identity_id
+                        ],
+                        "errors": {
+                            "leave": [
+                                {
+                                    "code": "ERROR_ERROR_IT_IS_AN_ERROR",
+                                    "identity_id": identity_id,
+                                    **(
+                                        {"detail": "Domo arigato, Mr. Roboto"}
+                                        if error_detail_present
+                                        else {}
+                                    ),
+                                }
+                            ]
+                        },
+                    }
+                )
+            ),
             "metadata": _common_metadata,
         }
 

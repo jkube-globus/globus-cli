@@ -171,9 +171,9 @@ def endpoint_activate(
 
     # check if endpoint is already activated unless --force
     if not force:
-        res: (
-            dict[str, str] | globus_sdk.GlobusHTTPResponse
-        ) = transfer_client.endpoint_autoactivate(endpoint_id, if_expires_in=60)
+        res: dict[str, str] | globus_sdk.GlobusHTTPResponse = (
+            transfer_client.endpoint_autoactivate(endpoint_id, if_expires_in=60)
+        )
 
         if "AlreadyActivated" == res["code"]:
             display(

@@ -1,6 +1,7 @@
 """
 Internal types for type annotations
 """
+
 from __future__ import annotations
 
 import sys

@@ -78,8 +78,7 @@ class ServerTimingParser(abc.ABC):
     spec_reference: t.ClassVar[str]
 
     @abc.abstractmethod
-    def parse_single_metric(self, metric_str: str) -> Metric:
-        ...
+    def parse_single_metric(self, metric_str: str) -> Metric: ...
 
     def parse_metric_header(
         self, header_str: str, skip_errors: bool = True

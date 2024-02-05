@@ -117,9 +117,7 @@ For GCS, use the globus-connect-server CLI from your Endpoint."""
     endpoint_type = (
         EntityType.GCP_MAPPED
         if personal
-        else EntityType.GCSV4_HOST
-        if server
-        else EntityType.GCSV4_SHARE
+        else EntityType.GCSV4_HOST if server else EntityType.GCSV4_SHARE
     )
 
     # build options into a dict for kwarg-expansion

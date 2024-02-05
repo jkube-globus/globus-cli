@@ -49,40 +49,42 @@ def _register_invitation_responses():
             "service": "groups",
             "path": f"/groups/{group_id}",
             "method": "POST",
-            "json": {
-                action: [
-                    {
-                        "group_id": group_id,
-                        "identity_id": iid,
-                        "username": username
-                        if iid == identity_id
-                        else username2
-                        if iid == identity_id2
-                        else "foo-user",
-                        "role": "member",
-                        "status": "active" if action == "accept" else "declined",
-                    }
-                    for iid in identities
-                ]
-            }
-            if success
-            else {
-                action: [],
-                "errors": {
+            "json": (
+                {
                     action: [
                         {
-                            "code": "ERROR_ERROR_IT_IS_AN_ERROR",
+                            "group_id": group_id,
                             "identity_id": iid,
-                            **(
-                                {"detail": "Domo arigato, Mr. Roboto"}
-                                if error_detail_present
-                                else {}
+                            "username": (
+                                username
+                                if iid == identity_id
+                                else username2 if iid == identity_id2 else "foo-user"
                             ),
+                            "role": "member",
+                            "status": "active" if action == "accept" else "declined",
                         }
                         for iid in identities
                     ]
-                },
-            },
+                }
+                if success
+                else {
+                    action: [],
+                    "errors": {
+                        action: [
+                            {
+                                "code": "ERROR_ERROR_IT_IS_AN_ERROR",
+                                "identity_id": iid,
+                                **(
+                                    {"detail": "Domo arigato, Mr. Roboto"}
+                                    if error_detail_present
+                                    else {}
+                                ),
+                            }
+                            for iid in identities
+                        ]
+                    },
+                }
+            ),
         }
 
     register_response_set(

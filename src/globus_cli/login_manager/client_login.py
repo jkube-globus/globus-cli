@@ -1,6 +1,7 @@
 """
 Logic for using client identities with the Globus CLI
 """
+
 from __future__ import annotations
 
 import os

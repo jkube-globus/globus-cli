@@ -5,6 +5,7 @@ Used for autodocumentation and testing.
 By keeping the tools as part of the application, we make them testable under the
 standard testsuite.
 """
+
 from __future__ import annotations
 
 import typing as t

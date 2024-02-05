@@ -274,9 +274,11 @@ class LoginManager:
             login_manager.<do the thing>(endpoint_id)
         """
         resource_servers = [
-            rs_name
-            if rs_name not in CLI_SCOPE_REQUIREMENTS
-            else CLI_SCOPE_REQUIREMENTS[rs_name]["resource_server"]
+            (
+                rs_name
+                if rs_name not in CLI_SCOPE_REQUIREMENTS
+                else CLI_SCOPE_REQUIREMENTS[rs_name]["resource_server"]
+            )
             for rs_name in services
         ]
 

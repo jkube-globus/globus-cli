@@ -4,6 +4,7 @@ It should not depend on any other part of the globus-cli codebase.
 
 (If you need to import something else, maybe it's not simple enough to be a constant...)
 """
+
 from __future__ import annotations
 
 import typing as t

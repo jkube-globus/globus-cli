@@ -63,14 +63,12 @@ class CustomAuthClient(globus_sdk.AuthClient):
     @t.overload
     def maybe_lookup_identity_id(
         self, identity_name: str, provision: t.Literal[True]
-    ) -> str:
-        ...
+    ) -> str: ...
 
     @t.overload
     def maybe_lookup_identity_id(
         self, identity_name: str, provision: bool = False
-    ) -> str | None:
-        ...
+    ) -> str | None: ...
 
     def maybe_lookup_identity_id(
         self, identity_name: str, provision: bool = False

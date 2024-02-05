@@ -31,6 +31,7 @@ about 100ms, it eats a significant chunk of our time budget for completions and 
 very latency-sensitive usages. We need to ensure that doesn't get done when the CLI does
 its (almost entirely eager) imports.
 """
+
 import subprocess
 import sys
 

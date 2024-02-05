@@ -223,8 +223,7 @@ def read_well_known_config(
     *,
     adapter: SQLiteAdapter | None = None,
     allow_null: t.Literal[False],
-) -> dict[str, t.Any]:
-    ...
+) -> dict[str, t.Any]: ...
 
 
 @t.overload
@@ -233,8 +232,7 @@ def read_well_known_config(
     *,
     adapter: SQLiteAdapter | None = None,
     allow_null: bool = True,
-) -> dict[str, t.Any] | None:
-    ...
+) -> dict[str, t.Any] | None: ...
 
 
 def read_well_known_config(
