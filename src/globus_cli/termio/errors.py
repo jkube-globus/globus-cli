@@ -38,10 +38,10 @@ class PrintableErrorField:
         return val
 
 
-def write_error_info(error_name, fields, message=None):
+def write_error_info(error_name, fields):
     if outformat_is_json():
         # dictify joined tuple lists and dump to json string
-        message = click.style(
+        click.style(
             json.dumps(
                 dict(
                     [("error_name", error_name)]
@@ -53,7 +53,7 @@ def write_error_info(error_name, fields, message=None):
             ),
             fg="yellow",
         )
-    if not message:
+    else:
         message = "A{} {} Occurred.\n{}".format(
             "n" if error_name[0] in "aeiouAEIOU" else "",
             click.style(error_name, bold=True, fg="red"),

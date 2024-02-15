@@ -8,7 +8,7 @@ import globus_sdk
 
 from globus_cli.endpointish import WrongEntityTypeError
 from globus_cli.login_manager import MissingLoginError
-from globus_cli.termio import PrintableErrorField, write_error_info
+from globus_cli.termio import PrintableErrorField, outformat_is_json, write_error_info
 from globus_cli.utils import CLIAuthRequirementsError
 
 from .registry import error_handler, sdk_error_handler
@@ -27,6 +27,20 @@ _DEFAULT_CONSENT_REAUTH_MESSAGE = (
     "The resource you are trying to access requires you to "
     "consent to additional access for the Globus CLI."
 )
+
+
+@sdk_error_handler(
+    error_class="GlobusAPIError",
+    condition=lambda err: outformat_is_json() and err.raw_json is not None,
+)
+def json_error_handler(exception: globus_sdk.GlobusAPIError) -> None:
+    click.echo(
+        click.style(
+            json.dumps(exception.raw_json, indent=2, separators=(",", ": ")),
+            fg="yellow",
+        ),
+        err=True,
+    )
 
 
 @error_handler(
@@ -184,17 +198,12 @@ def _concrete_consent_required_hook(
 def authentication_hook(
     exception: globus_sdk.TransferAPIError | globus_sdk.AuthAPIError,
 ) -> None:
-    write_error_info(
-        "No Authentication Error",
-        [
-            PrintableErrorField("HTTP status", exception.http_status),
-            PrintableErrorField("code", exception.code),
-            PrintableErrorField("message", exception.message, multiline=True),
-        ],
-        message=(
+    click.echo(
+        (
             "Globus CLI Error: No Authentication provided. Make sure "
             "you have logged in with 'globus login'."
         ),
+        err=True,
     )
 
 
@@ -267,17 +276,12 @@ def searchapi_hook(exception: globus_sdk.SearchAPIError) -> None:
     condition=lambda err: err.message == "invalid_grant",
 )
 def invalidrefresh_hook(exception: globus_sdk.AuthAPIError) -> None:
-    write_error_info(
-        "Invalid Refresh Token",
-        [
-            PrintableErrorField("HTTP status", exception.http_status),
-            PrintableErrorField("code", exception.code),
-            PrintableErrorField("message", exception.message, multiline=True),
-        ],
-        message=(
+    click.echo(
+        (
             "Globus CLI Error: Your credentials are no longer "
             "valid. Please log in again with 'globus login'."
         ),
+        err=True,
     )
 
 
