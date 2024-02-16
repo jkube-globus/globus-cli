@@ -44,11 +44,11 @@ def bump_pkg_version_on_file(
 
 
 _all_pkgs = {
-    "jmespath": "setup.py",
-    "scriv": "setup.py",
-    "responses": "setup.py",
-    "ruamel.yaml": "setup.py",
-    "globus-sdk": "setup.py",
+    "jmespath": "pyproject.toml",
+    "responses": "pyproject.toml",
+    "ruamel.yaml": "pyproject.toml",
+    "globus-sdk": "pyproject.toml",
+    "pre-commit": "tox.ini",
     "mypy": "tox.ini",
 }
 
