@@ -6,6 +6,8 @@ from globus_cli.parsing import group
     lazy_subcommands={
         "role": (".role", "role_command"),
         "set-subscription-id": (".set_subscription_id", "set_subscription_id_command"),
+        "show": (".show", "show_command"),
+        "update": (".update", "update_command"),
     },
 )
 def endpoint_command() -> None:
