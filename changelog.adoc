@@ -2,6 +2,37 @@
 
 // scriv-insert-here
 
+== 3.25.0 (2024-02-19)
+
+Enhancements:
+
+* Added gcs endpoint role management commands:
+
+** `globus gcs endpoint role create`
+** `globus gcs endpoint role list`
+** `globus gcs endpoint role show`
+** `globus gcs endpoint role delete`
+
+* Introduced principal urn resolution as a common util function
+
+* Add `--subscription-id` to `globus flows create` options, and add
+  `Subscription ID` to `flows` command outputs
+
+* `--format=JSON` output now offers greater detail when API errors are
+  encountered with JSON bodies. Rather than re-encoding error details, the
+  original error body is now shown in these cases.
+
+* Added support for GCSv5 endpoint displaying & updating:
+
+** `globus gcs endpoint show ENDPOINT_ID`
+** `globus gcs endpoint update ENDPOINT_ID`
+
+Other:
+
+* `globus login` and related commands are now more tolerant of clock drift, and
+  will emit a clearer error message when clock drift is severe enough to cause
+  errors during authentication attempts.
+
 ==  3.24.0 (2024-01-25)
 
 Bugfixes
