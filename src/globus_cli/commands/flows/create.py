@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import uuid
+
 import click
 
 from globus_cli.commands.flows._common import (
@@ -36,6 +38,11 @@ ROLE_TYPES = ("flow_viewer", "flow_starter", "flow_administrator", "flow_owner")
 @starters_option
 @viewers_option
 @keywords_option
+@click.option(
+    "--subscription-id",
+    help="Set a subscription_id for the flow, marking it as subscription tier.",
+    type=click.UUID,
+)
 @LoginManager.requires_login("flows")
 def create_command(
     login_manager: LoginManager,
@@ -49,6 +56,7 @@ def create_command(
     starters: tuple[str, ...],
     viewers: tuple[str, ...],
     keywords: tuple[str, ...],
+    subscription_id: uuid.UUID | None,
 ) -> None:
     """
     Create a new flow.
@@ -98,6 +106,7 @@ def create_command(
         flow_starters=list(starters),
         flow_administrators=list(administrators),
         keywords=list(keywords),
+        subscription_id=subscription_id,
     )
 
     # Configure formatters for principals
@@ -114,6 +123,7 @@ def create_command(
         Field("Description", "description"),
         Field("Keywords", "keywords", formatter=formatters.ArrayFormatter()),
         Field("Owner", "flow_owner", formatter=principal_formatter),
+        Field("Subscription ID", "subscription_id"),
         Field("Created At", "created_at", formatter=formatters.Date),
         Field("Updated At", "updated_at", formatter=formatters.Date),
         Field(

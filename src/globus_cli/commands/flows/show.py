@@ -30,6 +30,7 @@ def show_command(login_manager: LoginManager, *, flow_id: uuid.UUID) -> None:
         Field("Title", "title"),
         Field("Keywords", "keywords", formatter=formatters.ArrayFormatter()),
         Field("Owner", "flow_owner", formatter=principal_formatter),
+        Field("Subscription ID", "subscription_id"),
         Field("Created At", "created_at", formatter=formatters.Date),
         Field("Updated At", "updated_at", formatter=formatters.Date),
         Field(

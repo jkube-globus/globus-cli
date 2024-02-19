@@ -1,7 +1,10 @@
 import json
 import re
+import uuid
 from random import shuffle
 
+import pytest
+import responses
 from globus_sdk._testing import RegisteredResponse, load_response
 
 FLOW_IDENTITIES = {
@@ -171,6 +174,7 @@ def test_create_flow_text_output(run_line):
         "Description",
         "Keywords",
         "Owner",
+        "Subscription ID",
         "Created At",
         "Updated At",
         "Administrators",
@@ -223,3 +227,78 @@ def test_create_flow_text_output(run_line):
     for name, expected_values in expected_sets.items():
         match_list = set(value_for_field_from_output(name, result.output).split(","))
         assert match_list == expected_values
+
+
+@pytest.mark.parametrize(
+    "subscription_id, valid",
+    (
+        ("dummy-invalid-subscription-id", False),
+        (str(uuid.UUID(int=1)), True),
+    ),
+)
+def test_create_flow_with_subscription_id(run_line, subscription_id, valid):
+    # Load the response mock and extract metadata
+    response = load_response("flows.create_flow")
+
+    definition = response.metadata["params"]["definition"]
+    input_schema = response.metadata["params"]["input_schema"]
+    keywords = response.metadata["params"]["keywords"]
+    title = response.metadata["params"]["title"]
+    subtitle = response.metadata["params"]["subtitle"]
+    description = response.metadata["params"]["description"]
+
+    flow_administrators = response.metadata["params"]["flow_administrators"]
+    flow_starters = response.metadata["params"]["flow_starters"]
+    flow_viewers = response.metadata["params"]["flow_viewers"]
+
+    pool = IdentityPool()
+
+    # Configure the identities for all roles
+    pool.assign("owner", [response.json["flow_owner"]])
+    pool.assign("administrators", flow_administrators)
+    pool.assign("starters", flow_starters)
+    pool.assign("viewers", flow_viewers)
+
+    load_response(
+        RegisteredResponse(
+            service="auth",
+            path="/v2/api/identities",
+            json={
+                "identities": list(pool.identities.values()),
+            },
+        )
+    )
+
+    # Construct the command line
+    command = [
+        "globus",
+        "flows",
+        "create",
+        title,
+        json.dumps(definition),
+        "--subscription-id",
+        subscription_id,
+    ]
+    for flow_administrator in flow_administrators:
+        command.extend(("--administrator", flow_administrator))
+    for flow_starter in flow_starters:
+        command.extend(("--starter", flow_starter))
+    for flow_viewer in flow_viewers:
+        command.extend(("--viewer", flow_viewer))
+    for keyword in keywords:
+        command.extend(("--keyword", keyword))
+    if input_schema is not None:
+        command.extend(("--input-schema", json.dumps(input_schema)))
+    if subtitle is not None:
+        command.extend(("--subtitle", subtitle))
+    if description is not None:
+        command.extend(("--description", description))
+
+    run_line(command, assert_exit_code=0 if valid else 2)
+    if valid:
+        request = next(
+            call
+            for call in responses.calls
+            if "flows.automate.globus.org" in call.request.url
+        ).request
+        assert json.loads(request.body)["subscription_id"] == subscription_id
