@@ -77,3 +77,49 @@ categories = "Bugfixes, Enhancements, Other"
 format = "md"
 output_file = "changelog.adoc"
 entry_title_template = '{{ version }} ({{ date.strftime("%Y-%m-%d") }})'
+
+[tool.mypy]
+# the desired config here is
+#   strict=true
+# however, strict=true does not play well with overrides (used below)
+# therefore, we explicitly declare a number of options which approach
+# `strict=true` in effect
+warn_unused_configs = true
+
+# TODO: enable disallow_any_generics (currently fails)
+# disallow_any_generics = true
+disallow_subclassing_any = true
+
+# do not disallow_untyped_calls, as we have untyped defs of our own
+# this rule causes too much chaos at present
+#
+# disallow_untyped_calls = true
+
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+no_implicit_reexport = true
+strict_equality = true
+extra_checks = true
+
+# additional settings (not part of strict=true)
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+module = [
+    "globus_cli.services.gcs",
+    "globus_cli.services.transfer.activation",
+    "globus_cli.services.transfer.client",
+    "globus_cli.services.transfer.delegate_proxy",
+    "globus_cli.services.transfer.recursive_ls",
+    "globus_cli.termio",
+    "globus_cli.termio.printer",
+    "globus_cli.termio.errors",
+    "globus_cli.termio.awscli_text",
+]
