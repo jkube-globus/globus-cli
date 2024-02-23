@@ -317,7 +317,7 @@ def _execute_service_command(
             method.upper(),
             path,
             query_params=query_params_d,
-            data=body,
+            data=body.encode("utf-8") if body is not None else None,
             headers=headers_d,
             allow_redirects=allow_redirects,
         )
