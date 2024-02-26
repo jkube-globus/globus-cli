@@ -21,7 +21,7 @@ def group_show(login_manager: LoginManager, *, group_id: uuid.UUID) -> None:
         text_mode=TextMode.text_record,
         fields=[
             Field("Name", "name"),
-            Field("Description", "description"),
+            Field("Description", "description", wrap_enabled=True),
             Field("Type", "group_type"),
             Field("Visibility", "policies.group_visibility"),
             Field("Membership Visibility", "policies.group_members_visibility"),
