@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import enum
 import json
+import shutil
 import textwrap
 
 import click
@@ -28,6 +29,15 @@ class TextMode(enum.Enum):
     text_record_list = enum.auto()
     text_raw = enum.auto()
     text_custom = enum.auto()
+
+
+def _get_terminal_content_width() -> int:
+    """Get a content width for text output based on the terminal size.
+
+    Uses 80% of the terminal width, if it can be detected and isn't too small.
+    """
+    cols = shutil.get_terminal_size(fallback=(80, 20)).columns
+    return cols if cols < 100 else int(0.8 * cols)
 
 
 def _jmespath_preprocess(res):
@@ -73,16 +83,20 @@ def print_unix_response(res):
 def _colon_display(data, fields):
     maxlen = max(len(f.name) for f in fields) + 2
     indent = " " * maxlen
-    wrapper = textwrap.TextWrapper(initial_indent=indent, subsequent_indent=indent)
+
+    content_width = _get_terminal_content_width()
+    wrapper = textwrap.TextWrapper(
+        initial_indent=indent, subsequent_indent=indent, width=content_width
+    )
+
     for field in fields:
         # str in case the result is `None`
         value = str(field(data))
 
-        # 88 char wrap based on the same rationale that `black` and `flake8-bugbear`
-        # use 88 chars (or if there's a newline)
         # only wrap if it's enabled and detected
-        shouldwrap = field.wrap_enabled and (len(value) + maxlen > 88 or "\n" in value)
-        if shouldwrap:
+        if field.wrap_enabled and (
+            len(value) + maxlen > content_width or "\n" in value
+        ):
             # TextWrapper will discard existing whitespace, including newlines
             # so split, wrap each resulting line, then rejoin
             lines = value.split("\n")
