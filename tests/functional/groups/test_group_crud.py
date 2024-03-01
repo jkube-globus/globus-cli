@@ -1,6 +1,7 @@
 """CRUD = Create Read Update Delete"""
 
 import json
+import uuid
 
 import pytest
 import responses
@@ -168,7 +169,8 @@ def test_group_show(run_line):
     assert group1_description in result.output
 
 
-def test_group_create(run_line):
+@pytest.mark.parametrize("parent_group_id", (None, str(uuid.UUID(int=0))))
+def test_group_create(run_line, parent_group_id):
     """
     Basic success test for globus group create
     """
@@ -178,11 +180,23 @@ def test_group_create(run_line):
     group1_name = meta["group1_name"]
     group1_description = meta["group1_description"]
 
-    result = run_line(
-        f"globus group create '{group1_name}' --description '{group1_description}'"
-    )
+    cmd = [
+        "globus",
+        "group",
+        "create",
+        group1_name,
+        "--description",
+        group1_description,
+    ]
+    if parent_group_id:
+        cmd.extend(["--parent-id", parent_group_id])
+    result = run_line(cmd)
 
     assert f"Group {group1_id} created successfully" in result.output
+
+    last_req = responses.calls[-1].request
+    sent = json.loads(last_req.body)
+    assert sent["parent_id"] == parent_group_id
 
 
 def test_group_update(run_line):
