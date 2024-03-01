@@ -443,7 +443,9 @@ def test_timer_creation_errors_on_data_access_with_client_creds(
     src = make_non_ha_mapped_collection()
     dst = ep_for_timer
 
-    result = run_line(
+    setup_timer_consent_tree_response("fake_client_id", src)
+
+    run_line(
         [
             "globus",
             "timer",
@@ -455,7 +457,7 @@ def test_timer_creation_errors_on_data_access_with_client_creds(
             "--interval",
             "60m",
         ],
-        assert_exit_code=2,
     )
 
-    assert "Unsupported operation." in result.stderr
+    req = get_last_request()
+    assert req.url.startswith("https://timer")
