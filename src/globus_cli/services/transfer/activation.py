@@ -1,6 +1,3 @@
-import click
-
-
 def supported_activation_methods(res):
     """
     Given an activation_requirements document
@@ -74,29 +71,3 @@ def activation_requirements_help_text(res, ep_id):
     ]
 
     return "".join(lines)
-
-
-def autoactivate(client, endpoint_id, if_expires_in=None):
-    """
-    Attempts to auto-activate the given endpoint with the given client
-    If auto-activation fails, parses the returned activation requirements
-    to determine which methods of activation are supported, then tells
-    the user to use 'globus endpoint activate' with the correct options(s)
-    """
-    kwargs = {}
-    if if_expires_in is not None:
-        kwargs["if_expires_in"] = if_expires_in
-
-    res = client.endpoint_autoactivate(endpoint_id, **kwargs)
-    if res["code"] == "AutoActivationFailed":
-        message = (
-            "The endpoint could not be auto-activated and must be "
-            "activated before it can be used.\n\n"
-            + activation_requirements_help_text(res, endpoint_id)
-        )
-
-        click.echo(message, err=True)
-        click.get_current_context().exit(1)
-
-    else:
-        return res

@@ -58,15 +58,6 @@ def test_whoami(run_line):
     assert result.output == "foo@globusid.org\n"
 
 
-def test_whoami_no_auth(run_line):
-    """
-    Runs whoami with config set to be empty, confirms no login seen.
-    """
-    load_response_set("cli.all_authentication_failed")
-    result = run_line("globus whoami", assert_exit_code=1)
-    assert "Unable to get user information" in result.stderr
-
-
 def test_json_raw_string_output(run_line):
     """
     Get single-field jmespath output and make sure it's quoted
@@ -74,19 +65,6 @@ def test_json_raw_string_output(run_line):
     load_response_set("cli.foo_user_info")
     result = run_line("globus whoami --jmespath name")
     assert '"Foo McUser"\n' == result.output
-
-
-def test_auth_call_no_auth(run_line):
-    """
-    Runs get-identities with config set to be empty,
-    confirms No Authentication CLI error.
-    """
-    load_response_set("cli.all_authentication_failed")
-    result = run_line(
-        "globus get-identities foo@globusid.org",
-        assert_exit_code=1,
-    )
-    assert "No Authentication provided." in result.stderr
 
 
 def test_auth_call(run_line):
@@ -98,16 +76,6 @@ def test_auth_call(run_line):
     user_id = meta["user_id"]
     result = run_line("globus get-identities foo@globusid.org")
     assert user_id in result.output
-
-
-def test_transfer_call_no_auth(run_line):
-    """
-    Runs ls with config set to be empty,
-    confirms No Authentication CLI error.
-    """
-    meta = load_response_set("cli.all_authentication_failed").metadata
-    result = run_line(["globus", "ls", meta["endpoint_id"]], assert_exit_code=1)
-    assert "No Authentication provided." in result.stderr
 
 
 def test_transfer_call(run_line):

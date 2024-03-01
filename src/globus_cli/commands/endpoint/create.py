@@ -100,7 +100,7 @@ def endpoint_create(
     with the `--personal` flag, it returns a setup key which can be passed to
     Globus Connect Personal during setup.
     """
-    from globus_cli.services.transfer import assemble_generic_doc, autoactivate
+    from globus_cli.services.transfer import assemble_generic_doc
 
     print_command_hint(
         """\
@@ -162,7 +162,6 @@ For GCS, use the globus-connect-server CLI from your Endpoint."""
         kwargs["host_path"] = host_path
 
         ep_doc = assemble_generic_doc("shared_endpoint", **kwargs)
-        autoactivate(transfer_client, endpoint_id, if_expires_in=60)
         res = transfer_client.create_shared_endpoint(ep_doc)
 
     # non shared endpoint creation

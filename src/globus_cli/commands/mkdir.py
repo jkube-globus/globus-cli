@@ -34,12 +34,8 @@ def mkdir_command(
 
     {AUTOMATIC_ACTIVATION}
     """
-    from globus_cli.services.transfer import autoactivate
-
     endpoint_id, path = endpoint_plus_path
-
     transfer_client = login_manager.get_transfer_client()
-    autoactivate(transfer_client, endpoint_id, if_expires_in=60)
 
     res = transfer_client.operation_mkdir(endpoint_id, path=path, local_user=local_user)
     display(res, text_mode=TextMode.text_raw, response_key="message")

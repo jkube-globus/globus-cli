@@ -221,16 +221,11 @@ def ls_command(
 
     from globus_cli.services.transfer import (
         RecursiveLsResponse,
-        autoactivate,
         iterable_response_to_dict,
     )
 
     endpoint_id, path = endpoint_plus_path
-
-    # do autoactivation before the `ls` call so that recursive invocations
-    # won't do this repeatedly, and won't have to instantiate new clients
     transfer_client = login_manager.get_transfer_client()
-    autoactivate(transfer_client, endpoint_id, if_expires_in=60)
 
     # create the query parameters to send to operation_ls
     ls_params: dict[str, t.Any] = {"show_hidden": int(show_hidden)}

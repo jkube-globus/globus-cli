@@ -316,7 +316,7 @@ def transfer_command(
 
     {AUTOMATIC_ACTIVATION}
     """
-    from globus_cli.services.transfer import add_batch_to_transfer_data, autoactivate
+    from globus_cli.services.transfer import add_batch_to_transfer_data
 
     transfer_client = login_manager.get_transfer_client()
 
@@ -413,12 +413,6 @@ def transfer_command(
         )
         # exit safely
         return
-
-    # autoactivate after parsing all args and putting things together
-    # skip this if skip-activation-check is given
-    if not skip_activation_check:
-        autoactivate(transfer_client, source_endpoint, if_expires_in=60)
-        autoactivate(transfer_client, dest_endpoint, if_expires_in=60)
 
     res = transfer_client.submit_transfer(transfer_data)
     display(
