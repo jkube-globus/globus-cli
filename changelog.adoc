@@ -2,6 +2,21 @@
 
 // scriv-insert-here
 
+== 3.26.0 (2024-03-01)
+
+Bugfixes:
+
+* Payloads sent with `globus api` commands are now always encoded as UTF-8.
+  This fixes an issue on certain platforms in which encoding could fail on
+  specific payloads.
+
+Enhancements:
+
+* Text-wrapped fields in record-style text output now use a larger percentage
+  of the available space in wide terminals.
+
+* Add support for client credentials in `globus timer create transfer`.
+
 == 3.25.0 (2024-02-19)
 
 Enhancements:
