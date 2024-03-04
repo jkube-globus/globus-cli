@@ -2,11 +2,7 @@ import typing as t
 
 from globus_cli.termio import Field, formatters
 
-from .activation import (
-    activation_requirements_help_text,
-    autoactivate,
-    supported_activation_methods,
-)
+from .activation import activation_requirements_help_text, supported_activation_methods
 from .client import CustomTransferClient
 from .data import (
     add_batch_to_transfer_data,
@@ -38,7 +34,6 @@ __all__ = (
     "RecursiveLsResponse",
     "supported_activation_methods",
     "activation_requirements_help_text",
-    "autoactivate",
     "fill_delegate_proxy_activation_requirements",
     "display_name_or_cname",
     "iterable_response_to_dict",

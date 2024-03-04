@@ -42,10 +42,7 @@ def rename_command(
     The new path does not have to be in the same directory as the old path, but
     most endpoints will require it to stay on the same filesystem.
     """
-    from globus_cli.services.transfer import autoactivate
-
     transfer_client = login_manager.get_transfer_client()
-    autoactivate(transfer_client, endpoint_id, if_expires_in=60)
 
     res = transfer_client.operation_rename(
         endpoint_id, oldpath=source, newpath=destination, local_user=local_user

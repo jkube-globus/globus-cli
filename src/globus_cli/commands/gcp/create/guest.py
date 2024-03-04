@@ -43,7 +43,7 @@ def guest_command(
 
     The host ID and a path to the root for the Guest Collection are required.
     """
-    from globus_cli.services.transfer import assemble_generic_doc, autoactivate
+    from globus_cli.services.transfer import assemble_generic_doc
 
     if disable_verify is not None:
         verify["disable_verify"] = disable_verify
@@ -69,7 +69,6 @@ def guest_command(
         **verify,
     )
 
-    autoactivate(transfer_client, host_endpoint_id, if_expires_in=60)
     res = transfer_client.create_shared_endpoint(ep_doc)
 
     # output

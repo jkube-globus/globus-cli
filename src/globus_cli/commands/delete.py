@@ -126,8 +126,6 @@ def delete_command(
 
     {AUTOMATIC_ACTIVATION}
     """
-    from globus_cli.services.transfer import autoactivate
-
     endpoint_id, path = endpoint_plus_path
     transfer_client = login_manager.get_transfer_client()
 
@@ -187,10 +185,6 @@ def delete_command(
         display(delete_data.data, response_key="DATA", fields=[Field("Path", "path")])
         # exit safely
         return
-
-    # attempt to activate unless --skip-activation-check is given
-    if not skip_activation_check:
-        autoactivate(transfer_client, endpoint_id, if_expires_in=60)
 
     res = transfer_client.submit_delete(delete_data)
     display(
