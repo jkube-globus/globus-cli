@@ -164,10 +164,11 @@ def test_group_get_by_subscription_non_visible_group(
             r"The Group for this Subscription is not visible to you\.", result.stderr
         )
         result_lines = result.stdout.splitlines()
-        assert len(result_lines) == 3
+        assert len(result_lines) == 4
         assert re.match(r"Group ID:\s+" + re.escape(meta["group_id"]), result_lines[0])
         assert {r.partition(":")[0] for r in result_lines} == {
             "Group ID",
+            "Subscription ID",
             "BAA",
             "High Assurance",
         }

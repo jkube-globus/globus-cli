@@ -13,6 +13,10 @@ from globus_cli.parsing import group
         "member": (".member", "group_member"),
         "set-policies": (".set_policies", "group_set_policies"),
         "show": (".show", "group_show"),
+        "get-subscription-info": (
+            ".get_subscription_info",
+            "group_get_subscription_info",
+        ),
         "get-by-subscription": (".get_by_subscription", "group_get_by_subscription"),
         "update": (".update", "group_update"),
     },

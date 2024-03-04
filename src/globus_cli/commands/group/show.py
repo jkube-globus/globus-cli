@@ -2,9 +2,9 @@ import uuid
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.termio import Field, TextMode, display, formatters
+from globus_cli.termio import TextMode, display
 
-from ._common import SESSION_ENFORCEMENT_FIELD, group_id_arg
+from ._common import GROUP_FIELDS, GROUP_FIELDS_W_SUBSCRIPTION, group_id_arg
 
 
 @group_id_arg
@@ -16,22 +16,9 @@ def group_show(login_manager: LoginManager, *, group_id: uuid.UUID) -> None:
 
     group = groups_client.get_group(group_id, include="my_memberships")
 
-    display(
-        group,
-        text_mode=TextMode.text_record,
-        fields=[
-            Field("Name", "name"),
-            Field("Description", "description", wrap_enabled=True),
-            Field("Type", "group_type"),
-            Field("Visibility", "policies.group_visibility"),
-            Field("Membership Visibility", "policies.group_members_visibility"),
-            SESSION_ENFORCEMENT_FIELD,
-            Field("Join Requests Allowed", "policies.join_requests"),
-            Field(
-                "Signup Fields",
-                "policies.signup_fields",
-                formatter=formatters.SortedArray,
-            ),
-            Field("Roles", "my_memberships[].role", formatter=formatters.SortedArray),
-        ],
-    )
+    if group.get("subscription_id") is not None:
+        fields = GROUP_FIELDS_W_SUBSCRIPTION
+    else:
+        fields = GROUP_FIELDS
+
+    display(group, text_mode=TextMode.text_record, fields=fields)
