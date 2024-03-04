@@ -16,7 +16,7 @@ from globus_cli.termio import display
     "--parent-id",
     type=click.UUID,
     help=(
-        "Parent group ID, making the new group a subgroup. "
+        "Make the new group a subgroup of the specified parent group. "
         "You must be an admin of the parent group to do this."
     ),
 )
