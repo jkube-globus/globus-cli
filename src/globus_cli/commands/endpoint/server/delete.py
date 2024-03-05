@@ -9,7 +9,7 @@ import globus_sdk
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 
 
 def _spec_to_matches(
@@ -121,4 +121,4 @@ def server_delete(
 
     response = transfer_client.delete_endpoint_server(endpoint_id, server)
 
-    display(response, text_mode=TextMode.text_raw, response_key="message")
+    display(response, text_mode=display.RAW, response_key="message")

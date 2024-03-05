@@ -3,7 +3,7 @@ import uuid
 from globus_cli.commands.gcs.endpoint._common import GCS_ENDPOINT_FIELDS
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 
 
 @command("show")
@@ -19,4 +19,4 @@ def show_command(
 
     res = gcs_client.get_endpoint()
 
-    display(res, text_mode=TextMode.text_record, fields=GCS_ENDPOINT_FIELDS)
+    display(res, text_mode=display.RECORD, fields=GCS_ENDPOINT_FIELDS)

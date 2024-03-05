@@ -2,7 +2,7 @@ import uuid
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.termio import Field, TextMode, display, formatters
+from globus_cli.termio import Field, display, formatters
 
 from .._common import task_id_arg
 
@@ -26,7 +26,5 @@ def show_command(login_manager: LoginManager, *, task_id: uuid.UUID) -> None:
     """Display a Task"""
     search_client = login_manager.get_search_client()
     display(
-        search_client.get_task(task_id),
-        fields=TASK_FIELDS,
-        text_mode=TextMode.text_record,
+        search_client.get_task(task_id), fields=TASK_FIELDS, text_mode=display.RECORD
     )

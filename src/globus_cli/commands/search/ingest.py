@@ -4,7 +4,7 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import JSONStringOrFile, ParsedJSONData, command
-from globus_cli.termio import Field, TextMode, display
+from globus_cli.termio import Field, display
 
 from ._common import index_id_arg
 
@@ -47,6 +47,6 @@ def ingest_command(
 
     display(
         search_client.ingest(index_id, doc),
-        text_mode=TextMode.text_record,
+        text_mode=display.RECORD,
         fields=[Field("Task ID", "task_id"), Field("Acknowledged", "acknowledged")],
     )

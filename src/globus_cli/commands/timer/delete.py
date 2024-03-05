@@ -4,7 +4,7 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 
 from ._common import DELETED_TIMER_FORMAT_FIELDS
 
@@ -20,8 +20,4 @@ def delete_command(login_manager: LoginManager, *, timer_id: uuid.UUID) -> None:
     """
     timer_client = login_manager.get_timer_client()
     deleted = timer_client.delete_job(timer_id)
-    display(
-        deleted,
-        text_mode=TextMode.text_record,
-        fields=DELETED_TIMER_FORMAT_FIELDS,
-    )
+    display(deleted, text_mode=display.RECORD, fields=DELETED_TIMER_FORMAT_FIELDS)

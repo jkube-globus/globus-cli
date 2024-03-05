@@ -6,7 +6,7 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import Field, TextMode, display
+from globus_cli.termio import Field, display
 
 from ._common import AclPrincipalFormatter
 
@@ -37,7 +37,7 @@ def show_command(
     rule = transfer_client.get_endpoint_acl_rule(endpoint_id, rule_id)
     display(
         rule,
-        text_mode=TextMode.text_record,
+        text_mode=display.RECORD,
         fields=[
             Field("Rule ID", "id"),
             Field("Permissions", "permissions"),

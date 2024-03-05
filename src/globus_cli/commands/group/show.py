@@ -2,7 +2,7 @@ import uuid
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 
 from ._common import GROUP_FIELDS, GROUP_FIELDS_W_SUBSCRIPTION, group_id_arg
 
@@ -21,4 +21,4 @@ def group_show(login_manager: LoginManager, *, group_id: uuid.UUID) -> None:
     else:
         fields = GROUP_FIELDS
 
-    display(group, text_mode=TextMode.text_record, fields=fields)
+    display(group, text_mode=display.RECORD, fields=fields)

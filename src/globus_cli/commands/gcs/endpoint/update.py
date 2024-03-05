@@ -12,7 +12,7 @@ from globus_cli.constants import EXPLICIT_NULL, ExplicitNullType
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import CommaDelimitedList, command, endpoint_id_arg
 from globus_cli.parsing.param_types.nullable import IntOrNull
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 
 
 class SubscriptionIdType(click.ParamType):
@@ -241,4 +241,4 @@ def update_command(
 
     res = gcs_client.update_endpoint(endpoint_document, include="endpoint")
 
-    display(res, text_mode=TextMode.text_record, fields=GCS_ENDPOINT_FIELDS)
+    display(res, text_mode=display.RECORD, fields=GCS_ENDPOINT_FIELDS)

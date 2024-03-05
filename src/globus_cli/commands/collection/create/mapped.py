@@ -23,7 +23,7 @@ from globus_cli.parsing import (
     endpointish_params,
     mutex_option_group,
 )
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 
 
 def _make_multi_use_option_str(s: str) -> str:
@@ -312,6 +312,6 @@ def collection_create_mapped(
     fields = standard_collection_fields(login_manager.get_auth_client())
     display(
         res,
-        text_mode=TextMode.text_record,
+        text_mode=display.RECORD,
         fields=filter_fields(fields, res),
     )

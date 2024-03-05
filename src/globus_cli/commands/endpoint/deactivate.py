@@ -2,7 +2,7 @@ import uuid
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 
 
 @command("deactivate", deprecated=True, hidden=True)
@@ -15,4 +15,4 @@ def endpoint_deactivate(login_manager: LoginManager, *, endpoint_id: uuid.UUID) 
     """
     transfer_client = login_manager.get_transfer_client()
     res = transfer_client.endpoint_deactivate(endpoint_id)
-    display(res, text_mode=TextMode.text_raw, response_key="message")
+    display(res, text_mode=display.RAW, response_key="message")

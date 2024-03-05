@@ -10,7 +10,7 @@ import globus_sdk
 from globus_cli.login_manager import LoginManager
 from globus_cli.login_manager.utils import get_current_identity_id
 from globus_cli.parsing import command
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 from globus_cli.utils import CLIAuthRequirementsError
 
 # NB: GARE parsing requires other SDK components and therefore needs to be deferred to
@@ -53,11 +53,7 @@ def resume_command(
         timer_id,
         update_credentials=(gare is not None),
     )
-    display(
-        resumed,
-        text_mode=TextMode.text_raw,
-        simple_text=resumed["message"],
-    )
+    display(resumed, text_mode=display.RAW, simple_text=resumed["message"])
 
 
 def check_inactive_reason(

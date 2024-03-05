@@ -6,7 +6,7 @@ from unittest import mock
 import click
 import pytest
 
-from globus_cli.termio import Field, TextMode, display, term_is_interactive
+from globus_cli.termio import Field, display, term_is_interactive
 
 
 @pytest.mark.parametrize(
@@ -43,7 +43,7 @@ def test_format_record_list(capsys):
     ]
     fields = [Field("Bird", "bird"), Field("Wingspan", "wingspan")]
     with click.Context(click.Command("fake-command")) as _:
-        display(data, text_mode=TextMode.text_record_list, fields=fields)
+        display(data, text_mode=display.RECORD_LIST, fields=fields)
     output = capsys.readouterr().out
     # Should have:
     # 5 lines in total,
@@ -82,7 +82,7 @@ def test_format_record_with_text_wrapping(capsys, monkeypatch):
     ]
 
     with click.Context(click.Command("fake-command")) as _:
-        display(data, text_mode=TextMode.text_record, fields=fields)
+        display(data, text_mode=display.RECORD, fields=fields)
     output_lines = capsys.readouterr().out.splitlines()
 
     # output should be more than two lines

@@ -6,7 +6,7 @@ from textwrap import dedent
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import Field, TextMode, display, formatters
+from globus_cli.termio import Field, display, formatters
 
 from ._common import server_id_arg
 
@@ -99,8 +99,5 @@ def server_show(
         text_epilog = None
 
     display(
-        server_doc,
-        text_mode=TextMode.text_record,
-        fields=fields,
-        text_epilog=text_epilog,
+        server_doc, text_mode=display.RECORD, fields=fields, text_epilog=text_epilog
     )

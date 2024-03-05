@@ -16,13 +16,7 @@ from globus_cli.parsing import (
     local_user_option,
     task_submission_options,
 )
-from globus_cli.termio import (
-    Field,
-    TextMode,
-    display,
-    err_is_terminal,
-    term_is_interactive,
-)
+from globus_cli.termio import Field, display, err_is_terminal, term_is_interactive
 
 
 @command(
@@ -189,6 +183,6 @@ def delete_command(
     res = transfer_client.submit_delete(delete_data)
     display(
         res,
-        text_mode=TextMode.text_record,
+        text_mode=display.RECORD,
         fields=[Field("Message", "message"), Field("Task ID", "task_id")],
     )

@@ -2,7 +2,7 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 
 from ._common import resolve_id_or_name
 
@@ -32,4 +32,4 @@ def bookmark_delete(login_manager: LoginManager, *, bookmark_id_or_name: str) ->
     bookmark_id = resolve_id_or_name(transfer_client, bookmark_id_or_name)["id"]
 
     res = transfer_client.delete_bookmark(bookmark_id)
-    display(res, text_mode=TextMode.text_raw, response_key="message")
+    display(res, text_mode=display.RAW, response_key="message")

@@ -1,6 +1,6 @@
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.termio import Field, TextMode, display, formatters
+from globus_cli.termio import Field, display, formatters
 
 from .._common import INDEX_FIELDS
 
@@ -17,6 +17,6 @@ def list_command(login_manager: LoginManager) -> None:
     display(
         search_client.get("/v1/index_list"),
         fields=INDEX_LIST_FIELDS,
-        text_mode=TextMode.text_table,
+        text_mode=display.TABLE,
         response_key="index_list",
     )

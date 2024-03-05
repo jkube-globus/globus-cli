@@ -6,7 +6,7 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import CommaDelimitedList, command
-from globus_cli.termio import Field, TextMode, display
+from globus_cli.termio import Field, display
 
 from .._common import MEMBERSHIP_FIELDS, group_id_arg
 
@@ -43,7 +43,7 @@ def member_list(
 
     display(
         group,
-        text_mode=TextMode.text_table,
+        text_mode=display.TABLE,
         fields=[
             Field("Username", "username"),
             Field("Role", "role"),

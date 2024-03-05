@@ -5,7 +5,7 @@ import click
 from globus_cli.commands.gcs.endpoint.role._common import role_fields
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 
 
 @command("show")
@@ -24,4 +24,4 @@ def show_command(
 
     res = gcs_client.get_role(role_id)
 
-    display(res, text_mode=TextMode.text_record, fields=role_fields(auth_client))
+    display(res, text_mode=display.RECORD, fields=role_fields(auth_client))

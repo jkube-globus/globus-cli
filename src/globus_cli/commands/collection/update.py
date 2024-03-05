@@ -18,7 +18,7 @@ from globus_cli.parsing import (
     emptyable_opt_list_callback,
     endpointish_params,
 )
-from globus_cli.termio import Field, TextMode, display
+from globus_cli.termio import Field, display
 
 _MULTI_USE_OPTION_STR = "Give this option multiple times in a single command"
 
@@ -206,5 +206,5 @@ def collection_update(
     display(
         res,
         fields=[_FullDataField("code", "code")],
-        text_mode=TextMode.text_record,
+        text_mode=display.RECORD,
     )

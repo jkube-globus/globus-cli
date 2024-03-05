@@ -21,7 +21,7 @@ from globus_cli.parsing import (
     transfer_recursive_option,
     verify_checksum_option,
 )
-from globus_cli.termio import Field, TextMode, display
+from globus_cli.termio import Field, display
 
 
 @command(
@@ -417,6 +417,6 @@ def transfer_command(
     res = transfer_client.submit_transfer(transfer_data)
     display(
         res,
-        text_mode=TextMode.text_record,
+        text_mode=display.RECORD,
         fields=[Field("Message", "message"), Field("Task ID", "task_id")],
     )

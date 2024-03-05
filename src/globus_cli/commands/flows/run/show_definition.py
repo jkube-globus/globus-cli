@@ -4,7 +4,7 @@ import uuid
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, run_id_arg
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 
 
 @command("show-definition", short_help="Show a run's flow definition and input schema")
@@ -19,4 +19,4 @@ def show_definition_command(login_manager: LoginManager, *, run_id: uuid.UUID) -
 
     response = flows_client.get_run_definition(run_id)
 
-    display(response, text_mode=TextMode.json, sort_json_keys=False)
+    display(response, text_mode=display.JSON, sort_json_keys=False)

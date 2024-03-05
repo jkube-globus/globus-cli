@@ -5,7 +5,7 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import IdentityType, ParsedIdentity, command
-from globus_cli.termio import Field, TextMode, display
+from globus_cli.termio import Field, display
 
 from .._common import group_id_arg
 
@@ -62,7 +62,7 @@ def member_invite(
             raise ValueError("Could not invite the user to the group")
     display(
         response,
-        text_mode=TextMode.text_record,
+        text_mode=display.RECORD,
         fields=INVITED_USER_FIELDS,
         response_key=lambda data: data["invite"][0],
     )

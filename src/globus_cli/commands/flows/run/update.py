@@ -6,7 +6,7 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import CommaDelimitedList, command, run_id_arg
-from globus_cli.termio import Field, TextMode, display, formatters
+from globus_cli.termio import Field, display, formatters
 
 
 @command("update", short_help="Update a run")
@@ -106,4 +106,4 @@ def update_command(
         Field("Status", "status"),
     ]
 
-    display(response, fields=fields, text_mode=TextMode.text_record)
+    display(response, fields=fields, text_mode=display.RECORD)

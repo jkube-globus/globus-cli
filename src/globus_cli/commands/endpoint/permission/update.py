@@ -5,7 +5,7 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 
 
 @command(
@@ -49,4 +49,4 @@ def update_command(
 
     rule_data = assemble_generic_doc("access", permissions=permissions)
     res = transfer_client.update_endpoint_acl_rule(endpoint_id, rule_id, rule_data)
-    display(res, text_mode=TextMode.text_raw, response_key="message")
+    display(res, text_mode=display.RAW, response_key="message")

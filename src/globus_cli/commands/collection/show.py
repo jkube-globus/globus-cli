@@ -10,7 +10,7 @@ from globus_cli.commands.collection._common import (
 )
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import collection_id_arg, command
-from globus_cli.termio import Field, TextMode, display, formatters
+from globus_cli.termio import Field, display, formatters
 
 PRIVATE_FIELDS: list[Field] = [
     Field("Root Path", "root_path"),
@@ -64,6 +64,6 @@ def collection_show(
 
     display(
         res,
-        text_mode=TextMode.text_record,
+        text_mode=display.RECORD,
         fields=real_fields,
     )

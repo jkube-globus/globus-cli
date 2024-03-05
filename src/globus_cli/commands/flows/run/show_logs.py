@@ -8,7 +8,7 @@ from globus_sdk.paging import Paginator
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, run_id_arg
-from globus_cli.termio import Field, TextMode, display, print_command_hint
+from globus_cli.termio import Field, display, print_command_hint
 from globus_cli.utils import PagingWrapper
 
 
@@ -72,11 +72,7 @@ def show_logs_command(
         for entry in entry_list:
             entry["details"] = json.dumps(entry["details"])
 
-        display(
-            entry_list,
-            text_mode=TextMode.text_record_list,
-            fields=fields,
-        )
+        display(entry_list, text_mode=display.RECORD_LIST, fields=fields)
     else:
         print_command_hint(
             "Displaying summary data. "

@@ -4,7 +4,7 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.termio import Field, TextMode, display, formatters
+from globus_cli.termio import Field, display, formatters
 
 from .._common import index_id_arg
 
@@ -31,7 +31,7 @@ def delete_command(
     search_client = login_manager.get_search_client()
     display(
         search_client.delete_subject(index_id, subject),
-        text_mode=TextMode.text_record,
+        text_mode=display.RECORD,
         fields=[
             Field(
                 "Message",

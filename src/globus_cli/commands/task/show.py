@@ -8,7 +8,7 @@ from globus_sdk.paging import Paginator
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, mutex_option_group
-from globus_cli.termio import Field, TextMode, display
+from globus_cli.termio import Field, display
 
 from ._common import task_id_arg
 
@@ -92,7 +92,7 @@ def print_task_detail(client: globus_sdk.TransferClient, task_id: uuid.UUID) -> 
     res = client.get_task(task_id)
     display(
         res,
-        text_mode=TextMode.text_record,
+        text_mode=display.RECORD,
         fields=(
             COMMON_FIELDS
             + (COMPLETED_FIELDS if res["completion_time"] else ACTIVE_FIELDS)

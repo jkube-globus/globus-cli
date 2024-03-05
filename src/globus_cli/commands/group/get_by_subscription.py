@@ -7,13 +7,7 @@ import globus_sdk
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.termio import (
-    Field,
-    TextMode,
-    display,
-    outformat_is_text,
-    print_command_hint,
-)
+from globus_cli.termio import Field, display, outformat_is_text, print_command_hint
 
 from ._common import GROUP_FIELDS_W_SUBSCRIPTION, SUBSCRIPTION_FIELDS
 
@@ -46,7 +40,7 @@ def group_get_by_subscription(
     if group_data:
         display(
             group_data,
-            text_mode=TextMode.text_record,
+            text_mode=display.RECORD,
             fields=GROUP_FIELDS_W_SUBSCRIPTION,
         )
     # otherwise, display the subscription data and text-mode will be just the Group ID
@@ -59,7 +53,7 @@ def group_get_by_subscription(
             )
         display(
             subscription_data,
-            text_mode=TextMode.text_record,
+            text_mode=display.RECORD,
             fields=[Field("Group ID", "group_id")] + SUBSCRIPTION_FIELDS,
         )
 

@@ -14,7 +14,7 @@ from globus_cli.parsing import (
     endpointish_params,
     mutex_option_group,
 )
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 
 from ._common import validate_endpoint_create_and_update_params
 
@@ -108,4 +108,4 @@ def endpoint_update(
 
     # make the update
     res = transfer_client.update_endpoint(endpoint_id, ep_doc)
-    display(res, text_mode=TextMode.text_raw, response_key="message")
+    display(res, text_mode=display.RAW, response_key="message")
