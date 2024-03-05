@@ -7,7 +7,6 @@ import click
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import IdentityType, ParsedIdentity, command
 from globus_cli.termio import Field, display, is_verbose
-from globus_cli.utils import CLIStubResponse
 
 
 @command(
@@ -74,7 +73,7 @@ def get_identities_command(
         results += auth_client.get_identities(usernames=usernames, provision=provision)[
             "identities"
         ]
-    res = CLIStubResponse({"identities": results})
+    res = {"identities": results}
 
     def _custom_text_format(identities: list[dict[str, t.Any]]) -> None:
         """

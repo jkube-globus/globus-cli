@@ -20,8 +20,6 @@ else:
 if t.TYPE_CHECKING:
     import globus_sdk
 
-    from globus_cli.utils import CLIStubResponse
-
 
 ClickContextTree: TypeAlias = t.Tuple[
     click.Context, t.List[click.Context], t.List["ClickContextTree"]
@@ -31,7 +29,6 @@ ClickContextTree: TypeAlias = t.Tuple[
 DATA_CONTAINER_T = t.Union[
     t.Mapping[str, t.Any],
     "globus_sdk.GlobusHTTPResponse",
-    "CLIStubResponse",
 ]
 
 JsonValue: TypeAlias = t.Union[

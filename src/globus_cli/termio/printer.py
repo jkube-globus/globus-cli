@@ -9,8 +9,6 @@ import typing as t
 import click
 import globus_sdk
 
-from globus_cli.utils import CLIStubResponse
-
 from .awscli_text import unix_display
 from .context import (
     get_jmespath_expression,
@@ -44,7 +42,7 @@ def _get_terminal_content_width() -> int:
 def _jmespath_preprocess(res):
     jmespath_expr = get_jmespath_expression()
 
-    if isinstance(res, (CLIStubResponse, globus_sdk.GlobusHTTPResponse)):
+    if isinstance(res, globus_sdk.GlobusHTTPResponse):
         res = res.data
 
     if not isinstance(res, str):
