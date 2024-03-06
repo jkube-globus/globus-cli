@@ -11,21 +11,11 @@ from globus_cli.termio import (
     Field,
     TextMode,
     display,
-    formatters,
     outformat_is_text,
     print_command_hint,
 )
 
-from ._common import SESSION_ENFORCEMENT_FIELD
-
-_COMMON_FIELDS = [
-    Field("BAA", "subscription_info.is_baa", formatter=formatters.Bool),
-    Field(
-        "High Assurance",
-        "subscription_info.is_high_assurance",
-        formatter=formatters.Bool,
-    ),
-]
+from ._common import GROUP_FIELDS_W_SUBSCRIPTION, SUBSCRIPTION_FIELDS
 
 
 @click.argument("subscription_id", type=click.UUID)
@@ -57,29 +47,7 @@ def group_get_by_subscription(
         display(
             group_data,
             text_mode=TextMode.text_record,
-            fields=(
-                [Field("Group ID", "id")]
-                + _COMMON_FIELDS
-                + [
-                    Field("Name", "name"),
-                    Field("Description", "description", wrap_enabled=True),
-                    Field("Type", "group_type"),
-                    Field("Visibility", "policies.group_visibility"),
-                    Field("Membership Visibility", "policies.group_members_visibility"),
-                    SESSION_ENFORCEMENT_FIELD,
-                    Field("Join Requests Allowed", "policies.join_requests"),
-                    Field(
-                        "Signup Fields",
-                        "policies.signup_fields",
-                        formatter=formatters.SortedArray,
-                    ),
-                    Field(
-                        "Roles",
-                        "my_memberships[].role",
-                        formatter=formatters.SortedArray,
-                    ),
-                ]
-            ),
+            fields=GROUP_FIELDS_W_SUBSCRIPTION,
         )
     # otherwise, display the subscription data and text-mode will be just the Group ID
     else:
@@ -92,7 +60,7 @@ def group_get_by_subscription(
         display(
             subscription_data,
             text_mode=TextMode.text_record,
-            fields=[Field("Group ID", "group_id")] + _COMMON_FIELDS,
+            fields=[Field("Group ID", "group_id")] + SUBSCRIPTION_FIELDS,
         )
 
 
