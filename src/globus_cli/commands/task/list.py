@@ -238,9 +238,4 @@ def task_list(
         Field("Dest Display Name", "destination_endpoint_display_name"),
         Field("Label", "label"),
     ]
-    display(
-        task_iterator,
-        text_mode=display.TABLE,
-        fields=fields,
-        json_converter=iterable_response_to_dict,
-    )
+    display(task_iterator, fields=fields, json_converter=iterable_response_to_dict)

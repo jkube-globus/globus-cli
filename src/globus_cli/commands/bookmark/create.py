@@ -63,4 +63,4 @@ def bookmark_create(
     submit_data = {"endpoint_id": str(endpoint_id), "path": path, "name": bookmark_name}
 
     res = transfer_client.create_bookmark(submit_data)
-    display(res, text_mode=display.static_output(f"Bookmark ID: {res['id']}"))
+    display(res, simple_text="Bookmark ID: {}".format(res["id"]))

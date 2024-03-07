@@ -46,15 +46,18 @@ def bookmark_show(login_manager: LoginManager, *, bookmark_id_or_name: str) -> N
     res = resolve_id_or_name(transfer_client, bookmark_id_or_name)
     display(
         res,
-        text_mode=(
-            display.RECORD
-            if is_verbose()
-            else display.static_output(f"{res['endpoint_id']}:{res['path']}")
-        ),
+        text_mode=display.RECORD,
         fields=[
             Field("ID", "id"),
             Field("Name", "name"),
             Field("Endpoint ID", "endpoint_id"),
             Field("Path", "path"),
         ],
+        simple_text=(
+            # standard output is endpoint:path format
+            "{}:{}".format(res["endpoint_id"], res["path"])
+            # verbose output includes all fields
+            if not is_verbose()
+            else None
+        ),
     )

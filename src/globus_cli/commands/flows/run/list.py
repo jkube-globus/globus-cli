@@ -57,9 +57,4 @@ def list_command(
         Field("Status", "status"),
     ]
 
-    display(
-        run_iterator,
-        text_mode=display.TABLE,
-        fields=fields,
-        json_converter=run_iterator.json_converter,
-    )
+    display(run_iterator, fields=fields, json_converter=run_iterator.json_converter)

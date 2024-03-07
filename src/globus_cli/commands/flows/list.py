@@ -122,7 +122,6 @@ def list_command(
 
     display(
         flow_iterator,
-        text_mode=display.TABLE,
         fields=fields,
         json_converter=flow_iterator.json_converter,
     )

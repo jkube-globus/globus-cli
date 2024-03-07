@@ -58,16 +58,14 @@ def endpoint_is_activated(
             exp_string = f" or will expire within {deadline} seconds"
         requirements_help = activation_requirements_help_text(res, endpoint_id)
 
-        display(
-            res,
-            text_mode=display.static_output(
-                f"'{endpoint_id}' is not activated{exp_string}.\n\n{requirements_help}"
-            ),
+        message = (
+            f"'{endpoint_id}' is not activated{exp_string}.\n\n{requirements_help}"
         )
+        display(res, simple_text=message)
         click.get_current_context().exit(1)
 
     def success(msg: str) -> t.NoReturn:
-        display(res, text_mode=display.static_output(msg))
+        display(res, simple_text=msg)
         click.get_current_context().exit(0)
 
     # eternally active endpoints have a special expires_in value

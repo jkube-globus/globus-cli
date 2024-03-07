@@ -35,4 +35,4 @@ def bookmark_rename(
     submit_data = {"name": new_bookmark_name}
 
     res = transfer_client.update_bookmark(bookmark_id, submit_data)
-    display(res, text_mode=display.static_output("Success"))
+    display(res, simple_text="Success")

@@ -84,4 +84,4 @@ def role_create(
     )
 
     res = transfer_client.add_endpoint_role(endpoint_id, role_doc)
-    display(res, text_mode=display.static_output(f"ID: {res['id']}"))
+    display(res, simple_text="ID: {}".format(res["id"]))

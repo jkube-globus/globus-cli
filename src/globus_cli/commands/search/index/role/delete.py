@@ -23,7 +23,5 @@ def delete_command(
     search_client = login_manager.get_search_client()
     display(
         search_client.delete_role(index_id, role_id),
-        text_mode=display.static_output(
-            f"Successfully removed role {role_id} from index {index_id}"
-        ),
+        simple_text=f"Successfully removed role {role_id} from index {index_id}",
     )

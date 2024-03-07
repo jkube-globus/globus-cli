@@ -175,27 +175,14 @@ class Renderer:
     RECORD_LIST = TextMode.text_record_list
     RAW = TextMode.text_raw
 
-    @staticmethod
-    def static_output(text: str) -> t.Callable[[t.Any], None]:
-        """
-        Given some static text, turn it into a callable which can be used as a
-        text_mode for display.
-        """
-
-        def _render_method(data: t.Any) -> None:
-            click.echo(text)
-
-        return _render_method
-
     def __call__(
         self,
-        # required args
         response_data: t.Any,
         *,
-        text_mode: TextMode | t.Callable[[t.Any], None],
-        # optional args
+        simple_text: str | None = None,
         text_preamble: str | None = None,
         text_epilog: str | None = None,
+        text_mode: TextMode | t.Callable[[t.Any], None] = TextMode.text_table,
         json_converter: t.Callable[..., t.Any] | None = None,
         fields: list[Field] | None = None,
         response_key: str | t.Callable[[t.Any], t.Any] | None = None,
@@ -203,6 +190,7 @@ class Renderer:
     ) -> None:
         _display(
             response_data,
+            simple_text=simple_text,
             text_preamble=text_preamble,
             text_epilog=text_epilog,
             text_mode=text_mode,
@@ -219,9 +207,10 @@ display = Renderer()
 def _display(
     response_data,
     *,
-    text_mode: TextMode | t.Callable[[t.Any], None],
+    simple_text=None,
     text_preamble=None,
     text_epilog=None,
+    text_mode: TextMode | t.Callable[[t.Any], None] = TextMode.text_table,
     json_converter=None,
     fields: list[Field] | None = None,
     response_key: str | t.Callable[[t.Any], t.Any] | None = None,
@@ -234,6 +223,8 @@ def _display(
     ``TextMode.text_record_list``), or GlobusHTTPResponse object.
     It contains either an API response or synthesized data for printing.
 
+    ``simple_text`` is a text override -- normal printing is skipped and this
+    string is printed instead (text output only)
     ``text_preamble`` is text which prints before normal printing (text output
     only)
     ``text_epilog`` is text which prints after normal printing (text output
@@ -279,6 +270,11 @@ def _display(
         )
 
     def _print_as_text():
+        # if we're given simple text, print that and exit
+        if simple_text is not None:
+            click.echo(simple_text)
+            return
+
         # if there's a preamble, print it beofre any other text
         if text_preamble is not None:
             click.echo(text_preamble)

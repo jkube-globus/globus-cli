@@ -127,7 +127,6 @@ def endpoint_search(
 
     display(
         search_iterator,
-        text_mode=display.TABLE,
         fields=ENDPOINT_LIST_FIELDS,
         json_converter=iterable_response_to_dict,
     )

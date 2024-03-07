@@ -50,4 +50,4 @@ def update_task(
     task_doc = assemble_generic_doc("task", label=label, deadline=deadline)
 
     res = transfer_client.update_task(task_id, task_doc)
-    display(res, text_mode=display.static_output("Success"))
+    display(res, simple_text="Success")

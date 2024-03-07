@@ -13,7 +13,7 @@ from globus_cli.parsing import (
     local_user_option,
     mutex_option_group,
 )
-from globus_cli.termio import Field, display, formatters, is_verbose
+from globus_cli.termio import Field, display, formatters, is_verbose, outformat_is_text
 
 # Transfer supports all file fields, so this list is missing 'link_target'
 #
@@ -266,7 +266,6 @@ def ls_command(
     pathformatter = PathItemFormatter()
     display(
         res,
-        text_mode=display.TABLE if long_output or is_verbose() else _render_items,
         fields=[
             Field("Permissions", "permissions"),
             Field("User", "user"),
@@ -276,11 +275,10 @@ def ls_command(
             Field("File Type", "type"),
             Field("Filename", "@", formatter=pathformatter),
         ],
+        simple_text=(
+            None
+            if long_output or is_verbose() or not outformat_is_text()
+            else "\n".join(pathformatter.parse(x) for x in res)
+        ),
         json_converter=iterable_response_to_dict,
     )
-
-
-def _render_items(data: t.Any) -> None:
-    pathformatter = PathItemFormatter()
-    for item in data:
-        click.echo(pathformatter.parse(item))

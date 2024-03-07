@@ -29,4 +29,4 @@ def my_shared_endpoint_list(
     transfer_client = login_manager.get_transfer_client()
     ep_iterator = transfer_client.my_shared_endpoint_list(endpoint_id)
 
-    display(ep_iterator, text_mode=display.TABLE, fields=ENDPOINT_LIST_FIELDS)
+    display(ep_iterator, fields=ENDPOINT_LIST_FIELDS)

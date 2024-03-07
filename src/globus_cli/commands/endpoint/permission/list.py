@@ -34,7 +34,6 @@ def list_command(login_manager: LoginManager, *, endpoint_id: uuid.UUID) -> None
 
     display(
         rules,
-        text_mode=display.TABLE,
         fields=[
             Field("Rule ID", "id"),
             Field("Permissions", "permissions"),

@@ -41,4 +41,4 @@ def group_update(
 
     response = groups_client.update_group(group_id, data)
 
-    display(response, text_mode=display.static_output("Group updated successfully"))
+    display(response, simple_text="Group updated successfully")

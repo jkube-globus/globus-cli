@@ -108,7 +108,6 @@ def session_show(login_manager: LoginManager) -> None:
 
     display(
         list_data,
-        text_mode=display.TABLE,
         json_converter=lambda x: session_info,
         fields=SESSION_FIELDS,
     )

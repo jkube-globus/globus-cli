@@ -32,7 +32,6 @@ def list_command(
 
     display(
         paging_wrapper,
-        text_mode=display.TABLE,
         fields=role_fields(auth_client),
         json_converter=paging_wrapper.json_converter,
     )
