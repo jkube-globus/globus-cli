@@ -71,6 +71,7 @@ def print_successful_transfers(
     res = paginator(task_id).items()
     display(
         res,
+        text_mode=display.TABLE,
         fields=SUCCESSFULL_TRANSFER_FIELDS,
         json_converter=iterable_response_to_dict,
     )
@@ -83,6 +84,7 @@ def print_skipped_errors(client: globus_sdk.TransferClient, task_id: uuid.UUID) 
     res = paginator(task_id).items()
     display(
         res,
+        text_mode=display.TABLE,
         fields=SKIPPED_PATHS_FIELDS,
         json_converter=iterable_response_to_dict,
     )

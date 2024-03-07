@@ -113,7 +113,12 @@ def rm_command(
     delete_data.add_item(path)
 
     if dry_run:
-        display(delete_data.data, response_key="DATA", fields=[Field("Path", "path")])
+        display(
+            delete_data.data,
+            text_mode=display.TABLE,
+            response_key="DATA",
+            fields=[Field("Path", "path")],
+        )
         # exit safely
         return
 

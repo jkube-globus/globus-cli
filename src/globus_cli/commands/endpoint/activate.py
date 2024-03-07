@@ -178,9 +178,9 @@ def endpoint_activate(
         if "AlreadyActivated" == res["code"]:
             display(
                 res,
-                simple_text=(
+                text_mode=display.static_output(
                     "Endpoint is already activated. Activation "
-                    "expires at {}".format(res["expire_time"])
+                    f"expires at {res['expire_time']}"
                 ),
             )
             return
@@ -192,8 +192,8 @@ def endpoint_activate(
         if "AutoActivated" in res["code"]:
             display(
                 res,
-                simple_text=(
-                    "Autoactivation succeeded with message: {}".format(res["message"])
+                text_mode=display.static_output(
+                    f"Autoactivation succeeded with message: {res['message']}"
                 ),
             )
             return

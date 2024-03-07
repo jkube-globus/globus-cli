@@ -16,4 +16,4 @@ def pause_command(login_manager: LoginManager, *, timer_id: uuid.UUID) -> None:
     """
     timer_client = login_manager.get_timer_client()
     paused = timer_client.pause_job(timer_id)
-    display(paused, text_mode=display.RAW, simple_text=paused["message"])
+    display(paused, text_mode=display.static_output(paused["message"]))

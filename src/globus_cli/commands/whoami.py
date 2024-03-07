@@ -1,3 +1,5 @@
+import typing as t
+
 import click
 import globus_sdk
 
@@ -81,11 +83,7 @@ def whoami_command(login_manager: LoginManager, *, linked_identities: bool) -> N
                     Field("ID", "sub"),
                     Field("Email", "email"),
                 ],
-                simple_text=(
-                    None
-                    if is_verbose()
-                    else "\n".join([x["username"] for x in res["identity_set"]])
-                ),
+                text_mode=display.TABLE if is_verbose() else _render_identities,
             )
         except KeyError:
             click.echo(
@@ -99,12 +97,20 @@ def whoami_command(login_manager: LoginManager, *, linked_identities: bool) -> N
     else:
         display(
             res,
-            text_mode=display.RECORD,
+            text_mode=(
+                display.RECORD
+                if is_verbose()
+                else display.static_output(res["preferred_username"])
+            ),
             fields=[
                 Field("Username", "preferred_username"),
                 Field("Name", "name"),
                 Field("ID", "sub"),
                 Field("Email", "email"),
             ],
-            simple_text=(None if is_verbose() else res["preferred_username"]),
         )
+
+
+def _render_identities(data: t.Any) -> None:
+    for x in data:
+        click.echo(x["username"])

@@ -94,4 +94,6 @@ def group_set_policies(
     }
 
     response = groups_client.set_group_policies(group_id, data)
-    display(response, simple_text="Group policies updated successfully")
+    display(
+        response, text_mode=display.static_output("Group policies updated successfully")
+    )

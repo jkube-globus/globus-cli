@@ -403,6 +403,7 @@ def transfer_command(
     if dry_run:
         display(
             transfer_data.data,
+            text_mode=display.TABLE,
             response_key="DATA",
             fields=[
                 Field("Source Path", "source_path"),

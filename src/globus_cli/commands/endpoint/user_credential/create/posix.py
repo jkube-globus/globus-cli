@@ -38,4 +38,4 @@ def posix(
     )
     res = gcs_client.create_user_credential(data)
 
-    display(res, simple_text=res.full_data.get("message"))
+    display(res, text_mode=display.static_output(res.full_data.get("message")))

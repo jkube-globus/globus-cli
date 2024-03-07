@@ -24,4 +24,4 @@ def user_credential_delete(
 
     res = gcs_client.delete_user_credential(user_credential_id)
 
-    display(res, simple_text=res.data.get("message"))
+    display(res, text_mode=display.static_output(res.data.get("message")))

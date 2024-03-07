@@ -20,4 +20,4 @@ def group_delete(
 
     response = groups_client.delete_group(group_id)
 
-    display(response, simple_text="Group deleted successfully")
+    display(response, text_mode=display.static_output("Group deleted successfully"))

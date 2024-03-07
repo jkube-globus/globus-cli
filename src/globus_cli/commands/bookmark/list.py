@@ -58,6 +58,7 @@ def bookmark_list(login_manager: LoginManager) -> None:
 
     display(
         bookmark_iterator,
+        text_mode=display.TABLE,
         fields=[
             Field("Name", "name"),
             Field("Bookmark ID", "id"),

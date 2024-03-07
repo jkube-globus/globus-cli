@@ -15,6 +15,7 @@ def group_list(login_manager: LoginManager) -> None:
 
     display(
         groups,
+        text_mode=display.TABLE,
         fields=[
             Field("Group ID", "id"),
             Field("Name", "name"),

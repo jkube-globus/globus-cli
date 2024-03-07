@@ -115,10 +115,10 @@ def print_error_or_response(
     if isinstance(data, globus_sdk.GlobusAPIError):
         click.echo(data.text)
     else:
-        # however, we will pass this through display using 'simple_text' to get
-        # the right semantics
+        # however, use custom display logic (rather than a raw echo) to ensure
+        # the right semantics on normal responses
         # specifically: respect `--jmespath` and pretty-print JSON if `-Fjson` is used
-        display(data, simple_text=data.text)
+        display(data, text_mode=display.static_output(data.text))
 
 
 def _get_resource_server(service_name: str) -> str:

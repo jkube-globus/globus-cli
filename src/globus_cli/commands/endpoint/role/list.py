@@ -46,6 +46,7 @@ def role_list(login_manager: LoginManager, *, endpoint_id: uuid.UUID) -> None:
 
     display(
         roles,
+        text_mode=display.TABLE,
         fields=[
             Field("Principal Type", "principal_type"),
             Field("Role ID", "id"),

@@ -80,7 +80,10 @@ def show_logs_command(
         )
         # Display the log entries in a table.
         display(
-            entry_iterator, fields=fields, json_converter=entry_iterator.json_converter
+            entry_iterator,
+            text_mode=display.TABLE,
+            fields=fields,
+            json_converter=entry_iterator.json_converter,
         )
 
     if run_doc["status"] == "INACTIVE":

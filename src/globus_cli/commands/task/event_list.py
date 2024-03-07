@@ -122,6 +122,7 @@ def task_event_list(
 
     display(
         event_iterator,
+        text_mode=display.TABLE,
         fields=[
             Field("Time", "time"),
             Field("Code", "code"),

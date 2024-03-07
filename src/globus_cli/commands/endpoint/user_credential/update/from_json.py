@@ -36,4 +36,4 @@ def from_json(
     res = gcs_client.update_user_credential(
         user_credential_id, user_credential_json.data
     )
-    display(res, simple_text=res.full_data.get("message"))
+    display(res, text_mode=display.static_output(res.full_data.get("message")))

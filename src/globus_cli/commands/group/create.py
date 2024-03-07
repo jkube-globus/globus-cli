@@ -40,4 +40,7 @@ def group_create(
     )
     group_id = response["id"]
 
-    display(response, simple_text=f"Group {group_id} created successfully")
+    display(
+        response,
+        text_mode=display.static_output(f"Group {group_id} created successfully"),
+    )

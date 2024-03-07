@@ -123,6 +123,7 @@ def task_pause_info(login_manager: LoginManager, *, task_id: uuid.UUID) -> None:
         if effective_pause_rules:
             display(
                 effective_pause_rules,
+                text_mode=display.TABLE,
                 fields=PAUSE_RULE_DISPLAY_FIELDS,
                 text_preamble=(
                     "The following pause rules are effective on this task:\n"

@@ -53,7 +53,7 @@ def resume_command(
         timer_id,
         update_credentials=(gare is not None),
     )
-    display(resumed, text_mode=display.RAW, simple_text=resumed["message"])
+    display(resumed, text_mode=display.static_output(resumed["message"]))
 
 
 def check_inactive_reason(
