@@ -12,7 +12,7 @@ from globus_cli.parsing import (
     command,
     mutex_option_group,
 )
-from globus_cli.termio import Field, TextMode, display, formatters
+from globus_cli.termio import Field, display, formatters
 
 from ._common import index_id_arg
 
@@ -66,7 +66,7 @@ def delete_by_query_command(
     data = search_client.delete_by_query(index_id, doc)
     display(
         data,
-        text_mode=TextMode.text_record,
+        text_mode=display.RECORD,
         fields=[
             Field(
                 "Message",

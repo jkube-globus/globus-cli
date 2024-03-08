@@ -9,7 +9,7 @@ import globus_sdk
 from globus_cli.commands.gcs.endpoint.role._common import role_fields
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 from globus_cli.utils import resolve_principal_urn
 
 _VALID_ROLES = t.Literal["administrator", "activity_manager", "activity_monitor"]
@@ -56,4 +56,4 @@ def create_command(
         globus_sdk.GCSRoleDocument(role=role, principal=principal_urn)
     )
 
-    display(res, text_mode=TextMode.text_record, fields=role_fields(auth_client))
+    display(res, text_mode=display.RECORD, fields=role_fields(auth_client))

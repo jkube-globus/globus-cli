@@ -6,7 +6,7 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import Field, TextMode, display, formatters
+from globus_cli.termio import Field, display, formatters
 
 
 @command("list", short_help="List all User Credentials on an Endpoint")
@@ -44,4 +44,4 @@ def user_credential_list(
         Field("Local Username", "username"),
         Field("Invalid", "invalid"),
     ]
-    display(res, text_mode=TextMode.text_table, fields=fields)
+    display(res, text_mode=display.TABLE, fields=fields)

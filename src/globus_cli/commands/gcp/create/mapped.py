@@ -5,7 +5,7 @@ import click
 from globus_cli.constants import ExplicitNullType
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpointish_params
-from globus_cli.termio import Field, TextMode, display
+from globus_cli.termio import Field, display
 
 from ._common import deprecated_verify_option
 
@@ -86,5 +86,5 @@ def mapped_command(
             Field("Collection ID", "id"),
             Field("Setup Key", "globus_connect_setup_key"),
         ],
-        text_mode=TextMode.text_record,
+        text_mode=display.RECORD,
     )

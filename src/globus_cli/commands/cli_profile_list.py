@@ -7,7 +7,7 @@ import click
 
 from globus_cli.login_manager import is_client_login, token_storage_adapter
 from globus_cli.parsing import command
-from globus_cli.termio import Field, TextMode, display, formatters
+from globus_cli.termio import Field, display, formatters
 
 
 def _profilestr_to_datadict(s: str) -> dict[str, t.Any] | None:
@@ -97,7 +97,7 @@ def cli_profile_list(*, all: bool) -> None:
         ]
         if all:
             fields.append(Field("GLOBUS_SDK_ENVIRONMENT", "env"))
-        display(user_profiles, text_mode=TextMode.text_table, fields=fields)
+        display(user_profiles, text_mode=display.TABLE, fields=fields)
     if client_profiles:
         click.echo("")
         fields = [
@@ -106,4 +106,4 @@ def cli_profile_list(*, all: bool) -> None:
         ]
         if all:
             fields.append(Field("GLOBUS_SDK_ENVIRONMENT", "env"))
-        display(client_profiles, text_mode=TextMode.text_table, fields=fields)
+        display(client_profiles, text_mode=display.TABLE, fields=fields)

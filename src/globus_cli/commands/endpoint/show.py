@@ -5,7 +5,7 @@ import click
 from globus_cli.endpointish import Endpointish
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import Field, TextMode, display, formatters
+from globus_cli.termio import Field, display, formatters
 
 STANDARD_FIELDS = [
     Field("Display Name", "display_name"),
@@ -57,6 +57,6 @@ def endpoint_show(
 
     display(
         res,
-        text_mode=TextMode.text_record,
+        text_mode=display.RECORD,
         fields=GCP_FIELDS if res["is_globus_connect"] else STANDARD_FIELDS,
     )

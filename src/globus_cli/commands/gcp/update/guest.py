@@ -5,7 +5,7 @@ import uuid
 from globus_cli.constants import ExplicitNullType
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import collection_id_arg, command, endpointish_params
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 
 
 @command("guest", short_help="Update a Guest Collection on GCP")
@@ -57,4 +57,4 @@ def guest_command(
 
     # make the update
     res = transfer_client.update_endpoint(collection_id, ep_doc)
-    display(res, text_mode=TextMode.text_raw, response_key="message")
+    display(res, text_mode=display.RAW, response_key="message")

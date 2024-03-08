@@ -6,7 +6,7 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.termio import Field, TextMode, display
+from globus_cli.termio import Field, display
 
 from ._common import SUBSCRIPTION_FIELDS
 
@@ -23,6 +23,6 @@ def group_get_subscription_info(
     subscription_data = groups_client.get(f"/subscription_info/{subscription_id}")
     display(
         subscription_data,
-        text_mode=TextMode.text_record,
+        text_mode=display.RECORD,
         fields=[Field("Group ID", "group_id")] + SUBSCRIPTION_FIELDS,
     )

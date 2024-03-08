@@ -6,7 +6,7 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg, local_user_option
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 
 
 @command(
@@ -47,4 +47,4 @@ def rename_command(
     res = transfer_client.operation_rename(
         endpoint_id, oldpath=source, newpath=destination, local_user=local_user
     )
-    display(res, text_mode=TextMode.text_raw, response_key="message")
+    display(res, text_mode=display.RAW, response_key="message")

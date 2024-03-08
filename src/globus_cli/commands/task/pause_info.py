@@ -8,7 +8,7 @@ import globus_sdk
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.termio import Field, TextMode, display, formatters
+from globus_cli.termio import Field, display, formatters
 
 from ._common import task_id_arg
 
@@ -115,7 +115,7 @@ def task_pause_info(login_manager: LoginManager, *, task_id: uuid.UUID) -> None:
             display(
                 res,
                 fields=explicit_pauses,
-                text_mode=TextMode.text_record,
+                text_mode=display.RECORD,
                 text_preamble="This task has been explicitly paused.\n",
                 text_epilog="\n" if effective_pause_rules else None,
             )

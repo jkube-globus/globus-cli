@@ -13,7 +13,7 @@ from globus_cli.parsing import (
     mutex_option_group,
     one_use_option,
 )
-from globus_cli.termio import Field, TextMode, display, print_command_hint
+from globus_cli.termio import Field, display, print_command_hint
 
 from ._common import validate_endpoint_create_and_update_params
 
@@ -174,5 +174,5 @@ For GCS, use the globus-connect-server CLI from your Endpoint."""
     display(
         res,
         fields=(COMMON_FIELDS + GCP_FIELDS if personal else COMMON_FIELDS),
-        text_mode=TextMode.text_record,
+        text_mode=display.RECORD,
     )

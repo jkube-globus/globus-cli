@@ -4,7 +4,7 @@ import uuid
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import Field, TextMode, display
+from globus_cli.termio import Field, display
 
 from ._common import RolePrincipalFormatter, role_id_arg
 
@@ -51,7 +51,7 @@ def role_show(
     role = transfer_client.get_endpoint_role(endpoint_id, role_id)
     display(
         role,
-        text_mode=TextMode.text_record,
+        text_mode=display.RECORD,
         fields=[
             Field("Principal Type", "principal_type"),
             Field("Principal", "@", formatter=formatter),

@@ -17,7 +17,7 @@ from globus_cli.parsing import (
     command,
     flow_id_arg,
 )
-from globus_cli.termio import Field, TextMode, display, formatters
+from globus_cli.termio import Field, display, formatters
 from globus_cli.types import JsonValue
 
 ROLE_TYPES = ("flow_viewer", "flow_starter", "flow_administrator", "flow_owner")
@@ -189,4 +189,4 @@ def update_command(
         ),
     ]
 
-    display(res, fields=fields, text_mode=TextMode.text_record)
+    display(res, fields=fields, text_mode=display.RECORD)

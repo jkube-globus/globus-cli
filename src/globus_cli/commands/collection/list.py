@@ -7,7 +7,7 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import Field, TextMode, display, formatters
+from globus_cli.termio import Field, display, formatters
 
 
 class ChoiceSlugified(click.Choice):
@@ -112,7 +112,7 @@ def collection_list(
     res = gcs_client.get_collection_list(**params)
     display(
         res,
-        text_mode=TextMode.text_table,
+        text_mode=display.TABLE,
         fields=[
             Field("ID", "id"),
             Field("Display Name", "display_name"),

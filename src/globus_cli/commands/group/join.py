@@ -6,7 +6,7 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import IdentityType, ParsedIdentity, command
-from globus_cli.termio import Field, TextMode, display
+from globus_cli.termio import Field, display
 
 from ._common import group_id_arg
 
@@ -70,7 +70,7 @@ def group_join(
 
     display(
         response,
-        text_mode=TextMode.text_record,
+        text_mode=display.RECORD,
         fields=JOIN_USER_FIELDS,
         response_key=lambda data: data[action][0],
     )

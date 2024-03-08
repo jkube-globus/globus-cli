@@ -8,7 +8,7 @@ from globus_sdk.paging import Paginator
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 
 from ._common import task_id_arg
 
@@ -113,4 +113,4 @@ def cancel_task(
 
     else:
         res = transfer_client.cancel_task(t.cast(uuid.UUID, task_id))
-        display(res, text_mode=TextMode.text_raw, response_key="message")
+        display(res, text_mode=display.RAW, response_key="message")

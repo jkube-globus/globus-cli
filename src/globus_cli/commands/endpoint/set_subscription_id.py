@@ -7,7 +7,7 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 
 
 class SubscriptionIdType(click.ParamType):
@@ -62,4 +62,4 @@ def set_endpoint_subscription_id(
         f"/endpoint/{endpoint_id}/subscription",
         data={"subscription_id": optional_subscription_id},
     )
-    display(res, text_mode=TextMode.text_raw, response_key="message")
+    display(res, text_mode=display.RAW, response_key="message")

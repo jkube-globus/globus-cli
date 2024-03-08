@@ -4,11 +4,10 @@ import enum
 import json
 import shutil
 import textwrap
+import typing as t
 
 import click
 import globus_sdk
-
-from globus_cli.utils import CLIStubResponse
 
 from .awscli_text import unix_display
 from .context import (
@@ -43,7 +42,7 @@ def _get_terminal_content_width() -> int:
 def _jmespath_preprocess(res):
     jmespath_expr = get_jmespath_expression()
 
-    if isinstance(res, (CLIStubResponse, globus_sdk.GlobusHTTPResponse)):
+    if isinstance(res, globus_sdk.GlobusHTTPResponse):
         res = res.data
 
     if not isinstance(res, str):
@@ -167,16 +166,54 @@ def print_table(iterable, fields, print_headers=True):
         click.echo(format_line([none_to_null(f(i)) for f in fields]))
 
 
-def display(
+class Renderer:
+    TABLE = TextMode.text_table
+    SILENT = TextMode.silent
+    JSON = TextMode.json
+    TABLE = TextMode.text_table
+    RECORD = TextMode.text_record
+    RECORD_LIST = TextMode.text_record_list
+    RAW = TextMode.text_raw
+
+    def __call__(
+        self,
+        response_data: t.Any,
+        *,
+        simple_text: str | None = None,
+        text_preamble: str | None = None,
+        text_epilog: str | None = None,
+        text_mode: TextMode | t.Callable[[t.Any], None] = TextMode.text_table,
+        json_converter: t.Callable[..., t.Any] | None = None,
+        fields: list[Field] | None = None,
+        response_key: str | t.Callable[[t.Any], t.Any] | None = None,
+        sort_json_keys: bool = True,
+    ) -> None:
+        _display(
+            response_data,
+            simple_text=simple_text,
+            text_preamble=text_preamble,
+            text_epilog=text_epilog,
+            text_mode=text_mode,
+            json_converter=json_converter,
+            fields=fields,
+            response_key=response_key,
+            sort_json_keys=sort_json_keys,
+        )
+
+
+display = Renderer()
+
+
+def _display(
     response_data,
     *,
     simple_text=None,
     text_preamble=None,
     text_epilog=None,
-    text_mode=TextMode.text_table,
+    text_mode: TextMode | t.Callable[[t.Any], None] = TextMode.text_table,
     json_converter=None,
     fields: list[Field] | None = None,
-    response_key=None,
+    response_key: str | t.Callable[[t.Any], t.Any] | None = None,
     sort_json_keys=True,
 ):
     """

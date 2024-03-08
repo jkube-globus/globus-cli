@@ -2,7 +2,7 @@ import uuid
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.termio import Field, TextMode, display
+from globus_cli.termio import Field, display
 
 from .._common import index_id_arg
 
@@ -23,6 +23,6 @@ def list_command(login_manager: LoginManager, *, index_id: uuid.UUID) -> None:
     display(
         search_client.get_task_list(index_id),
         fields=TASK_FIELDS,
-        text_mode=TextMode.text_table,
+        text_mode=display.TABLE,
         response_key="tasks",
     )

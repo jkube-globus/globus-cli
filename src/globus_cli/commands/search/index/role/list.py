@@ -2,7 +2,7 @@ import uuid
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.termio import Field, TextMode, display
+from globus_cli.termio import Field, display
 
 from ..._common import index_id_arg, resolved_principals_field
 
@@ -23,6 +23,6 @@ def list_command(login_manager: LoginManager, *, index_id: uuid.UUID) -> None:
             Field("Role", "role_name"),
             resolved_principals_field(auth_client, res["role_list"]),
         ],
-        text_mode=TextMode.text_table,
+        text_mode=display.TABLE,
         response_key="role_list",
     )

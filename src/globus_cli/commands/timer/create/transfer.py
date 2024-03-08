@@ -26,7 +26,7 @@ from globus_cli.parsing import (
     transfer_recursive_option,
     verify_checksum_option,
 )
-from globus_cli.termio import Field, TextMode, display, formatters
+from globus_cli.termio import Field, display, formatters
 
 from .._common import DATETIME_FORMATS, ScheduleFormatter
 
@@ -288,7 +288,7 @@ def transfer_command(
     timer_client = login_manager.get_timer_client()
     body = globus_sdk.TransferTimer(name=name, schedule=schedule, body=transfer_data)
     response = timer_client.create_timer(body)
-    display(response["timer"], text_mode=TextMode.text_record, fields=FORMAT_FIELDS)
+    display(response["timer"], text_mode=display.RECORD, fields=FORMAT_FIELDS)
 
 
 def _derive_needed_scopes(

@@ -14,7 +14,7 @@ from .context import (
 )
 from .errors import PrintableErrorField, write_error_info
 from .field import Field
-from .printer import TextMode, display
+from .printer import display
 
 
 def print_command_hint(message: str, *, color: str = "yellow"):
@@ -31,7 +31,6 @@ __all__ = [
     "PrintableErrorField",
     "write_error_info",
     "Field",
-    "TextMode",
     "display",
     "out_is_terminal",
     "env_interactive",

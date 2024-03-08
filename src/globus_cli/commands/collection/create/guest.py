@@ -19,7 +19,7 @@ from globus_cli.login_manager import LoginManager, MissingLoginError
 from globus_cli.login_manager.context import LoginContext
 from globus_cli.parsing import command, endpointish_params, mutex_option_group
 from globus_cli.services.gcs import CustomGCSClient
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 
 
 @command("guest", short_help="Create a GCSv5 Guest Collection")
@@ -139,7 +139,7 @@ def collection_create_guest(
         raise
 
     fields = standard_collection_fields(login_manager.get_auth_client())
-    display(res, text_mode=TextMode.text_record, fields=filter_fields(fields, res))
+    display(res, text_mode=display.RECORD, fields=filter_fields(fields, res))
 
 
 def _select_user_credential_id(

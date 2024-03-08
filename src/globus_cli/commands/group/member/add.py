@@ -5,7 +5,7 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import IdentityType, ParsedIdentity, command
-from globus_cli.termio import Field, TextMode, display
+from globus_cli.termio import Field, display
 
 from .._common import group_id_arg
 
@@ -55,7 +55,7 @@ def member_add(
             raise ValueError("Could not add user to group")
     display(
         response,
-        text_mode=TextMode.text_record,
+        text_mode=display.RECORD,
         fields=ADD_USER_FIELDS,
         response_key=lambda data: data["add"][0],
     )

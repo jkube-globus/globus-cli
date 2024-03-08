@@ -5,8 +5,6 @@ import uuid
 
 import click
 
-from globus_cli.types import DATA_CONTAINER_T
-
 if t.TYPE_CHECKING:
     from globus_cli.services.auth import CustomAuthClient
 
@@ -105,22 +103,6 @@ def format_plural_str(
         for singular, plural in pluralizable.items()
     }
     return formatstr.format(**argdict)
-
-
-class CLIStubResponse:
-    """
-    A stub response class to make arbitrary data accessible in a way similar to a
-    GlobusHTTPResponse object.
-    """
-
-    def __init__(self, data: DATA_CONTAINER_T) -> None:
-        self.data = data
-
-    def __contains__(self, key: str) -> bool:
-        return key in self.data
-
-    def __getitem__(self, key: str) -> t.Any:
-        return self.data[key]
 
 
 # wrap to add a `has_next()` method and `limit` param to a naive iterator

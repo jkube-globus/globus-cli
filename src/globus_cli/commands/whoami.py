@@ -3,7 +3,7 @@ import globus_sdk
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.termio import Field, TextMode, display, is_verbose, print_command_hint
+from globus_cli.termio import Field, display, is_verbose, print_command_hint
 
 
 @command(
@@ -99,7 +99,7 @@ def whoami_command(login_manager: LoginManager, *, linked_identities: bool) -> N
     else:
         display(
             res,
-            text_mode=TextMode.text_record,
+            text_mode=display.RECORD,
             fields=[
                 Field("Username", "preferred_username"),
                 Field("Name", "name"),

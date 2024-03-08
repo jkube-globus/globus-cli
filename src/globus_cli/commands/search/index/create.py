@@ -2,7 +2,7 @@ import click
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 
 from .._common import INDEX_FIELDS
 
@@ -18,6 +18,6 @@ def create_command(
     search_client = login_manager.get_search_client()
     display(
         search_client.create_index(display_name=display_name, description=description),
-        text_mode=TextMode.text_record,
+        text_mode=display.RECORD,
         fields=INDEX_FIELDS,
     )

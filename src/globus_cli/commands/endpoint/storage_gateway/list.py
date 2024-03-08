@@ -2,7 +2,7 @@ import uuid
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import Field, TextMode, display, formatters
+from globus_cli.termio import Field, display, formatters
 
 STANDARD_FIELDS = [
     Field("ID", "id"),
@@ -25,4 +25,4 @@ def storage_gateway_list(
     """
     gcs_client = login_manager.get_gcs_client(endpoint_id=endpoint_id)
     res = gcs_client.get_storage_gateway_list()
-    display(res, text_mode=TextMode.text_table, fields=STANDARD_FIELDS)
+    display(res, text_mode=display.TABLE, fields=STANDARD_FIELDS)

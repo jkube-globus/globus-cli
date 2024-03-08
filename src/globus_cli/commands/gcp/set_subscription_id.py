@@ -9,7 +9,7 @@ from globus_cli.constants import EXPLICIT_NULL, ExplicitNullType
 from globus_cli.endpointish import Endpointish, EntityType
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import TextMode, display
+from globus_cli.termio import display
 
 
 class GCPSubscriptionIdType(click.ParamType):
@@ -64,4 +64,4 @@ def set_endpoint_subscription_id(
         data={"subscription_id": ExplicitNullType.nullify(subscription_id)},
     )
 
-    display(res, text_mode=TextMode.text_raw, response_key="message")
+    display(res, text_mode=display.RAW, response_key="message")

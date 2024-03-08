@@ -2,7 +2,7 @@ import uuid
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
-from globus_cli.termio import Field, TextMode, display, formatters
+from globus_cli.termio import Field, display, formatters
 
 from ._common import user_credential_id_arg
 
@@ -41,4 +41,4 @@ def user_credential_show(
     ]
 
     res = gcs_client.get_user_credential(user_credential_id)
-    display(res, text_mode=TextMode.text_record, fields=fields)
+    display(res, text_mode=display.RECORD, fields=fields)
