@@ -58,6 +58,7 @@ def test_update_flow_text_output(run_line):
         ("--starters", ",".join(flow_starters)),
         ("--viewers", ",".join(flow_viewers)),
         ("--keywords", ",".join(keywords)),
+        ("--subscription-id", str(uuid.uuid4())),
     ]
 
     command = ["globus", "flows", "update", flow_id, *chain.from_iterable(options)]
@@ -72,6 +73,7 @@ def test_update_flow_text_output(run_line):
         "Description",
         "Keywords",
         "Owner",
+        "Subscription ID",
         "Created At",
         "Updated At",
         "Administrators",
@@ -150,7 +152,13 @@ def test_omitted_options(run_line):
     run_line(command)
 
     request = get_last_request()
-    omitted_keys = {"flow_administrators", "flow_starters", "flow_viewers", "keywords"}
+    omitted_keys = {
+        "flow_administrators",
+        "flow_starters",
+        "flow_viewers",
+        "keywords",
+        "subscription_id",
+    }
     assert json.loads(request.body).keys() & omitted_keys == set()
 
 

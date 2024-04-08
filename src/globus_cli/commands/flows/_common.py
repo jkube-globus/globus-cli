@@ -1,3 +1,8 @@
+from __future__ import annotations
+
+import typing as t
+import uuid
+
 import click
 
 from globus_cli.parsing import JSONStringOrFile
@@ -100,5 +105,32 @@ keywords_option = click.option(
 
         This option can be specified multiple times
         to create a list of keywords.
+    """,
+)
+
+
+class SubscriptionIdType(click.ParamType):
+    name = "SUBSCRIPTION_ID"
+
+    def convert(
+        self, value: str, param: click.Parameter | None, ctx: click.Context | None
+    ) -> uuid.UUID | t.Literal["DEFAULT"]:
+        if value.upper() == "DEFAULT":
+            return "DEFAULT"
+        try:
+            return uuid.UUID(value)
+        except ValueError:
+            self.fail(f"{value} must be either a UUID or 'DEFAULT'", param, ctx)
+
+
+subscription_id_option = click.option(
+    "--subscription-id",
+    "subscription_id",
+    type=SubscriptionIdType(),
+    multiple=False,
+    help="""
+        A subscription ID to assign to the flow.
+
+        The value may be a UUID or the word "DEFAULT".
     """,
 )

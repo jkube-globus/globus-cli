@@ -1,12 +1,15 @@
 from __future__ import annotations
 
+import typing as t
 import uuid
 
 import click
+from globus_sdk.utils import MISSING
 
 from globus_cli.commands.flows._common import (
     description_option,
     input_schema_option,
+    subscription_id_option,
     subtitle_option,
 )
 from globus_cli.login_manager import LoginManager
@@ -104,6 +107,7 @@ ROLE_TYPES = ("flow_viewer", "flow_starter", "flow_administrator", "flow_owner")
         Passing an empty string will clear any existing keywords.
     """,
 )
+@subscription_id_option
 @LoginManager.requires_login("flows")
 def update_command(
     login_manager: LoginManager,
@@ -119,6 +123,7 @@ def update_command(
     starters: list[str] | None,
     viewers: list[str] | None,
     keywords: list[str] | None,
+    subscription_id: uuid.UUID | t.Literal["DEFAULT"] | None,
 ) -> None:
     """
     Update a flow.
@@ -154,6 +159,7 @@ def update_command(
         flow_starters=starters,
         flow_viewers=viewers,
         keywords=keywords,
+        subscription_id=subscription_id or MISSING,
     )
 
     # Configure formatters for principals
@@ -170,6 +176,7 @@ def update_command(
         Field("Description", "description"),
         Field("Keywords", "keywords", formatter=formatters.ArrayFormatter()),
         Field("Owner", "flow_owner", formatter=principal_formatter),
+        Field("Subscription ID", "subscription_id"),
         Field("Created At", "created_at", formatter=formatters.Date),
         Field("Updated At", "updated_at", formatter=formatters.Date),
         Field(
