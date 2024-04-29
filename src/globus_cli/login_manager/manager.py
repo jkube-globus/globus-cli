@@ -7,6 +7,7 @@ import uuid
 
 import click
 import globus_sdk
+from globus_sdk.experimental.consents import ConsentForest
 from globus_sdk.experimental.scope_parser import Scope
 from globus_sdk.scopes import (
     AuthScopes,
@@ -37,7 +38,7 @@ from .tokenstore import (
 from .utils import get_current_identity_id, is_remote_session
 
 if t.TYPE_CHECKING:
-    from ..services.auth import ConsentForestResponse, CustomAuthClient
+    from ..services.auth import CustomAuthClient
     from ..services.gcs import CustomGCSClient
     from ..services.transfer import CustomTransferClient
 
@@ -178,14 +179,19 @@ class LoginManager:
         else:
             # If there are dependent scopes all required scope paths are present in the
             #   user's cached consent forest.
-            return self._cached_consent_forest.contains_scopes(required_scopes)
+            #
+            # FIXME: this type ignore is temporary because `meets_scope_requirements()`
+            # has too tight of a type
+            return self._cached_consent_forest.meets_scope_requirements(
+                required_scopes  # type: ignore[arg-type]
+            )
 
     @property
     @functools.lru_cache(maxsize=1)  # noqa: B019
-    def _cached_consent_forest(self) -> ConsentForestResponse:
+    def _cached_consent_forest(self) -> ConsentForest:
         identity_id = get_current_identity_id()
 
-        return self.get_auth_client().get_consents(identity_id)
+        return self.get_auth_client().get_consents(identity_id).to_forest()
 
     def run_login_flow(
         self,

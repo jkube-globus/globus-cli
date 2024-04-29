@@ -32,6 +32,17 @@ def resolve_times_to_utc(monkeypatch):
 
 
 def setup_timer_consent_tree_response(identity_id, *data_access_collection_ids):
+    _dummy_consent_fields = {
+        "allows_refresh": True,
+        "atomically_revocable": False,
+        "auto_approved": False,
+        "client": str(uuid.UUID(int=1)),
+        "created": "1970-01-01T00:00:00.000000+00:00",
+        "effective_identity": str(uuid.UUID(int=2)),
+        "last_used": "1970-01-01T00:00:00.000000+00:00",
+        "status": "approved",
+        "updated": "1970-01-01T00:00:00.000000+00:00",
+    }
     load_response(
         RegisteredResponse(
             service="auth",
@@ -41,28 +52,36 @@ def setup_timer_consent_tree_response(identity_id, *data_access_collection_ids):
                 "consents": [
                     {
                         "scope_name": globus_sdk.TimerClient.scopes.timer,
+                        "scope": str(uuid.uuid1()),
                         "dependency_path": [100],
                         "id": 100,
+                        **_dummy_consent_fields,
                     },
                     {
                         "scope_name": (
                             "https://auth.globus.org/scopes/"
                             "actions.globus.org/transfer/transfer"
                         ),
+                        "scope": str(uuid.uuid1()),
                         "dependency_path": [100, 101],
                         "id": 101,
+                        **_dummy_consent_fields,
                     },
                     {
                         "scope_name": globus_sdk.TransferClient.scopes.all,
+                        "scope": str(uuid.uuid1()),
                         "dependency_path": [100, 101, 102],
                         "id": 102,
+                        **_dummy_consent_fields,
                     },
                 ]
                 + [
                     {
                         "scope_name": GCSCollectionScopeBuilder(name).data_access,
+                        "scope": str(uuid.uuid1()),
                         "dependency_path": [100, 101, 102, 1000 + idx],
                         "id": 1000 + idx,
+                        **_dummy_consent_fields,
                     }
                     for idx, name in enumerate(data_access_collection_ids)
                 ]
