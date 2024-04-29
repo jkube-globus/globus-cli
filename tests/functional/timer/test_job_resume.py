@@ -167,6 +167,17 @@ def _register_responses(mock_user_data):
         },
     }
 
+    _dummy_consent_fields = {
+        "allows_refresh": True,
+        "atomically_revocable": False,
+        "auto_approved": False,
+        "client": str(uuid.UUID(int=1)),
+        "created": "1970-01-01T00:00:00.000000+00:00",
+        "effective_identity": str(uuid.UUID(int=2)),
+        "last_used": "1970-01-01T00:00:00.000000+00:00",
+        "status": "approved",
+        "updated": "1970-01-01T00:00:00.000000+00:00",
+    }
     register_response_set(
         "cli.timer_resume.inactive_gare.consents_missing",
         dict(
@@ -190,8 +201,10 @@ def _register_responses(mock_user_data):
                     "consents": [
                         {
                             "scope_name": timers_scope,
+                            "scope": str(uuid.uuid1()),
                             "dependency_path": [100],
                             "id": 100,
+                            **_dummy_consent_fields,
                         }
                     ]
                 },
@@ -223,23 +236,31 @@ def _register_responses(mock_user_data):
                     "consents": [
                         {
                             "scope_name": timers_scope,
+                            "scope": str(uuid.uuid1()),
                             "dependency_path": [100],
                             "id": 100,
+                            **_dummy_consent_fields,
                         },
                         {
                             "scope_name": transfer_ap_scope,
+                            "scope": str(uuid.uuid1()),
                             "dependency_path": [100, 101],
                             "id": 101,
+                            **_dummy_consent_fields,
                         },
                         {
                             "scope_name": transfer_scope,
+                            "scope": str(uuid.uuid1()),
                             "dependency_path": [100, 101, 102],
                             "id": 102,
+                            **_dummy_consent_fields,
                         },
                         {
                             "scope_name": data_access_scope,
+                            "scope": str(uuid.uuid1()),
                             "dependency_path": [100, 101, 102, 103],
                             "id": 103,
+                            **_dummy_consent_fields,
                         },
                     ]
                 },
@@ -247,7 +268,6 @@ def _register_responses(mock_user_data):
         ),
         metadata=metadata,
     )
-
     register_response_set(
         "cli.timer_resume.inactive_gare.session_required_identities",
         dict(

@@ -315,13 +315,13 @@ def _derive_missing_scopes(
     user_identity_id = get_current_identity_id()
 
     # get the user's Globus CLI consents
-    consents = auth_client.get_consents(user_identity_id)
+    consents = auth_client.get_consents(user_identity_id).to_forest()
 
     # check the 'needs_data_access' scope names against the 3rd-order dependencies
     # of the Timer scope and record the names of the ones which we need to request
     will_request_data_access: list[str] = []
     for name, scope_object in scopes_needed.items():
-        if not consents.contains_scopes([scope_object]):
+        if not consents.meets_scope_requirements([scope_object]):
             will_request_data_access.append(name)
 
     # return these ultimately filtered requirements
