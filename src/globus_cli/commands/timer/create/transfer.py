@@ -321,7 +321,7 @@ def _derive_missing_scopes(
     # of the Timer scope and record the names of the ones which we need to request
     will_request_data_access: list[str] = []
     for name, scope_object in scopes_needed.items():
-        if not consents.meets_scope_requirements([scope_object]):
+        if not consents.meets_scope_requirements([str(scope_object)]):
             will_request_data_access.append(name)
 
     # return these ultimately filtered requirements

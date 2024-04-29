@@ -179,7 +179,12 @@ class LoginManager:
         else:
             # If there are dependent scopes all required scope paths are present in the
             #   user's cached consent forest.
-            return self._cached_consent_forest.meets_scope_requirements(required_scopes)
+            #
+            # FIXME: this type ignore is temporary because `meets_scope_requirements()`
+            # has too tight of a type
+            return self._cached_consent_forest.meets_scope_requirements(
+                required_scopes  # type: ignore[arg-type]
+            )
 
     @property
     @functools.lru_cache(maxsize=1)  # noqa: B019

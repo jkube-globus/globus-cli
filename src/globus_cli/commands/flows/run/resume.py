@@ -130,4 +130,6 @@ def _has_required_consent(
     auth_client = login_manager.get_auth_client()
     user_identity_id = get_current_identity_id()
     consents = auth_client.get_consents(user_identity_id).to_forest()
-    return consents.meets_scope_requirements(required_scopes)
+    # FIXME: this type ignore is temporary because `meets_scope_requirements()`
+    # has too tight of a type
+    return consents.meets_scope_requirements(required_scopes)  # type: ignore[arg-type]
