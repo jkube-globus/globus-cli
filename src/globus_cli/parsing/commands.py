@@ -212,6 +212,10 @@ class TopLevelGroup(GlobusCommandGroup):
     def invoke(self, ctx: click.Context) -> t.Any:
         try:
             return super().invoke(ctx)
+        # explicitly re-raise any IOError (e.g. broken pipe) in order to engage
+        # click's existing handling of broken pipes
+        except OSError:
+            raise
         except Exception:
             # mypy thinks that exc_info could be (None, None, None), but... nope. False.
             custom_except_hook(sys.exc_info())  # type: ignore[arg-type]
