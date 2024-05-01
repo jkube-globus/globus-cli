@@ -111,7 +111,7 @@ def test_validate_flow_output(response_set, expected_table_data, run_line):
         # Get the rows of the table
         headers, table_data = _parse_table_content(result.output)[0]
         # Check all fields are present
-        assert headers == ["Identity", "Scope"]
+        assert headers == ["RunAs", "Scope"]
         # Check the entries
         assert len(table_data) == len(expected_table_data)
         assert len(table_data[0]) == 2

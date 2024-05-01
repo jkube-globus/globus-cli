@@ -75,9 +75,9 @@ def _validate_flow_output_handler(result: globus_sdk.GlobusHTTPResponse) -> None
 
 def _validate_flow_scope_output_handler(scopes_response: dict[str, str]) -> None:
     # Always include User and Flow scopes
-    scopes_fields = [Field("Identity", "identity"), Field("Scope", "scope")]
+    scopes_fields = [Field("RunAs", "RunAs"), Field("Scope", "scope")]
     scope_entries = [
-        {"identity": k, "scope": scope}
+        {"RunAs": k, "scope": scope}
         for k, scopes in scopes_response.items()
         for scope in scopes
     ]
