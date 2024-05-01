@@ -170,7 +170,6 @@ class Renderer:
     TABLE = TextMode.text_table
     SILENT = TextMode.silent
     JSON = TextMode.json
-    TABLE = TextMode.text_table
     RECORD = TextMode.text_record
     RECORD_LIST = TextMode.text_record_list
     RAW = TextMode.text_raw
@@ -199,6 +198,9 @@ class Renderer:
             response_key=response_key,
             sort_json_keys=sort_json_keys,
         )
+
+    def render_table(self, iterable, fields, print_headers=True):
+        print_table(iterable, fields, print_headers)
 
 
 display = Renderer()

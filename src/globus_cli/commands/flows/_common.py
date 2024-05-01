@@ -7,11 +7,7 @@ import click
 
 from globus_cli.parsing import JSONStringOrFile
 
-input_schema_option = click.option(
-    "--input-schema",
-    "input_schema",
-    type=JSONStringOrFile(),
-    help="""
+_input_schema_helptext = """
         The JSON input schema that governs the parameters
         used to start the flow.
 
@@ -26,11 +22,22 @@ input_schema_option = click.option(
 
         \b
             --input-schema schema.json
+    """
 
-        If unspecified, the default is an empty JSON object ('{}').
-    """,
+input_schema_option = click.option(
+    "--input-schema",
+    "input_schema",
+    type=JSONStringOrFile(),
+    help=_input_schema_helptext,
 )
 
+input_schema_option_with_default = click.option(
+    "--input-schema",
+    "input_schema",
+    type=JSONStringOrFile(),
+    help=_input_schema_helptext
+    + "\n    If unspecified, the default is an empty JSON object ('{}').",
+)
 
 subtitle_option = click.option(
     "--subtitle",
