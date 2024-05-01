@@ -199,7 +199,7 @@ class Renderer:
             sort_json_keys=sort_json_keys,
         )
 
-    def render_table(self, iterable, fields, print_headers=True):
+    def render_table(self, iterable, fields, print_headers=True) -> None:
         print_table(iterable, fields, print_headers)
 
 
