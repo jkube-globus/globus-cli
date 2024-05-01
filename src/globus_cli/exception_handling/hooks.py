@@ -22,10 +22,12 @@ def _pretty_json(data: dict, compact: bool = False) -> str:
 
 
 _JSONPATH_SPECIAL_CHARS = "[]'\"\\."
-_JSONPATH_ESCAPE_MAP = {
-    "'": "\\'",
-    "\\": "\\\\",
-}
+_JSONPATH_ESCAPE_MAP = str.maketrans(
+    {
+        "'": "\\'",
+        "\\": "\\\\",
+    }
+)
 
 
 def _jsonpath_from_pydantic_loc(loc: list[str | int]) -> str:
@@ -307,8 +309,8 @@ def searchapi_hook(exception: globus_sdk.SearchAPIError) -> None:
     condition=lambda err: err.code == "UNPROCESSABLE_ENTITY",
 )
 def flows_validation_error_hook(exception: globus_sdk.FlowsAPIError) -> None:
-    message_string = exception.raw_json["error"]["message"]
-    details = exception.raw_json["error"]["detail"]
+    message_string: str = exception.raw_json["error"]["message"]  # type: ignore[index]
+    details: str | list[dict[str, t.Any]] = exception.raw_json["error"]["detail"]  # type: ignore[index] # noqa: E501
     message_fields = [PrintableErrorField("message", message_string)]
 
     # conditionally do this work if there are multiple details
@@ -347,7 +349,7 @@ def flows_validation_error_hook(exception: globus_sdk.FlowsAPIError) -> None:
 
 @sdk_error_handler(error_class="FlowsAPIError")
 def flows_error_hook(exception: globus_sdk.FlowsAPIError) -> None:
-    details: list[dict[str, t.Any]] | str = exception.raw_json["error"]["detail"]
+    details: list[dict[str, t.Any]] | str = exception.raw_json["error"]["detail"]  # type: ignore[index] # noqa: E501
     detail_fields: list[PrintableErrorField] = []
 
     # if the detail is a string, return that as a single field
@@ -370,7 +372,9 @@ def flows_error_hook(exception: globus_sdk.FlowsAPIError) -> None:
         [
             PrintableErrorField("HTTP status", exception.http_status),
             PrintableErrorField("code", exception.code),
-            PrintableErrorField("message", exception.raw_json["error"]["message"]),
+            PrintableErrorField(
+                "message", exception.raw_json["error"]["message"]  # type: ignore[index]
+            ),
             *detail_fields,
         ],
     )
