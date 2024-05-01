@@ -166,7 +166,7 @@ def _parse_table_content(output):
     # Find the table divider
     lines = output.split("\n")
     divider_indices = [
-        i for i, line in enumerate(lines) if re.fullmatch(r"[-| ]*", line)
+        i for i, line in enumerate(lines) if re.fullmatch(r"-+ \| [-| ]*", line)
     ]
 
     if not divider_indices:
