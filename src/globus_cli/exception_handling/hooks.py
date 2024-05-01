@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import textwrap
 import typing as t
 
 import click
@@ -18,6 +19,38 @@ def _pretty_json(data: dict, compact: bool = False) -> str:
     if compact:
         return json.dumps(data, separators=(",", ":"), sort_keys=True)
     return json.dumps(data, indent=2, separators=(",", ": "), sort_keys=True)
+
+
+_JSONPATH_SPECIAL_CHARS = "[]'\"\\."
+_JSONPATH_ESCAPE_MAP = str.maketrans(
+    {
+        "'": "\\'",
+        "\\": "\\\\",
+    }
+)
+
+
+def _jsonpath_from_pydantic_loc(loc: list[str | int]) -> str:
+    """
+    Given a 'loc' from pydantic error data, convert it into a JSON Path expression.
+
+    Takes the following steps:
+    - turns integers into integer indices
+    - turns most strings into dotted access
+    - turns strings containing special characters into single-quoted bracket access
+      with ' and \\ escaped
+    """
+    path = "$"
+    for part in loc:
+        if isinstance(part, int):
+            path += f"[{part}]"
+        else:
+            if any(c in part for c in _JSONPATH_SPECIAL_CHARS):
+                part = f"'{part.translate(_JSONPATH_ESCAPE_MAP)}'"
+                path += f"[{part}]"
+            else:
+                path += f".{part}"
+    return path
 
 
 _DEFAULT_SESSION_REAUTH_MESSAGE = (
@@ -269,6 +302,82 @@ def searchapi_hook(exception: globus_sdk.SearchAPIError) -> None:
         ]
 
     write_error_info("Search API Error", fields)
+
+
+@sdk_error_handler(
+    error_class="FlowsAPIError",
+    condition=lambda err: err.code == "UNPROCESSABLE_ENTITY",
+)
+def flows_validation_error_hook(exception: globus_sdk.FlowsAPIError) -> None:
+    message_string: str = exception.raw_json["error"]["message"]  # type: ignore[index]
+    details: str | list[dict[str, t.Any]] = exception.raw_json["error"]["detail"]  # type: ignore[index] # noqa: E501
+    message_fields = [PrintableErrorField("message", message_string)]
+
+    # conditionally do this work if there are multiple details
+    if isinstance(details, list) and len(details) > 1:
+        num_errors = len(details)
+        # try to extract 'loc' and 'msg' from the details, but only
+        # update 'message_fields' if the data are present
+        try:
+            messages = [
+                f"{_jsonpath_from_pydantic_loc(data['loc'])}: {data['msg']}"
+                for data in details
+            ]
+        except KeyError:
+            pass
+        else:
+            message_fields = [
+                PrintableErrorField(
+                    "message", f"{num_errors} validation errors", multiline=True
+                ),
+                PrintableErrorField(
+                    "errors",
+                    "\n".join(messages),
+                    multiline=True,
+                ),
+            ]
+
+    write_error_info(
+        "Flows API Error",
+        [
+            PrintableErrorField("HTTP status", exception.http_status),
+            PrintableErrorField("code", exception.code),
+            *message_fields,
+        ],
+    )
+
+
+@sdk_error_handler(error_class="FlowsAPIError")
+def flows_error_hook(exception: globus_sdk.FlowsAPIError) -> None:
+    details: list[dict[str, t.Any]] | str = exception.raw_json["error"]["detail"]  # type: ignore[index] # noqa: E501
+    detail_fields: list[PrintableErrorField] = []
+
+    # if the detail is a string, return that as a single field
+    if isinstance(details, str):
+        if len(details) > 120:
+            details = textwrap.fill(details, width=80)
+        detail_fields = [PrintableErrorField("detail", details, multiline=True)]
+    # if it's a list of objects, wrap them into a multiline detail field
+    else:
+        detail_fields = [
+            PrintableErrorField(
+                "detail",
+                "\n".join(_pretty_json(detail, compact=True) for detail in details),
+                multiline=True,
+            )
+        ]
+
+    write_error_info(
+        "Flows API Error",
+        [
+            PrintableErrorField("HTTP status", exception.http_status),
+            PrintableErrorField("code", exception.code),
+            PrintableErrorField(
+                "message", exception.raw_json["error"]["message"]  # type: ignore[index]
+            ),
+            *detail_fields,
+        ],
+    )
 
 
 @sdk_error_handler(
