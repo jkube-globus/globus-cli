@@ -67,6 +67,12 @@ def validate_command(
 
 def _validate_flow_output_handler(result: globus_sdk.GlobusHTTPResponse) -> None:
     # Discovered scopes output
+    analysis_response = result.get("analysis")
+    # Beta API: Defend against the case where 'analysis' is no longer returned
+    if analysis_response is not None:
+        _validate_flow_analysis_output_handler(analysis_response)
+        click.echo()
+
     scopes_response = result.get("scopes")
     # Beta API: Defend against the case where 'scopes' is no longer returned
     if scopes_response is not None:
@@ -90,3 +96,11 @@ def _validate_flow_scope_output_handler(scopes_response: dict[str, str]) -> None
         )
     else:
         click.echo("No scopes discovered")
+
+
+def _validate_flow_analysis_output_handler(analysis_response: dict[str, str]) -> None:
+    # Always include the analysis output
+    click.echo("Analysis")
+    click.echo("========")
+    if count := analysis_response.get("number_of_possibilities"):
+        click.echo(f"Possible State Traversals: {count}")

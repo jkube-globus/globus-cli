@@ -32,9 +32,10 @@ def _register_responses():
                 service="flows",
                 path="/flows/validate",
                 method="POST",
-                json={"scopes": {}},
+                json={"scopes": {}, "analysis": {"number_of_possibilities": 0}},
             ),
         ),
+        metadata={"possibility_count": None},
     )
     # User scopes
     register_response_set(
@@ -47,10 +48,12 @@ def _register_responses():
                 json={
                     "scopes": {
                         "User": ["urn:globus:auth:scope:transfer.api.globus.org:all"]
-                    }
+                    },
+                    "analysis": {"number_of_possibilities": 1},
                 },
             ),
         ),
+        metadata={"possibility_count": 1},
     )
     # Multiple Flow and User scopes
     register_response_set(
@@ -68,9 +71,11 @@ def _register_responses():
                             "urn:globus:auth:scope:baz.api.globus.org:all",
                         ],
                     },
+                    "analysis": {"number_of_possibilities": 1000000},
                 },
             ),
         ),
+        metadata={"possibility_count": 1000000},
     )
 
 
@@ -94,7 +99,7 @@ def _register_responses():
         ),
     ],
 )
-def test_validate_flow_output(response_set, expected_table_data, run_line):
+def test_validate_flow_scope_output(response_set, expected_table_data, run_line):
     # Load the response mock and extract metadata
     load_response_set(response_set)
     definition = {"StartAt": "a", "States": {"a": {"Type": "Pass", "End": True}}}
@@ -118,7 +123,7 @@ def test_validate_flow_output(response_set, expected_table_data, run_line):
         assert table_data == expected_table_data
 
 
-def test_validate_flow_output_missing(run_line):
+def test_validate_flow_scope_output_missing(run_line):
     load_response_set("cli.flow_validate.missing")
     result = run_line(["globus", "flows", "validate", "{}"])
     assert "Discovered Scopes" not in result.output
@@ -150,6 +155,39 @@ def test_validate_flow_input_schema(input_schema, run_line):
         }
 
 
+@pytest.mark.parametrize(
+    "response_set",
+    [
+        pytest.param("cli.flow_validate.none", id="no_scopes"),
+        pytest.param("cli.flow_validate.user", id="user_scopes"),
+        pytest.param("cli.flow_validate.multi", id="multi_scopes"),
+    ],
+)
+def test_validate_flow_analysis_output(response_set, run_line):
+    # Load the response mock and extract metadata
+    metadata = load_response_set(response_set).metadata
+    expected_possibility_count = metadata.get("possibility_count")
+    definition = {"StartAt": "a", "States": {"a": {"Type": "Pass", "End": True}}}
+
+    # Construct the command line
+    command = ["globus", "flows", "validate", json.dumps(definition)]
+    result = run_line(command)
+
+    if expected_possibility_count is not None:
+        assert (
+            f"Possible State Traversals: {expected_possibility_count}" in result.output
+        )
+    else:
+        # Should be omitted entirely
+        assert "Possible State Traversals" not in result.output
+
+
+def test_validate_flow_analysis_output_missing(run_line):
+    load_response_set("cli.flow_validate.missing")
+    result = run_line(["globus", "flows", "validate", "{}"])
+    assert "Analysis" not in result.output
+
+
 def _parse_table_content(output):
     """
     Parse the output of a command, searching for tables in the output and returning
@@ -164,7 +202,7 @@ def _parse_table_content(output):
     Raises a ValueError if no table is found in the output.
     """
     # Find the table divider
-    lines = output.split("\n")
+    lines = output.splitlines()
     divider_indices = [
         i for i, line in enumerate(lines) if re.fullmatch(r"-+ \| [-| ]*", line)
     ]
@@ -178,9 +216,16 @@ def _parse_table_content(output):
         headers = [header.strip() for header in lines[divider_index - 1].split(" | ")]
         rows = lines[divider_index + 1 :]
         # Turn the rows into a table data as a list of lists
-        table_data = [
-            [cell.strip() for cell in row.split(" | ")] for row in rows if row
-        ]
+        table_data = []
+        for row in rows:
+            # Get the cells in the row
+            cells = [cell.strip() for cell in row.split(" | ")]
+            # Is this a valid row?
+            if len(cells) != len(headers):
+                break
+            # Add the row to the table data
+            table_data.append(cells)
+        # Add the table to the list of tables
         tables.append((headers, table_data))
 
     return tables
