@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import textwrap
 import typing as t
 
 import click
@@ -340,6 +341,37 @@ def flows_validation_error_hook(exception: globus_sdk.FlowsAPIError) -> None:
             PrintableErrorField("HTTP status", exception.http_status),
             PrintableErrorField("code", exception.code),
             *message_fields,
+        ],
+    )
+
+
+@sdk_error_handler(error_class="FlowsAPIError")
+def flows_error_hook(exception: globus_sdk.FlowsAPIError) -> None:
+    details: list[dict[str, t.Any]] | str = exception.raw_json["error"]["detail"]
+    detail_fields: list[PrintableErrorField] = []
+
+    # if the detail is a string, return that as a single field
+    if isinstance(details, str):
+        if len(details) > 120:
+            details = textwrap.fill(details, width=80)
+        detail_fields = [PrintableErrorField("detail", details, multiline=True)]
+    # if it's a list of objects, wrap them into a multiline detail field
+    else:
+        detail_fields = [
+            PrintableErrorField(
+                "detail",
+                "\n".join(_pretty_json(detail, compact=True) for detail in details),
+                multiline=True,
+            )
+        ]
+
+    write_error_info(
+        "Flows API Error",
+        [
+            PrintableErrorField("HTTP status", exception.http_status),
+            PrintableErrorField("code", exception.code),
+            PrintableErrorField("message", exception.raw_json["error"]["message"]),
+            *detail_fields,
         ],
     )
 
