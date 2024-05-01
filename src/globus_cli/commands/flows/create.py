@@ -7,7 +7,7 @@ import click
 from globus_cli.commands.flows._common import (
     administrators_option,
     description_option,
-    input_schema_option,
+    input_schema_option_with_default,
     keywords_option,
     starters_option,
     subtitle_option,
@@ -31,7 +31,7 @@ ROLE_TYPES = ("flow_viewer", "flow_starter", "flow_administrator", "flow_owner")
     type=JSONStringOrFile(),
     metavar="DEFINITION",
 )
-@input_schema_option
+@input_schema_option_with_default
 @subtitle_option
 @description_option
 @administrators_option

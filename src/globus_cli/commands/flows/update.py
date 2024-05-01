@@ -8,7 +8,7 @@ from globus_sdk.utils import MISSING
 
 from globus_cli.commands.flows._common import (
     description_option,
-    input_schema_option,
+    input_schema_option_with_default,
     subscription_id_option,
     subtitle_option,
 )
@@ -63,7 +63,7 @@ ROLE_TYPES = ("flow_viewer", "flow_starter", "flow_administrator", "flow_owner")
 )
 @subtitle_option
 @description_option
-@input_schema_option
+@input_schema_option_with_default
 @click.option(
     "--administrators",
     type=CommaDelimitedList(),
