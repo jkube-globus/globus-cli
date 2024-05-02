@@ -2,6 +2,12 @@
 
 // scriv-insert-here
 
+== 3.28.1 (2024-05-02)
+
+Enhancements:
+
+* Improve the reporting of errors found by `globus flows validate`
+
 == 3.28.0 (2024-05-02)
 
 Bugfixes:
