@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 
 import click
@@ -13,17 +15,19 @@ class PrintableErrorField:
 
     TEXT_PREFIX = "Globus CLI Error:"
 
-    def __init__(self, name, value, multiline=False):
+    def __init__(
+        self, name: str, value: str | int | None, multiline: bool = False
+    ) -> None:
         self.multiline = multiline
         self.name = str(name)
         self.raw_value = str(value)
         self.value = self._format_value(self.raw_value)
 
     @property
-    def _text_prefix_len(self):
+    def _text_prefix_len(self) -> int:
         return len(self.TEXT_PREFIX)
 
-    def _format_value(self, val):
+    def _format_value(self, val: str) -> str:
         """
         formats a value to be good for textmode printing
         val must be unicode
@@ -38,7 +42,7 @@ class PrintableErrorField:
         return val
 
 
-def write_error_info(error_name, fields):
+def write_error_info(error_name: str, fields: list[PrintableErrorField]) -> None:
     if outformat_is_json():
         # dictify joined tuple lists and dump to json string
         click.style(
