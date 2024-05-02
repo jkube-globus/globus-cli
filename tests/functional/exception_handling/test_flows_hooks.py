@@ -96,6 +96,7 @@ def test_flows_generic_hook_on_detail_array(run_line):
     assert "This flow contains errors in 1 wait state." in result.stderr
     assert "detail:" in result.stderr
     assert (
+        "InvalidAccessPath $.definition.States.y.SecondsPath: "
         "Improper access to data in this wait state with expression: $.foo[0]"
         in result.stderr
     )
