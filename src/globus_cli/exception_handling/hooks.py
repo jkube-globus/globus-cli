@@ -358,14 +358,35 @@ def flows_error_hook(exception: globus_sdk.FlowsAPIError) -> None:
             details = textwrap.fill(details, width=80)
         detail_fields = [PrintableErrorField("detail", details, multiline=True)]
     # if it's a list of objects, wrap them into a multiline detail field
-    else:
-        detail_fields = [
-            PrintableErrorField(
-                "detail",
-                "\n".join(_pretty_json(detail, compact=True) for detail in details),
-                multiline=True,
-            )
-        ]
+    elif isinstance(details, list):
+        num_errors = len(details)
+        if all((isinstance(d, dict) and "loc" in d and "msg" in d) for d in details):
+            detail_strings = [
+                (
+                    ((data["type"] + " ") if "type" in data else "")
+                    + f"{_jsonpath_from_pydantic_loc(data['loc'])}: {data['msg']}"
+                )
+                for data in details
+            ]
+            if num_errors == 1:
+                detail_fields = [PrintableErrorField("detail", detail_strings[0])]
+            else:
+                detail_fields = [
+                    PrintableErrorField("detail", f"{num_errors} errors"),
+                    PrintableErrorField(
+                        "errors",
+                        "\n".join(detail_strings),
+                        multiline=True,
+                    ),
+                ]
+        else:
+            detail_fields = [
+                PrintableErrorField(
+                    "detail",
+                    "\n".join(_pretty_json(detail, compact=True) for detail in details),
+                    multiline=True,
+                )
+            ]
 
     write_error_info(
         "Flows API Error",
