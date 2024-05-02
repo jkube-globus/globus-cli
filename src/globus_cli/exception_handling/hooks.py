@@ -64,7 +64,18 @@ _DEFAULT_CONSENT_REAUTH_MESSAGE = (
 
 @sdk_error_handler(
     error_class="GlobusAPIError",
-    condition=lambda err: outformat_is_json() and err.raw_json is not None,
+    condition=lambda err: err.raw_json is None,
+)
+def null_data_error_handler(exception: globus_sdk.GlobusAPIError) -> None:
+    write_error_info(
+        "GlobusAPINullDataError",
+        [PrintableErrorField("error_type", exception.__class__.__name__)],
+    )
+
+
+@sdk_error_handler(
+    error_class="GlobusAPIError",
+    condition=lambda err: outformat_is_json(),
 )
 def json_error_handler(exception: globus_sdk.GlobusAPIError) -> None:
     click.echo(
