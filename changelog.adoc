@@ -2,6 +2,27 @@
 
 // scriv-insert-here
 
+== 3.28.0 (2024-05-02)
+
+Bugfixes:
+
+* In certain conditions, the CLI would not handle Broken Pipe errors (EPIPE)
+  correctly, resulting in error messages on stderr when commands were piped to
+  commands like `head`. The handling of broken pipes has been improved to avoid
+  these spurious error messages.
+
+Enhancements:
+
+* Allow subscriptions to be assigned to existing flows
+  using the `globus flows update --subscription-id` option.
+
+* Added a new *beta* command `globus flows validate` to validate a provided flow
+  definition and optional input schema without creating a flow. This command provides
+  extended validation and analysis of the provided flow definition.
+
+* The presentation of Globus Flows API errors has been improved, especially for
+  cases relating to data validation failures.
+
 == 3.27.0 (2024-03-28)
 
 Enhancements:
