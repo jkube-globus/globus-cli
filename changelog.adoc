@@ -2,6 +2,12 @@
 
 // scriv-insert-here
 
+== 3.28.2 (2024-05-02)
+
+Bugfixes:
+
+* Fix printing of API errors which do not contain JSON data
+
 == 3.28.1 (2024-05-02)
 
 Enhancements:
