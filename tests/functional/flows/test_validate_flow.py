@@ -1,5 +1,6 @@
 import json
 import re
+import uuid
 from itertools import chain
 
 import pytest
@@ -76,6 +77,30 @@ def _register_responses():
             ),
         ),
         metadata={"possibility_count": 1000000},
+    )
+    # Scope resolution error
+    ap_url = "https://domain.example/bad"
+    register_response_set(
+        "cli.flow_validate.scope_resolution_failed",
+        dict(
+            default=dict(
+                service="flows",
+                path="/flows/validate",
+                method="POST",
+                status=409,
+                json={
+                    "error": {
+                        "code": "SCOPE_RESOLUTION_FAILED",
+                        "detail": (
+                            "Failed to resolve scope for Action Provider "
+                            f"at '{ap_url}': upstream did not respond"
+                        ),
+                    },
+                    "debug_id": str(uuid.uuid4()),
+                },
+            )
+        ),
+        metadata={"ap_url": ap_url},
     )
 
 
@@ -186,6 +211,17 @@ def test_validate_flow_analysis_output_missing(run_line):
     load_response_set("cli.flow_validate.missing")
     result = run_line(["globus", "flows", "validate", "{}"])
     assert "Analysis" not in result.output
+
+
+def test_validate_flow_scope_resolution_failed(run_line):
+    """Verify that KeyError is not raised when 'message' is missing."""
+
+    load_response_set("cli.flow_validate.scope_resolution_failed")
+    run_line(
+        ["globus", "flows", "validate", "{}"],
+        assert_exit_code=1,
+        search_stderr="SCOPE_RESOLUTION_FAILED",
+    )
 
 
 def _parse_table_content(output):
