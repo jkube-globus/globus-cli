@@ -360,7 +360,8 @@ def flows_validation_error_hook(exception: globus_sdk.FlowsAPIError) -> None:
 
 @sdk_error_handler(error_class="FlowsAPIError")
 def flows_error_hook(exception: globus_sdk.FlowsAPIError) -> None:
-    details: list[dict[str, t.Any]] | str = exception.raw_json["error"]["detail"]  # type: ignore[index] # noqa: E501
+    assert exception.raw_json is not None  # Influence mypy's knowledge of `raw_json`.
+    details: list[dict[str, t.Any]] | str = exception.raw_json["error"]["detail"]
     detail_fields: list[PrintableErrorField] = []
 
     # if the detail is a string, return that as a single field
@@ -399,17 +400,17 @@ def flows_error_hook(exception: globus_sdk.FlowsAPIError) -> None:
                 )
             ]
 
-    write_error_info(
-        "Flows API Error",
-        [
-            PrintableErrorField("HTTP status", exception.http_status),
-            PrintableErrorField("code", exception.code),
-            PrintableErrorField(
-                "message", exception.raw_json["error"]["message"]  # type: ignore[index]
-            ),
-            *detail_fields,
-        ],
-    )
+    fields = [
+        PrintableErrorField("HTTP status", exception.http_status),
+        PrintableErrorField("code", exception.code),
+    ]
+    if "message" in exception.raw_json["error"]:
+        fields.append(
+            PrintableErrorField("message", exception.raw_json["error"]["message"])
+        )
+    fields.extend(detail_fields)
+
+    write_error_info("Flows API Error", fields)
 
 
 @sdk_error_handler(
