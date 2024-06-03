@@ -282,7 +282,7 @@ def _display(
             click.echo(simple_text)
             return
 
-        # if there's a preamble, print it beofre any other text
+        # if there's a preamble, print it before any other text
         if text_preamble is not None:
             click.echo(text_preamble)
 
