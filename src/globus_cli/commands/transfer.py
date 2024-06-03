@@ -271,7 +271,12 @@ def transfer_command(
     Lines are of the form
     [--recursive] [--external-checksum TEXT] SOURCE_PATH DEST_PATH\n
 
-    Skips empty lines and allows comments beginning with "#".
+    Each line of the batch input is parsed like it would be at the command line.
+    This means that if `SOURCE_PATH` or `DEST_PATH` contain spaces,
+    the path should be wrapped in quotes, or the spaces should be escaped
+    using a backslash character ("\\").
+
+    Similarly, empty lines are skipped, and comments beginning with "#" are allowed.
 
     \b
     If you use `--batch` and a commandline SOURCE_PATH and/or DEST_PATH, these
@@ -311,7 +316,7 @@ def transfer_command(
     is included by default, making the `--include` option only useful for
     overriding later `--exclude` options.
 
-    For example, `globus transfer --include *.txt --exclude * ...` will
+    For example, `globus transfer --include "*.txt" --exclude "*" ...` will
     only transfer files ending in .txt found within the directory structure.
 
     {AUTOMATIC_ACTIVATION}

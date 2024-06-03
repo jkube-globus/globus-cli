@@ -72,8 +72,7 @@ def test_exclude_recursive(run_line, go_ep1_id, go_ep2_id):
 def test_exclude_recursive_batch_stdin(run_line, go_ep1_id, go_ep2_id):
     load_response_set("cli.get_submission_id")
     result = run_line(
-        "globus transfer --exclude *.txt --batch - "
-        "{}:/ {}:/".format(go_ep1_id, go_ep1_id),
+        f"globus transfer --exclude *.txt --batch - {go_ep1_id}:/ {go_ep1_id}:/",
         stdin="abc /def\n",
         assert_exit_code=2,
     )

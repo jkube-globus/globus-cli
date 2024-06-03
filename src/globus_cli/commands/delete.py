@@ -108,7 +108,7 @@ def delete_command(
     Lines are of the form
       PATH
 
-    Note that unlike `globus transfer` --recursive is not an option at the per line
+    Note that unlike `globus transfer`, `--recursive` is not an option at the per-line
     level, instead, if given with the original command, all paths that point to
     directories will be recursively deleted.
 
