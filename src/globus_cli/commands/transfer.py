@@ -316,7 +316,7 @@ def transfer_command(
     is included by default, making the `--include` option only useful for
     overriding later `--exclude` options.
 
-    For example, `globus transfer --include *.txt --exclude * ...` will
+    For example, `globus transfer --include "*.txt" --exclude "*" ...` will
     only transfer files ending in .txt found within the directory structure.
 
     {AUTOMATIC_ACTIVATION}
