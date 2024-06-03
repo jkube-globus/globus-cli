@@ -59,7 +59,7 @@ def test_v2_json_string_or_file(runner, tmpdir):
     assert "does not exist" in result.output
     # note that in this case, without the 'file:' prefix, this will actually start
     # out as a failed parse of JSON data as an argument, which then needs to be detected
-    # as probably not JSON data, andemit the "right" error
+    # as probably not JSON data, and emit the "right" error
     result = runner.invoke(foo, ["--bar", str(missing_file)])
     assert "FileNotFound" in result.output
     assert "does not exist" in result.output
