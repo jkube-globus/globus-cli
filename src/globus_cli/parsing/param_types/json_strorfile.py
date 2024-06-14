@@ -11,6 +11,9 @@ import click
 from globus_cli.constants import EXPLICIT_NULL, ExplicitNullType
 from globus_cli.types import JsonValue
 
+if t.TYPE_CHECKING:
+    from click.shell_completion import CompletionItem
+
 
 @dataclasses.dataclass
 class ParsedJSONData:
@@ -56,6 +59,13 @@ class JSONStringOrFile(click.ParamType):
 
     def get_metavar(self, param: click.Parameter) -> str:
         return "[JSON_FILE|JSON|file:JSON_FILE]"
+
+    def shell_complete(
+        self, ctx: click.Context, param: click.Parameter, incomplete: str
+    ) -> list[CompletionItem]:
+        from click.shell_completion import CompletionItem
+
+        return [CompletionItem(incomplete, type="file")]
 
     def get_type_annotation(self, param: click.Parameter) -> type:
         if self.null is not None:

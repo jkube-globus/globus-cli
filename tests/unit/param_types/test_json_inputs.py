@@ -1,6 +1,9 @@
+import contextlib
 import json
+import sys
 
 import click
+import pytest
 
 from globus_cli.parsing import JSONStringOrFile, ParsedJSONData
 
@@ -88,3 +91,20 @@ def test_v2_json_string_or_file_handles_stdin(runner, tmpdir):
     result = runner.invoke(foo, ["--bar", "-"], input="[\n")
     assert result.exit_code == 2
     assert "stdin did not contain valid JSON" in result.output
+
+
+@pytest.mark.skipif(sys.version_info < (3, 11), reason="contextlib.chdir added in 3.11")
+def test_json_string_or_file_completion_matches_files(get_completions, tmp_path):
+    @click.command()
+    @click.option("--bar", type=JSONStringOrFile())
+    def foo(bar):
+        pass
+
+    file = tmp_path / "some_file.json"
+    file.touch()
+    with contextlib.chdir(tmp_path):
+        completion_items = get_completions(foo, ["--bar"], "some_", as_strings=False)
+        assert len(completion_items) == 1
+        result = completion_items[0]
+        assert result.type == "file"
+        assert result.value == "some_"
