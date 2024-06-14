@@ -2,6 +2,14 @@
 
 // scriv-insert-here
 
+== 3.28.3 (2024-06-14)
+
+Bugfixes:
+
+* Fix a bug which would break rendering if a user created a timer with no end.
+
+* Resolve a `KeyError` that can happen if scope resolution fails during flow validation.
+
 == 3.28.2 (2024-05-02)
 
 Bugfixes:
