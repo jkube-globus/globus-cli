@@ -11,6 +11,7 @@ from globus_cli.parsing.command_state import (
     debug_option,
     format_option,
     map_http_status_option,
+    quiet_option,
     show_server_timing_option,
     verbose_option,
 )
@@ -46,6 +47,7 @@ def common_options(*, disable_options: list[str] | None = None) -> t.Callable[[C
         f = debug_option(f)
         f = show_server_timing_option(f)
         f = verbose_option(f)
+        f = quiet_option(f)
         f = click.help_option("-h", "--help")(f)
 
         # if the format option is being allowed, it needs to be applied to `f`
