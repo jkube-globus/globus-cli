@@ -66,11 +66,19 @@ class CommandState:
     def is_verbose(self) -> bool:
         return self.verbosity > 0
 
+    def is_quiet(self) -> bool:
+        return self.verbosity < 0
+
     def set_verbosity(self, value: int) -> None:
+        # short-circuit if verbosity is already below 0 -- this makes `--quiet` higher
+        # precedence than `--verbose` regardless of the order of application
+        if self.verbosity < 0:
+            return
+
         self.verbosity = value
 
-        # verbosity level 0: never warn, never log normal events
-        # (also covers negative/quiet modes, e.g. `--quiet`)
+        # min verbosity level: never warn, never log normal events
+        # (covers quiet modes, e.g. `--quiet`)
         if value <= 0:
             _warnings.simplefilter("ignore")
             _setup_logging(level="CRITICAL")
@@ -175,18 +183,24 @@ def verbose_option(f: F) -> F:
 
 
 def quiet_option(f: F) -> F:
-    def callback(ctx: click.Context, param: click.Parameter, value: int) -> None:
+    def callback(ctx: click.Context, param: click.Parameter, value: bool) -> None:
+        if not value:
+            return
+
         # set state verbosity value from option
         state = ctx.ensure_object(CommandState)
-        state.set_verbosity(state.verbosity - value)
+        state.set_verbosity(-1)
 
     return click.option(
         "--quiet",
-        count=True,
         expose_value=False,
         callback=callback,
+        is_flag=True,
         is_eager=True,
-        help="Control level of output, make it less verbose.",
+        help=(
+            "Suppress non-essential output. "
+            "This is higher precedence than `--verbose`."
+        ),
     )(f)
 
 

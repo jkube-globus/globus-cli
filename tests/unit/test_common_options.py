@@ -31,11 +31,11 @@ def test_common_options_are_not_exposed(runner):
         pytest.param(["-vv"], 2, id="vv"),
         pytest.param(["-vvv"], 3, id="vvv"),
         pytest.param(["--quiet"], -1, id="quiet"),
-        pytest.param(["-v", "--quiet"], 0, id="v-quiet"),
-        pytest.param(["-vv", "--quiet"], 1, id="vv-quiet"),
-        pytest.param(["-vv", "--quiet", "--quiet"], 0, id="vv-quiet-quiet"),
+        pytest.param(["-v", "--quiet"], -1, id="v-quiet"),
+        pytest.param(["-vv", "--quiet"], -1, id="vv-quiet"),
+        pytest.param(["-vv", "--quiet", "--quiet"], -1, id="vv-quiet-quiet"),
         pytest.param(["--debug"], 3, id="debug"),
-        pytest.param(["--debug", "--quiet"], 2, id="debug-quiet"),
+        pytest.param(["--debug", "--quiet"], -1, id="debug-quiet"),
     ),
 )
 def test_verbosity_control(runner, add_args, expect_verbosity):
