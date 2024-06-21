@@ -2,6 +2,7 @@ import uuid
 from unittest import mock
 
 import globus_sdk
+import pytest
 from globus_sdk._testing import load_response_set
 
 from globus_cli.login_manager import (
@@ -121,3 +122,12 @@ def test_login_with_flow(monkeypatch, run_line):
     client = globus_sdk.SpecificFlowClient(uuid1)
     expected_rs_name_and_scope = (client.scopes.resource_server, [client.scopes.user])
     assert expected_rs_name_and_scope in list(manager.login_requirements)
+
+
+@pytest.mark.parametrize("quiet_mode", (True, False))
+def test_login_quiet_mode_suppresses_output(run_line, quiet_mode):
+    result = run_line(["globus", "login"] + (["--quiet"] if quiet_mode else []))
+    if quiet_mode:
+        assert result.output == ""
+    else:
+        assert "You are already logged in!" in result.output

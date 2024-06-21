@@ -10,6 +10,7 @@ from globus_sdk.services.flows import SpecificFlowClient
 
 from globus_cli.login_manager import LoginManager, is_client_login
 from globus_cli.parsing import command, no_local_server_option
+from globus_cli.termio import verbosity
 
 _SHARED_EPILOG = """\
 
@@ -184,7 +185,8 @@ def login_command(
 
     # if not forcing, stop if user already logged in
     if not force and manager.is_logged_in():
-        click.echo(_LOGGED_IN_RESPONSE)
+        if verbosity() >= 0:
+            click.echo(_LOGGED_IN_RESPONSE)
         return
 
     manager.run_login_flow(
