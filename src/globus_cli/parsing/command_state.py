@@ -66,6 +66,35 @@ class CommandState:
     def is_verbose(self) -> bool:
         return self.verbosity > 0
 
+    def is_quiet(self) -> bool:
+        return self.verbosity < 0
+
+    def set_verbosity(self, value: int) -> None:
+        # short-circuit if verbosity is already below 0 -- this makes `--quiet` higher
+        # precedence than `--verbose` regardless of the order of application
+        if self.verbosity < 0:
+            return
+
+        self.verbosity = value
+
+        # min verbosity level: never warn, never log normal events
+        # (covers quiet modes, e.g. `--quiet`)
+        if value <= 0:
+            _warnings.simplefilter("ignore")
+            _setup_logging(level="CRITICAL")
+        # verbosity level 1: warn minimally, log errors
+        elif value == 1:
+            _warnings.simplefilter("once")
+            _setup_logging(level="ERROR")
+        # verbosity level 2: warn once per usage, log info
+        elif value == 2:
+            _warnings.simplefilter("default")
+            _setup_logging(level="INFO")
+        # verbosity level 3+: warn always, log debug
+        elif value >= 3:
+            _warnings.simplefilter("always")
+            _setup_logging(level="DEBUG")
+
 
 def format_option(f: F) -> F:
     def callback(ctx: click.Context, param: click.Parameter, value: t.Any) -> None:
@@ -118,16 +147,13 @@ def format_option(f: F) -> F:
 
 
 def debug_option(f: F) -> F:
-    def callback(ctx: click.Context, param: click.Parameter, value: t.Any) -> None:
-        if not value or ctx.resilient_parsing:
-            # turn off warnings altogether
-            _warnings.simplefilter("ignore")
+    def callback(ctx: click.Context, param: click.Parameter, value: bool) -> None:
+        if not value:
             return
 
-        _warnings.simplefilter("default")
         state = ctx.ensure_object(CommandState)
+        state.set_verbosity(max(state.verbosity, 3))
         state.debug = True
-        _setup_logging(level="DEBUG")
 
     return click.option(
         "--debug",
@@ -140,39 +166,10 @@ def debug_option(f: F) -> F:
 
 
 def verbose_option(f: F) -> F:
-    def callback(ctx: click.Context, param: click.Parameter, value: t.Any) -> None:
+    def callback(ctx: click.Context, param: click.Parameter, value: int) -> None:
         # set state verbosity value from option
         state = ctx.ensure_object(CommandState)
-        state.verbosity = value
-
-        # no verbosity
-        # all warnings are ignored
-        # logging is not turned on
-        if value == 0:
-            _warnings.simplefilter("ignore")
-
-        # verbosity level 1
-        # warnings set to once
-        # logging set to error
-        if value == 1:
-            _warnings.simplefilter("once")
-            _setup_logging(level="ERROR")
-
-        # verbosity level 2
-        # warnings set to default
-        # logging set to info
-        if value == 2:
-            _warnings.simplefilter("default")
-            _setup_logging(level="INFO")
-
-        # verbosity level 3+
-        # warnings set to always
-        # logging set to debug
-        # sets debug flag to true
-        if value >= 3:
-            _warnings.simplefilter("always")
-            state.debug = True
-            _setup_logging(level="DEBUG")
+        state.set_verbosity(state.verbosity + value)
 
     return click.option(
         "--verbose",
@@ -181,7 +178,29 @@ def verbose_option(f: F) -> F:
         expose_value=False,
         callback=callback,
         is_eager=True,
-        help="Control level of output.",
+        help="Control level of output, make it more verbose.",
+    )(f)
+
+
+def quiet_option(f: F) -> F:
+    def callback(ctx: click.Context, param: click.Parameter, value: bool) -> None:
+        if not value:
+            return
+
+        # set state verbosity value from option
+        state = ctx.ensure_object(CommandState)
+        state.set_verbosity(-1)
+
+    return click.option(
+        "--quiet",
+        expose_value=False,
+        callback=callback,
+        is_flag=True,
+        is_eager=True,
+        help=(
+            "Suppress non-essential output. "
+            "This is higher precedence than `--verbose`."
+        ),
     )(f)
 
 
