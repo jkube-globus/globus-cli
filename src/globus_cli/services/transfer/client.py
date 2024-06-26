@@ -44,8 +44,13 @@ def _retry_client_consent(ctx: RetryContext) -> RetryCheckResult:
 
 
 class CustomTransferClient(globus_sdk.TransferClient):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        *,
+        authorizer: globus_sdk.GlobusAuthorizer,
+        app_name: str,
+    ) -> None:
+        super().__init__(authorizer=authorizer, app_name=app_name)
         self.transport.register_retry_check(_retry_client_consent)
 
     # TODO: Remove this function when endpoints natively support recursive ls
@@ -78,7 +83,7 @@ class CustomTransferClient(globus_sdk.TransferClient):
         return RecursiveLsResponse(self, endpoint_id, params, max_depth=depth)
 
     def get_endpoint_w_server_list(
-        self, endpoint_id
+        self, endpoint_id: str | uuid.UUID
     ) -> tuple[
         globus_sdk.GlobusHTTPResponse, str | globus_sdk.IterableTransferResponse
     ]:

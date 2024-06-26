@@ -115,7 +115,6 @@ disallow_incomplete_defs = false
 module = [
     "globus_cli.services.gcs",
     "globus_cli.services.transfer.activation",
-    "globus_cli.services.transfer.client",
     "globus_cli.services.transfer.delegate_proxy",
     "globus_cli.services.transfer.recursive_ls",
     "globus_cli.termio",
