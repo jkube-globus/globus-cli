@@ -30,6 +30,17 @@ def test_collection_list(run_line, add_gcs_login, base_command):
         assert name in result.stdout
 
 
+@pytest.mark.parametrize("limit", (1, 3))
+def test_collection_list_limit(limit, run_line, add_gcs_login, base_command):
+    meta = load_response_set("cli.collection_operations").metadata
+    epid = meta["endpoint_id"]
+    add_gcs_login(epid)
+    result = run_line(f"{base_command} {epid} --limit {limit}")
+    lines = result.stdout.splitlines()
+    assert len(lines) == limit + 2  # two header lines
+    assert "Happy Fun Collection Name 1" in lines[2]
+
+
 def test_collection_list_opts(run_line, add_gcs_login, base_command):
     meta = load_response_set("cli.collection_operations").metadata
     epid = meta["endpoint_id"]
