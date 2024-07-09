@@ -2,6 +2,32 @@
 
 // scriv-insert-here
 
+== 3.29.0 (2024-07-09)
+
+Enhancements:
+
+* All commands now support a `--quiet` option which minimizes verbosity. For
+  most commands, this option will not change the default output, but
+  it will counteract the `-v/--verbose` option.
+
+* Completion support has been added for inputs which are JSON strings or files.
+  These will autocomplete to filenames when possible, for users leveraging tab
+  completion.
+
+* When `globus login` is run with the `--quiet` flag, it will print no output
+  if you are already logged in.
+
+* `globus gcs collection list` can now return results in excess of the GCS default
+  page size; control over the number of results returned is available
+  via the `--limit` option.
+
+Other:
+
+* All support for Delegate Proxy Activation has been removed. This change
+  is part of removal of GCSv4 Activation Support. Users should not experience
+  any impact, as there are no longer any valid usages for Delegate Proxy
+  Activation.
+
 == 3.28.3 (2024-06-14)
 
 Bugfixes:
