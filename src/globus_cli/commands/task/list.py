@@ -22,6 +22,20 @@ def _format_date_callback(
     return value.strftime("%Y-%m-%d %H:%M:%S")
 
 
+def _process_filterval(
+    prefix: str,
+    value: str | t.Sequence[str | uuid.UUID] | None,
+    default: str | None = None,
+) -> str | None:
+    if not value:
+        return default
+    if isinstance(value, collections.abc.Sequence) and not any(value):
+        return default
+    if isinstance(value, str):
+        return f"{prefix}:{value}"
+    return f"{prefix}:{','.join(str(x) for x in value)}"
+
+
 @command(
     "list",
     short_help="List your tasks",
@@ -178,27 +192,12 @@ def task_list(
     """
     from globus_cli.services.transfer import iterable_response_to_dict
 
-    def _process_filterval(
-        prefix: str,
-        value: str | t.Sequence[str | uuid.UUID] | None,
-        default: str | None = None,
-    ) -> str:
-        if value:
-            if isinstance(value, collections.abc.Sequence) and not any(value):
-                return default or ""
-            if isinstance(value, str):
-                return f"{prefix}:{value}/"
-            return "{}:{}/".format(prefix, ",".join(str(x) for x in value))
-        else:
-            return default or ""
-
     # make filter string
-    filter_string = ""
-    filter_string += _process_filterval("task_id", filter_task_id)
-    filter_string += _process_filterval("status", filter_status)
-    filter_string += _process_filterval(
-        "type", filter_type, default="type:TRANSFER,DELETE/"
-    )
+    filter_parts = [
+        _process_filterval("task_id", filter_task_id),
+        _process_filterval("status", filter_status),
+        _process_filterval("type", filter_type, default="type:TRANSFER,DELETE"),
+    ]
 
     # combine data into one list for easier processing
     if inexact:
@@ -209,23 +208,26 @@ def task_list(
         label_data = ["=" + s for s in filter_label] + [
             "!" + s for s in filter_not_label
         ]
-    filter_string += _process_filterval("label", label_data)
 
-    filter_string += _process_filterval(
-        "request_time", [filter_requested_before, filter_requested_after]
+    filter_parts.extend(
+        [
+            _process_filterval("label", label_data),
+            _process_filterval(
+                "request_time", [filter_requested_before, filter_requested_after]
+            ),
+            _process_filterval(
+                "completion_time", [filter_completed_before, filter_completed_after]
+            ),
+        ]
     )
-    filter_string += _process_filterval(
-        "completion_time", [filter_completed_before, filter_completed_after]
-    )
+
+    filter_string = "/".join(p for p in filter_parts if p is not None)
 
     transfer_client = login_manager.get_transfer_client()
     paginator = Paginator.wrap(transfer_client.task_list)
     task_iterator = PagingWrapper(
         paginator(
-            query_params={
-                "filter": filter_string[:-1],  # remove trailing /
-                "orderby": "request_time DESC",
-            },
+            filter=filter_string, query_params={"orderby": "request_time DESC"}
         ).items(),
         limit=limit,
     )
