@@ -4,6 +4,7 @@ import typing as t
 
 import globus_sdk
 
+from globus_cli.endpointish import Endpointish
 from globus_cli.termio import formatters
 
 CONNECTOR_INFO: list[dict[str, str]] = [
@@ -84,6 +85,8 @@ class ConnectorIdFormatter(formatters.StrFormatter):
 
 
 class CustomGCSClient(globus_sdk.GCSClient):
-    def __init__(self, *args, source_epish=None, **kwargs):
+    def __init__(
+        self, *args: t.Any, source_epish: Endpointish, **kwargs: t.Any
+    ) -> None:
         super().__init__(*args, **kwargs)
         self.source_epish = source_epish
