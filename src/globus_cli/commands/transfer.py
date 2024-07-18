@@ -347,9 +347,12 @@ def transfer_command(
     # put them together before passing to TransferData
     perf_opts = {
         k: v
-        for (k, v) in dict(
-            perf_cc=perf_cc, perf_p=perf_p, perf_pp=perf_pp, perf_udt=perf_udt
-        ).items()
+        for (k, v) in (
+            ("perf_cc", perf_cc),
+            ("perf_p", perf_p),
+            ("perf_pp", perf_pp),
+            ("perf_udt", perf_udt),
+        )
         if v is not None
     }
 

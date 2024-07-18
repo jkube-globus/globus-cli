@@ -36,11 +36,11 @@ def s3(
     auth_client = login_manager.get_auth_client()
 
     # TODO: replace with SDK class once available
-    policies = dict(
-        DATA_TYPE="s3_user_credential_policies#1.0.0",
-        s3_key_id=s3_key_id,
-        s3_secret_key=s3_secret_key,
-    )
+    policies = {
+        "DATA_TYPE": "s3_user_credential_policies#1.0.0",
+        "s3_key_id": s3_key_id,
+        "s3_secret_key": s3_secret_key,
+    }
 
     data = UserCredentialDocument(
         storage_gateway_id=storage_gateway,
