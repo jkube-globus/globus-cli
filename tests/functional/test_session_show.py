@@ -23,17 +23,17 @@ def _register_session_introspect_response():
 
     register_response_set(
         "cthulhu_session",
-        dict(
-            introspect=dict(
-                service="auth",
-                path="/v2/oauth2/token/introspect",
-                method="POST",
-                json=create_introspect_data(cthulhu_user_attrs),
-            ),
-            identities=dict(
-                service="auth",
-                path="/v2/api/identities",
-                json={
+        {
+            "introspect": {
+                "service": "auth",
+                "path": "/v2/oauth2/token/introspect",
+                "method": "POST",
+                "json": create_introspect_data(cthulhu_user_attrs),
+            },
+            "identities": {
+                "service": "auth",
+                "path": "/v2/api/identities",
+                "json": {
                     "identities": [
                         {
                             "username": cthulhu_user_attrs["username"],
@@ -46,8 +46,8 @@ def _register_session_introspect_response():
                         }
                     ]
                 },
-            ),
-        ),
+            },
+        },
         metadata=cthulhu_user_attrs,
     )
 
