@@ -105,19 +105,19 @@ def test_run_show_logs_paginated_response(run_line, limit):
     register_response_set(
         "get_run_logs_paginated",
         {
-            "page0": dict(
-                service="flows",
-                method="GET",
-                path=f"/runs/{RUN_ID}/log",
-                json=PAGINATED_RUN_LOG_RESPONSES[0],
-                match=[query_param_matcher(params={"reverse_order": "False"})],
-            ),
-            "page1": dict(
-                service="flows",
-                method="GET",
-                path=f"/runs/{RUN_ID}/log",
-                json=PAGINATED_RUN_LOG_RESPONSES[1],
-                match=[
+            "page0": {
+                "service": "flows",
+                "method": "GET",
+                "path": f"/runs/{RUN_ID}/log",
+                "json": PAGINATED_RUN_LOG_RESPONSES[0],
+                "match": [query_param_matcher(params={"reverse_order": "False"})],
+            },
+            "page1": {
+                "service": "flows",
+                "method": "GET",
+                "path": f"/runs/{RUN_ID}/log",
+                "json": PAGINATED_RUN_LOG_RESPONSES[1],
+                "match": [
                     query_param_matcher(
                         params={
                             "reverse_order": "False",
@@ -125,7 +125,7 @@ def test_run_show_logs_paginated_response(run_line, limit):
                         },
                     )
                 ],
-            ),
+            },
         },
     )
     load_response_set("get_run_logs_paginated")

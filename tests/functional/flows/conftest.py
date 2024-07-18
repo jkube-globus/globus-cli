@@ -84,21 +84,21 @@ def setup_paginated_responses() -> None:
     register_response_set(
         "flows_list_paginated",
         {
-            "page0": dict(
-                service="flows",
-                path="/flows",
-                json={
+            "page0": {
+                "service": "flows",
+                "path": "/flows",
+                "json": {
                     "flows": [generate_hello_world_example_flow(i) for i in range(20)],
                     "limit": 20,
                     "has_next_page": True,
                     "marker": "fake_marker_0",
                 },
-                match=[matchers.query_param_matcher({"orderby": "updated_at DESC"})],
-            ),
-            "page1": dict(
-                service="flows",
-                path="/flows",
-                json={
+                "match": [matchers.query_param_matcher({"orderby": "updated_at DESC"})],
+            },
+            "page1": {
+                "service": "flows",
+                "path": "/flows",
+                "json": {
                     "flows": [
                         generate_hello_world_example_flow(i) for i in range(20, 40)
                     ],
@@ -106,16 +106,16 @@ def setup_paginated_responses() -> None:
                     "has_next_page": True,
                     "marker": "fake_marker_1",
                 },
-                match=[
+                "match": [
                     matchers.query_param_matcher(
                         {"orderby": "updated_at DESC", "marker": "fake_marker_0"}
                     )
                 ],
-            ),
-            "page2": dict(
-                service="flows",
-                path="/flows",
-                json={
+            },
+            "page2": {
+                "service": "flows",
+                "path": "/flows",
+                "json": {
                     "flows": [
                         generate_hello_world_example_flow(i) for i in range(40, 60)
                     ],
@@ -123,16 +123,16 @@ def setup_paginated_responses() -> None:
                     "has_next_page": False,
                     "marker": None,
                 },
-                match=[
+                "match": [
                     matchers.query_param_matcher(
                         {"orderby": "updated_at DESC", "marker": "fake_marker_1"}
                     )
                 ],
-            ),
-            "auth_get_identities": dict(
-                service="auth",
-                path="/v2/api/identities",
-                json={
+            },
+            "auth_get_identities": {
+                "service": "auth",
+                "path": "/v2/api/identities",
+                "json": {
                     "identities": [
                         {
                             "username": "shrek@globus.org",
@@ -148,7 +148,7 @@ def setup_paginated_responses() -> None:
                         }
                     ]
                 },
-            ),
+            },
         },
         metadata={
             "owner_id": OWNER_ID,
@@ -165,10 +165,10 @@ def setup_custom_orderby_response() -> None:
     register_response_set(
         "flows_list_orderby_title_asc",
         {
-            "title_asc": dict(
-                service="flows",
-                path="/flows",
-                json={
+            "title_asc": {
+                "service": "flows",
+                "path": "/flows",
+                "json": {
                     "flows": [
                         # chr(65) = 'A', so this is A-Z
                         generate_hello_world_example_flow(
@@ -179,12 +179,12 @@ def setup_custom_orderby_response() -> None:
                     "limit": 100,
                     "has_next_page": False,
                 },
-                match=[matchers.query_param_matcher({"orderby": "title ASC"})],
-            ),
-            "auth_get_identities": dict(
-                service="auth",
-                path="/v2/api/identities",
-                json={
+                "match": [matchers.query_param_matcher({"orderby": "title ASC"})],
+            },
+            "auth_get_identities": {
+                "service": "auth",
+                "path": "/v2/api/identities",
+                "json": {
                     "identities": [
                         {
                             "username": "shrek@globus.org",
@@ -200,7 +200,7 @@ def setup_custom_orderby_response() -> None:
                         }
                     ]
                 },
-            ),
+            },
         },
         metadata={
             "owner_id": OWNER_ID,
