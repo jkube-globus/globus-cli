@@ -18,11 +18,11 @@ def _register_get_group_responses():
 
     register_response_set(
         "get_group?include=memberships",
-        dict(
-            default=dict(
-                service="groups",
-                path=f"/groups/{group_id}",
-                json={
+        {
+            "default": {
+                "service": "groups",
+                "path": f"/groups/{group_id}",
+                "json": {
                     "description": "Ipso facto",
                     "enforce_session": False,
                     "group_type": "regular",
@@ -113,7 +113,7 @@ def _register_get_group_responses():
                         }
                     },
                 },
-                metadata={
+                "metadata": {
                     "group_id": group_id,
                     "known_members": [
                         {
@@ -133,8 +133,8 @@ def _register_get_group_responses():
                         },
                     ],
                 },
-            )
-        ),
+            }
+        },
     )
 
 

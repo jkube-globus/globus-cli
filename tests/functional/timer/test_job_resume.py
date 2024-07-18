@@ -180,24 +180,24 @@ def _register_responses(mock_user_data):
     }
     register_response_set(
         "cli.timer_resume.inactive_gare.consents_missing",
-        dict(
-            get_timer=dict(
-                service="timer",
-                path=f"/jobs/{timer_id}",
-                method="GET",
-                json=get_timer_json_consent_gare_body,
-            ),
-            resume=dict(
-                service="timer",
-                path=f"/jobs/{timer_id}/resume",
-                method="POST",
-                json={"message": f"Successfully resumed timer {timer_id}."},
-            ),
-            consents=dict(
-                service="auth",
-                path=f"/v2/api/identities/{user_id}/consents",
-                method="GET",
-                json={
+        {
+            "get_timer": {
+                "service": "timer",
+                "path": f"/jobs/{timer_id}",
+                "method": "GET",
+                "json": get_timer_json_consent_gare_body,
+            },
+            "resume": {
+                "service": "timer",
+                "path": f"/jobs/{timer_id}/resume",
+                "method": "POST",
+                "json": {"message": f"Successfully resumed timer {timer_id}."},
+            },
+            "consents": {
+                "service": "auth",
+                "path": f"/v2/api/identities/{user_id}/consents",
+                "method": "GET",
+                "json": {
                     "consents": [
                         {
                             "scope_name": timers_scope,
@@ -208,31 +208,31 @@ def _register_responses(mock_user_data):
                         }
                     ]
                 },
-            ),
-        ),
+            },
+        },
         metadata=metadata,
     )
 
     register_response_set(
         "cli.timer_resume.inactive_gare.consents_present",
-        dict(
-            get_timer=dict(
-                service="timer",
-                path=f"/jobs/{timer_id}",
-                method="GET",
-                json=get_timer_json_consent_gare_body,
-            ),
-            resume=dict(
-                service="timer",
-                path=f"/jobs/{timer_id}/resume",
-                method="POST",
-                json={"message": f"Successfully resumed timer {timer_id}."},
-            ),
-            consents=dict(
-                service="auth",
-                path=f"/v2/api/identities/{user_id}/consents",
-                method="GET",
-                json={
+        {
+            "get_timer": {
+                "service": "timer",
+                "path": f"/jobs/{timer_id}",
+                "method": "GET",
+                "json": get_timer_json_consent_gare_body,
+            },
+            "resume": {
+                "service": "timer",
+                "path": f"/jobs/{timer_id}/resume",
+                "method": "POST",
+                "json": {"message": f"Successfully resumed timer {timer_id}."},
+            },
+            "consents": {
+                "service": "auth",
+                "path": f"/v2/api/identities/{user_id}/consents",
+                "method": "GET",
+                "json": {
                     "consents": [
                         {
                             "scope_name": timers_scope,
@@ -264,26 +264,26 @@ def _register_responses(mock_user_data):
                         },
                     ]
                 },
-            ),
-        ),
+            },
+        },
         metadata=metadata,
     )
     register_response_set(
         "cli.timer_resume.inactive_gare.session_required_identities",
-        dict(
-            get_timer=dict(
-                service="timer",
-                path=f"/jobs/{timer_id}",
-                method="GET",
-                json=timer_session_identity_gare_body,
-            ),
-            resume=dict(
-                service="timer",
-                path=f"/jobs/{timer_id}/resume",
-                method="POST",
-                json={"message": f"Successfully resumed timer {timer_id}."},
-            ),
-        ),
+        {
+            "get_timer": {
+                "service": "timer",
+                "path": f"/jobs/{timer_id}",
+                "method": "GET",
+                "json": timer_session_identity_gare_body,
+            },
+            "resume": {
+                "service": "timer",
+                "path": f"/jobs/{timer_id}/resume",
+                "method": "POST",
+                "json": {"message": f"Successfully resumed timer {timer_id}."},
+            },
+        },
         metadata={
             "session_required_identities": ["foo@globusid.org"],
             **metadata,
