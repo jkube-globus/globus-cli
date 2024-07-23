@@ -101,55 +101,55 @@ def _apply_endpointish_create_or_update_params(
         raise NotImplementedError()
 
     decorators.update(
-        dict(
-            description=click.option(
+        {
+            "description": click.option(
                 "--description", help=f"Description for the {name}", type=StringOrNull()
             ),
-            info_link=click.option(
+            "info_link": click.option(
                 "--info-link",
                 help=f"Link for info about the {name}",
                 type=StringOrNull(),
             ),
-            contact_info=click.option(
+            "contact_info": click.option(
                 "--contact-info",
                 help=f"Contact info for the {name}",
                 type=StringOrNull(),
             ),
-            contact_email=click.option(
+            "contact_email": click.option(
                 "--contact-email",
                 help=f"Contact email for the {name}",
                 type=StringOrNull(),
             ),
-            organization=click.option(
+            "organization": click.option(
                 "--organization",
                 help=f"Organization for the {name}",
                 type=StringOrNull(),
             ),
-            department=click.option(
+            "department": click.option(
                 "--department",
                 help=f"Department which operates the {name}",
                 type=StringOrNull(),
             ),
-            keywords=click.option(
+            "keywords": click.option(
                 "--keywords",
                 type=str if keyword_style == "string" else CommaDelimitedList(),
                 help=(
                     f"Comma separated list of keywords to help searches for the {name}"
                 ),
             ),
-            default_directory=click.option(
+            "default_directory": click.option(
                 "--default-directory",
                 type=StringOrNull(),
                 help=(
                     f"Default directory when browsing or executing tasks on the {name}"
                 ),
             ),
-            force_encryption=click.option(
+            "force_encryption": click.option(
                 "--force-encryption/--no-force-encryption",
                 default=None,
                 help=f"Force the {name} to encrypt transfers",
             ),
-            user_message=click.option(
+            "user_message": click.option(
                 "--user-message",
                 help=(
                     "A message for clients to display to users when interacting "
@@ -157,7 +157,7 @@ def _apply_endpointish_create_or_update_params(
                 ),
                 type=StringOrNull(),
             ),
-            user_message_link=click.option(
+            "user_message_link": click.option(
                 "--user-message-link",
                 help=(
                     "Link to additional messaging for clients to display to users "
@@ -166,7 +166,7 @@ def _apply_endpointish_create_or_update_params(
                 ),
                 type=UrlOrNull(),
             ),
-            public=click.option(
+            "public": click.option(
                 "--public/--private",
                 is_flag=True,
                 default=public_default,
@@ -175,7 +175,7 @@ def _apply_endpointish_create_or_update_params(
                     + (f" {_GCSONLY}" if add_legacy_params else "")
                 ),
             ),
-        )
+        }
     )
 
     if verify_style == "choice":

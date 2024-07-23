@@ -128,12 +128,12 @@ def test_user_credential_create_posix(add_gcs_login, run_line):
 
     # confirm passed values were used
     sent_body = json.loads(responses.calls[-1].request.body)
-    expected_body = dict(
-        DATA_TYPE="user_credential#1.0.0",
-        storage_gateway_id=gateway_id,
-        identity_id=identity_id,
-        username=local_username,
-    )
+    expected_body = {
+        "DATA_TYPE": "user_credential#1.0.0",
+        "storage_gateway_id": gateway_id,
+        "identity_id": identity_id,
+        "username": local_username,
+    }
     assert sent_body == expected_body
 
 
@@ -163,17 +163,17 @@ def test_user_credential_create_s3(add_gcs_login, run_line):
 
     # confirm passed values were used
     sent_body = json.loads(responses.calls[-1].request.body)
-    expected_body = dict(
-        DATA_TYPE="user_credential#1.0.0",
-        storage_gateway_id=gateway_id,
-        identity_id=identity_id,
-        username=local_username,
-        policies=dict(
-            DATA_TYPE="s3_user_credential_policies#1.0.0",
-            s3_key_id=key_id,
-            s3_secret_key=secret_key,
-        ),
-    )
+    expected_body = {
+        "DATA_TYPE": "user_credential#1.0.0",
+        "storage_gateway_id": gateway_id,
+        "identity_id": identity_id,
+        "username": local_username,
+        "policies": {
+            "DATA_TYPE": "s3_user_credential_policies#1.0.0",
+            "s3_key_id": key_id,
+            "s3_secret_key": secret_key,
+        },
+    }
     assert sent_body == expected_body
 
 

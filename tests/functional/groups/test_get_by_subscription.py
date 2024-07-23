@@ -19,11 +19,11 @@ def _register_responses():
 
     register_response_set(
         "cli.group_get_by_subscription",
-        dict(
-            default=dict(
-                service="groups",
-                path=f"/subscription_info/{subscription_id}",
-                json={
+        {
+            "default": {
+                "service": "groups",
+                "path": f"/subscription_info/{subscription_id}",
+                "json": {
                     "group_id": group_id,
                     "subscription_id": subscription_id,
                     "subscription_info": {
@@ -37,11 +37,11 @@ def _register_responses():
                         "is_high_assurance": False,
                     },
                 },
-            ),
-            get_group=dict(
-                service="groups",
-                path=f"/groups/{group_id}",
-                json={
+            },
+            "get_group": {
+                "service": "groups",
+                "path": f"/groups/{group_id}",
+                "json": {
                     "id": group_id,
                     "subscription_id": subscription_id,
                     "subscription_info": {
@@ -75,21 +75,21 @@ def _register_responses():
                         "signup_fields": [],
                     },
                 },
-            ),
-            get_group_not_visible=dict(
-                service="groups",
-                path=f"/groups/{group_id}",
-                json={"message": "forbidden!"},
-                status=403,
-            ),
-            get_group_fails=dict(
-                service="groups",
-                path=f"/groups/{group_id}",
-                json={"message": "boom!"},
-                status=409,
-                metadata={"message": "boom!"},
-            ),
-        ),
+            },
+            "get_group_not_visible": {
+                "service": "groups",
+                "path": f"/groups/{group_id}",
+                "json": {"message": "forbidden!"},
+                "status": 403,
+            },
+            "get_group_fails": {
+                "service": "groups",
+                "path": f"/groups/{group_id}",
+                "json": {"message": "boom!"},
+                "status": 409,
+                "metadata": {"message": "boom!"},
+            },
+        },
         metadata={
             "group_id": group_id,
             "group_name": group_name,

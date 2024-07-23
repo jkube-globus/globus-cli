@@ -31,7 +31,7 @@ class CustomAuthClient(globus_sdk.AuthClient):
     ) -> str | None:
         assert (id_name or id_id) and not (id_name and id_id)
 
-        kw: GetIdentitiesKwargs = dict(provision=provision)
+        kw: GetIdentitiesKwargs = {"provision": provision}
         if id_name:
             kw["usernames"] = id_name
         elif id_id:

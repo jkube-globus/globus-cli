@@ -240,23 +240,23 @@ def _register_responses(mock_user_data):
     }
     register_response_set(
         "cli.resume_run.inactive_consents_missing",
-        dict(
-            get_run=dict(
-                service="flows",
-                path=f"/runs/{run_id}",
-                json=inactive_consent_required_body,
-            ),
-            resume=dict(
-                service="flows",
-                path=f"/runs/{run_id}/resume",
-                method="POST",
-                json=succeeded_body,
-            ),
-            consents=dict(
-                service="auth",
-                path=f"/v2/api/identities/{user_id}/consents",
-                method="GET",
-                json={
+        {
+            "get_run": {
+                "service": "flows",
+                "path": f"/runs/{run_id}",
+                "json": inactive_consent_required_body,
+            },
+            "resume": {
+                "service": "flows",
+                "path": f"/runs/{run_id}/resume",
+                "method": "POST",
+                "json": succeeded_body,
+            },
+            "consents": {
+                "service": "auth",
+                "path": f"/v2/api/identities/{user_id}/consents",
+                "method": "GET",
+                "json": {
                     "consents": [
                         {
                             "scope_name": flow_scope,
@@ -267,30 +267,30 @@ def _register_responses(mock_user_data):
                         }
                     ]
                 },
-            ),
-        ),
+            },
+        },
         metadata=metadata,
     )
 
     register_response_set(
         "cli.resume_run.inactive_consents_present",
-        dict(
-            get_run=dict(
-                service="flows",
-                path=f"/runs/{run_id}",
-                json=inactive_consent_required_body,
-            ),
-            resume=dict(
-                service="flows",
-                path=f"/runs/{run_id}/resume",
-                method="POST",
-                json=succeeded_body,
-            ),
-            consents=dict(
-                service="auth",
-                path=f"/v2/api/identities/{user_id}/consents",
-                method="GET",
-                json={
+        {
+            "get_run": {
+                "service": "flows",
+                "path": f"/runs/{run_id}",
+                "json": inactive_consent_required_body,
+            },
+            "resume": {
+                "service": "flows",
+                "path": f"/runs/{run_id}/resume",
+                "method": "POST",
+                "json": succeeded_body,
+            },
+            "consents": {
+                "service": "auth",
+                "path": f"/v2/api/identities/{user_id}/consents",
+                "method": "GET",
+                "json": {
                     "consents": [
                         {
                             "scope_name": flow_scope,
@@ -315,26 +315,26 @@ def _register_responses(mock_user_data):
                         },
                     ]
                 },
-            ),
-        ),
+            },
+        },
         metadata=metadata,
     )
 
     register_response_set(
         "cli.resume_run.inactive_session_identities",
-        dict(
-            get_run=dict(
-                service="flows",
-                path=f"/runs/{run_id}",
-                json=inactive_required_session_identities_body,
-            ),
-            resume=dict(
-                service="flows",
-                path=f"/runs/{run_id}/resume",
-                method="POST",
-                json=succeeded_body,
-            ),
-        ),
+        {
+            "get_run": {
+                "service": "flows",
+                "path": f"/runs/{run_id}",
+                "json": inactive_required_session_identities_body,
+            },
+            "resume": {
+                "service": "flows",
+                "path": f"/runs/{run_id}/resume",
+                "method": "POST",
+                "json": succeeded_body,
+            },
+        },
         metadata=metadata,
     )
 

@@ -16,55 +16,55 @@ def _register_responses():
     # Missing (defensive case for beta API)
     register_response_set(
         "cli.flow_validate.missing",
-        dict(
-            default=dict(
-                service="flows",
-                path="/flows/validate",
-                method="POST",
-                json={},
-            ),
-        ),
+        {
+            "default": {
+                "service": "flows",
+                "path": "/flows/validate",
+                "method": "POST",
+                "json": {},
+            },
+        },
     )
     # Empty scopes
     register_response_set(
         "cli.flow_validate.none",
-        dict(
-            default=dict(
-                service="flows",
-                path="/flows/validate",
-                method="POST",
-                json={"scopes": {}, "analysis": {"number_of_possibilities": 0}},
-            ),
-        ),
+        {
+            "default": {
+                "service": "flows",
+                "path": "/flows/validate",
+                "method": "POST",
+                "json": {"scopes": {}, "analysis": {"number_of_possibilities": 0}},
+            },
+        },
         metadata={"possibility_count": None},
     )
     # User scopes
     register_response_set(
         "cli.flow_validate.user",
-        dict(
-            default=dict(
-                service="flows",
-                path="/flows/validate",
-                method="POST",
-                json={
+        {
+            "default": {
+                "service": "flows",
+                "path": "/flows/validate",
+                "method": "POST",
+                "json": {
                     "scopes": {
                         "User": ["urn:globus:auth:scope:transfer.api.globus.org:all"]
                     },
                     "analysis": {"number_of_possibilities": 1},
                 },
-            ),
-        ),
+            },
+        },
         metadata={"possibility_count": 1},
     )
     # Multiple Flow and User scopes
     register_response_set(
         "cli.flow_validate.multi",
-        dict(
-            default=dict(
-                service="flows",
-                path="/flows/validate",
-                method="POST",
-                json={
+        {
+            "default": {
+                "service": "flows",
+                "path": "/flows/validate",
+                "method": "POST",
+                "json": {
                     "scopes": {
                         "User": ["urn:globus:auth:scope:foo.api.globus.org:all"],
                         "Flow": [
@@ -74,21 +74,21 @@ def _register_responses():
                     },
                     "analysis": {"number_of_possibilities": 1000000},
                 },
-            ),
-        ),
+            },
+        },
         metadata={"possibility_count": 1000000},
     )
     # Scope resolution error
     ap_url = "https://domain.example/bad"
     register_response_set(
         "cli.flow_validate.scope_resolution_failed",
-        dict(
-            default=dict(
-                service="flows",
-                path="/flows/validate",
-                method="POST",
-                status=409,
-                json={
+        {
+            "default": {
+                "service": "flows",
+                "path": "/flows/validate",
+                "method": "POST",
+                "status": 409,
+                "json": {
                     "error": {
                         "code": "SCOPE_RESOLUTION_FAILED",
                         "detail": (
@@ -98,8 +98,8 @@ def _register_responses():
                     },
                     "debug_id": str(uuid.uuid4()),
                 },
-            )
-        ),
+            }
+        },
         metadata={"ap_url": ap_url},
     )
 
