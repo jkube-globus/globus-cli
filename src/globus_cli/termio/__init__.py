@@ -17,7 +17,7 @@ from .field import Field
 from .printer import display
 
 
-def print_command_hint(message: str, *, color: str = "yellow"):
+def print_command_hint(message: str, *, color: str = "yellow") -> None:
     """
     Wrapper around echo that checks terminal state
     before printing a given command hint message

@@ -113,7 +113,5 @@ disallow_untyped_defs = false
 disallow_incomplete_defs = false
 module = [
     "globus_cli.services.transfer.recursive_ls",
-    "globus_cli.termio",
-    "globus_cli.termio.printer",
     "globus_cli.termio.awscli_text",
 ]

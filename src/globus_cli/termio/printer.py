@@ -19,6 +19,11 @@ from .context import (
 from .field import Field
 from .server_timing import maybe_show_server_timing
 
+if t.TYPE_CHECKING:
+    from globus_cli.types import JsonValue
+
+T = t.TypeVar("T")
+
 
 class TextMode(enum.Enum):
     silent = enum.auto()
@@ -30,6 +35,21 @@ class TextMode(enum.Enum):
     text_custom = enum.auto()
 
 
+def _none_to_null(val: T | None) -> T | str:
+    if val is None:
+        return "NULL"
+    return val
+
+
+def _assert_fields(fields: list[Field] | None) -> list[Field]:
+    if fields is None:
+        raise ValueError(
+            "Internal Error! Output format requires fields; none given. "
+            "You can workaround this error by using `--format JSON`"
+        )
+    return fields
+
+
 def _get_terminal_content_width() -> int:
     """Get a content width for text output based on the terminal size.
 
@@ -39,7 +59,7 @@ def _get_terminal_content_width() -> int:
     return cols if cols < 100 else int(0.8 * cols)
 
 
-def _jmespath_preprocess(res):
+def _jmespath_preprocess(res: JsonValue | globus_sdk.GlobusHTTPResponse) -> t.Any:
     jmespath_expr = get_jmespath_expression()
 
     if isinstance(res, globus_sdk.GlobusHTTPResponse):
@@ -52,13 +72,15 @@ def _jmespath_preprocess(res):
     return res
 
 
-def print_json_response(res, *, sort_keys=True):
+def print_json_response(
+    res: JsonValue | globus_sdk.GlobusHTTPResponse, *, sort_keys: bool = True
+) -> None:
     res = _jmespath_preprocess(res)
     res = json.dumps(res, indent=2, separators=(",", ": "), sort_keys=sort_keys)
     click.echo(res)
 
 
-def print_unix_response(res):
+def print_unix_response(res: JsonValue | globus_sdk.GlobusHTTPResponse) -> None:
     res = _jmespath_preprocess(res)
     try:
         unix_display(res)
@@ -79,7 +101,9 @@ def print_unix_response(res):
         click.get_current_context().exit(2)
 
 
-def _colon_display(data, fields):
+def _colon_display(
+    data: JsonValue | globus_sdk.GlobusHTTPResponse, fields: list[Field]
+) -> None:
     maxlen = max(len(f.name) for f in fields) + 2
     indent = " " * maxlen
 
@@ -109,7 +133,9 @@ def _colon_display(data, fields):
         click.echo("{}{}".format((field.name + ":").ljust(maxlen), value))
 
 
-def print_table(iterable, fields, print_headers=True):
+def print_table(
+    iterable: t.Iterable[t.Any], fields: list[Field], print_headers: bool = True
+) -> None:
     # the iterable may not be safe to walk multiple times, so we must walk it
     # only once -- however, to let us write things naturally, convert it to a
     # list and we can assume it is safe to walk repeatedly
@@ -120,8 +146,8 @@ def print_table(iterable, fields, print_headers=True):
 
     # use the iterable to find the max width of an element for each column
     # use a special function to handle empty iterable
-    def get_max_colwidth(f):
-        def _safelen(x):
+    def get_max_colwidth(f: Field) -> int:
+        def _safelen(x: t.Any) -> int:
             try:
                 return len(x)
             except TypeError:
@@ -137,12 +163,7 @@ def print_table(iterable, fields, print_headers=True):
     # handle the case in which the column header is the widest thing
     widths = [max(w, len(h)) for w, h in zip(widths, headers)]
 
-    def none_to_null(val):
-        if val is None:
-            return "NULL"
-        return val
-
-    def format_line(inputs):
+    def format_line(inputs: list[str]) -> str:
         out = ""
         last_offset = 3
         for w, h, x in zip(widths, headers, inputs):
@@ -163,7 +184,7 @@ def print_table(iterable, fields, print_headers=True):
 
     # print the rows of data
     for i in iterable:
-        click.echo(format_line([none_to_null(f(i)) for f in fields]))
+        click.echo(format_line([_none_to_null(f(i)) for f in fields]))
 
 
 class Renderer:
@@ -212,17 +233,17 @@ display = Renderer()
 
 
 def _display(
-    response_data,
+    response_data: t.Any,
     *,
-    simple_text=None,
-    text_preamble=None,
-    text_epilog=None,
+    simple_text: str | None = None,
+    text_preamble: str | None = None,
+    text_epilog: str | None = None,
     text_mode: TextMode | t.Callable[[t.Any], None] = TextMode.text_table,
-    json_converter=None,
+    json_converter: t.Callable[[t.Any], t.Any] | None = None,
     fields: list[Field] | None = None,
     response_key: str | t.Callable[[t.Any], t.Any] | None = None,
-    sort_json_keys=True,
-):
+    sort_json_keys: bool = True,
+) -> None:
     """
     A generic output printer. Consumes the following pieces of data:
 
@@ -258,25 +279,7 @@ def _display(
     if isinstance(response_data, globus_sdk.GlobusHTTPResponse):
         maybe_show_server_timing(response_data)
 
-    def _assert_fields():
-        if fields is None:
-            raise ValueError(
-                "Internal Error! Output format requires fields; none given. "
-                "You can workaround this error by using `--format JSON`"
-            )
-
-    def _print_as_json(*, sort_keys=True):
-        print_json_response(
-            json_converter(response_data) if json_converter else response_data,
-            sort_keys=sort_keys,
-        )
-
-    def _print_as_unix():
-        print_unix_response(
-            json_converter(response_data) if json_converter else response_data
-        )
-
-    def _print_as_text():
+    def _print_as_text() -> None:
         # if we're given simple text, print that and exit
         if simple_text is not None:
             click.echo(simple_text)
@@ -297,13 +300,11 @@ def _display(
 
         #  do the various kinds of printing
         if text_mode == TextMode.text_table:
-            _assert_fields()
-            print_table(data, fields)
+            print_table(data, _assert_fields(fields))
         elif text_mode == TextMode.text_record:
-            _assert_fields()
-            _colon_display(data, fields)
+            _colon_display(data, _assert_fields(fields))
         elif text_mode == TextMode.text_record_list:
-            _assert_fields()
+            fields_ = _assert_fields(fields)
             if not isinstance(data, list):
                 raise ValueError("only lists can be output in text record list format")
             first = True
@@ -312,7 +313,7 @@ def _display(
                 if not first:
                     click.echo()
                 first = False
-                _colon_display(record, fields)
+                _colon_display(record, fields_)
         elif text_mode == TextMode.text_raw:
             click.echo(data)
         elif text_mode == TextMode.text_custom:
@@ -331,9 +332,14 @@ def _display(
         text_mode = TextMode.text_custom
 
     if outformat_is_json() or (outformat_is_text() and text_mode == TextMode.json):
-        _print_as_json(sort_keys=sort_json_keys)
+        print_json_response(
+            json_converter(response_data) if json_converter else response_data,
+            sort_keys=sort_json_keys,
+        )
     elif outformat_is_unix():
-        _print_as_unix()
+        print_unix_response(
+            json_converter(response_data) if json_converter else response_data
+        )
     else:
         # silent does nothing
         if text_mode == TextMode.silent:
