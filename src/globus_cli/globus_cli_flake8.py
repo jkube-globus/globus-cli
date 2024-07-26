@@ -8,6 +8,9 @@ import ast
 CODEMAP = {
     "CLI001": "CLI001 import from globus_sdk module, defeats lazy importer",
     "CLI002": "CLI002 names in `requires_login` were out of sorted order",
+    # this rule helps ensure that short-help is uniform about '.' endings
+    "CLI003": "CLI003 single-line function docstring did not end in period",
+    "CLI004": "CLI004 short_help string did not end in period",
 }
 
 
@@ -80,6 +83,8 @@ class CLIVisitor(ErrorRecordingVisitor):
     #                     keywords=[])])],
     #     type_ignores=[])
     def visit_FunctionDef(self, node):  # a function definition
+        self._check_docstring_cli003(node)
+
         if not node.decorator_list:
             return
 
@@ -94,6 +99,14 @@ class CLIVisitor(ErrorRecordingVisitor):
                 continue  # wrong name
             self._check_requires_login_decorator(decorator_call)
 
+        self.generic_visit(node)
+
+    def visit_Call(self, node):
+        for keyword in node.keywords:
+            if keyword.arg == "short_help":
+                self._check_stringnode_cli004(keyword.value)
+                break
+
     # a function call already identified as a decorator named "X.requires_login"
     def _check_requires_login_decorator(self, node):
         args = node.args
@@ -102,3 +115,25 @@ class CLIVisitor(ErrorRecordingVisitor):
         arg_values = [x.value for x in args]
         if sorted(arg_values) != arg_values:
             self._record(node, "CLI002")
+
+    def _check_docstring_cli003(self, node):
+        docstring = ast.get_docstring(node)
+        if not docstring:
+            return
+        if docstring.count("\n") != 0:
+            return
+        if not docstring.endswith("."):
+            self._record(node, "CLI003")
+
+    def _check_stringnode_cli004(self, node):
+        if isinstance(node, ast.Constant):
+            if isinstance(node.value, str) and not node.value.endswith("."):
+                self._record(node, "CLI004")
+        elif isinstance(node, ast.JoinedStr):
+            last = node.values[-1]
+            if (
+                isinstance(last, ast.Constant)
+                and isinstance(last.value, str)
+                and not last.value.endswith(".")
+            ):
+                self._record(node, "CLI004")
