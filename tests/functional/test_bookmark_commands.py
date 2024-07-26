@@ -5,7 +5,7 @@ from globus_sdk._testing import load_response_set
 
 def test_bookmark_create(run_line, go_ep1_id):
     """
-    Runs bookmark create, confirms simple things about text and json output
+    Runs bookmark create, confirms simple things about text and json output.
     """
     meta = load_response_set("cli.bookmark_operations").metadata
     bookmark_id = meta["bookmark_id"]

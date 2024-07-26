@@ -30,7 +30,7 @@ Group:         tutorial
 
 def test_stat_not_found(run_line):
     """
-    operation_stat returns a NotFound error, confirm non-error output
+    operation_stat returns a NotFound error, confirm non-error output.
     """
     meta = load_response(
         globus_sdk.TransferClient.operation_stat, case="not_found"
@@ -44,7 +44,7 @@ def test_stat_not_found(run_line):
 
 def test_stat_permission_denied(run_line):
     """
-    operation_stat hits a permission denied error, confirm error output
+    operation_stat hits a permission denied error, confirm error output.
     """
     meta = load_response(
         globus_sdk.TransferClient.operation_stat, case="permission_denied"

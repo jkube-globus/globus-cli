@@ -5,7 +5,7 @@ from globus_sdk._testing import RegisteredResponse, load_response, load_response
 
 def test_default_one_id(run_line):
     """
-    Runs get-identities with one id, confirms correct username returned
+    Runs get-identities with one id, confirms correct username returned.
     """
     meta = load_response_set("cli.foo_user_info").metadata
     user_id = meta["user_id"]
@@ -16,7 +16,7 @@ def test_default_one_id(run_line):
 
 def test_default_one_username(run_line):
     """
-    Runs get-identities with one username, confirms correct id returned
+    Runs get-identities with one username, confirms correct id returned.
     """
     meta = load_response_set("cli.foo_user_info").metadata
     user_id = meta["user_id"]
@@ -27,7 +27,7 @@ def test_default_one_username(run_line):
 
 def test_default_nosuchidentity(run_line):
     """
-    Runs get-identities with one username, confirms correct id returned
+    Runs get-identities with one username, confirms correct id returned.
     """
     load_response(
         RegisteredResponse(
@@ -73,7 +73,7 @@ def test_default_multiple_inputs(run_line):
 
 def test_verbose(run_line):
     """
-    Runs get-identities with --verbose, confirms expected fields found
+    Runs get-identities with --verbose, confirms expected fields found.
     """
     meta = load_response_set("cli.foo_user_info").metadata
     user_id = meta["user_id"]
@@ -84,7 +84,7 @@ def test_verbose(run_line):
 
 def test_json(run_line):
     """
-    Runs get-identities with -F json confirms expected values
+    Runs get-identities with -F json confirms expected values.
     """
     meta = load_response_set("cli.foo_user_info").metadata
     user_id = meta["user_id"]

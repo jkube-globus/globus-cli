@@ -4,7 +4,6 @@ from globus_sdk._testing import load_response_set
 
 @pytest.mark.parametrize("ep_type", ["personal", "share", "server"])
 def test_show_works(run_line, ep_type):
-    """make sure it doesn't blow up"""
     meta = load_response_set("cli.endpoint_operations").metadata
     if ep_type == "personal":
         epid = meta["gcp_endpoint_id"]

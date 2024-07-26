@@ -19,7 +19,7 @@ def test_simple_mkdir_success(run_line):
 
 def test_local_user(run_line):
     """
-    Confirms --local-user makes it to the request body
+    Confirms --local-user makes it to the request body.
     """
     load_response_set("cli.transfer_activate_success")
     meta = load_response(globus_sdk.TransferClient.operation_mkdir).metadata
