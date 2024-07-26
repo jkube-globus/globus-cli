@@ -10,4 +10,4 @@ from globus_cli.parsing import group
     },
 )
 def session_command() -> None:
-    """Manage your CLI auth session"""
+    """Manage your CLI auth session."""

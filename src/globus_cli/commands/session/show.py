@@ -24,7 +24,7 @@ SESSION_FIELDS = [
 
 @command(
     "show",
-    short_help="Show your current CLI auth session",
+    short_help="Show your current CLI auth session.",
     adoc_output="""Note: this output will not show your primary identity if it is not
 in session. For information on your identity set use 'globus whoami'.
 

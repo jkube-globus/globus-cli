@@ -17,7 +17,7 @@ from globus_cli.parsing import (
 def _update_session_params_all_case(
     identity_set: list[dict[str, t.Any]], session_params: dict[str, t.Any]
 ) -> None:
-    """if --all use every identity id in the user's identity set"""
+    """If --all use every identity id in the user's identity set."""
     identity_ids = [x["sub"] for x in identity_set]
     # set session params once we have all identity ids
     session_params["session_required_identities"] = ",".join(identity_ids)
@@ -78,7 +78,7 @@ def _update_session_params_identities_case(
 
 @command(
     "update",
-    short_help="Update your CLI auth session",
+    short_help="Update your CLI auth session.",
     disable_options=["format", "map_http_status"],
 )
 @no_local_server_option
