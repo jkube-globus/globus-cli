@@ -54,7 +54,7 @@ def test_filter_rules(run_line, go_ep1_id, go_ep2_id):
 
 def test_exclude_recursive(run_line, go_ep1_id, go_ep2_id):
     """
-    Confirms using --exclude on non recursive transfers raises errors
+    Confirms using --exclude on non recursive transfers raises errors.
     """
     # would be better if this could fail before we make any api calls, but
     # we want to build the transfer_data object before we parse batch input
@@ -125,7 +125,7 @@ def test_transfer_local_user_opts(run_line, go_ep1_id, go_ep2_id):
 
 def test_delete_local_user(run_line, go_ep1_id):
     """
-    confirms --local-user is present in delete dry-run output
+    Confirms --local-user is present in delete dry-run output.
     """
     load_response_set("cli.get_submission_id")
 
@@ -139,7 +139,7 @@ def test_delete_local_user(run_line, go_ep1_id):
 
 def test_rm_local_user(run_line, go_ep1_id):
     """
-    confirms --local-user is present in rm dry-run output
+    Confirms --local-user is present in rm dry-run output.
     """
     load_response_set("cli.get_submission_id")
 

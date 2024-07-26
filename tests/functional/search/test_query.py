@@ -20,7 +20,7 @@ from globus_sdk._testing import load_response_set
 )
 def test_query_string(run_line, addargs, expect_params):
     """
-    Runs 'globus search query -q ...' and validates results
+    Runs 'globus search query -q ...' and validates results.
     """
     meta = load_response_set("cli.search").metadata
     index_id = meta["index_id"]
@@ -54,7 +54,7 @@ def test_query_string(run_line, addargs, expect_params):
 )
 def test_query_document(run_line, tmp_path, addargs, expect_params):
     """
-    Runs 'globus search query --query-document ...' and validates results
+    Runs 'globus search query --query-document ...' and validates results.
     """
     meta = load_response_set("cli.search").metadata
     index_id = meta["index_id"]
@@ -80,7 +80,7 @@ def test_query_document(run_line, tmp_path, addargs, expect_params):
 
 def test_query_string_and_document_mutex(run_line, tmp_path):
     """
-    Check that `-q` and `--query-document` cannot be used together
+    Check that `-q` and `--query-document` cannot be used together.
     """
     meta = load_response_set("cli.search").metadata
     index_id = meta["index_id"]
@@ -105,7 +105,7 @@ def test_query_string_and_document_mutex(run_line, tmp_path):
 
 def test_query_required(run_line):
     """
-    Check that at least one of `-q` or `--query-document` must be provided
+    Check that at least one of `-q` or `--query-document` must be provided.
     """
     meta = load_response_set("cli.search").metadata
     index_id = meta["index_id"]

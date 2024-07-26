@@ -6,7 +6,7 @@ from globus_sdk._testing import RegisteredResponse
 
 def test_base_json_hook(run_line):
     """
-    confirms that the base json hook captures the error JSON and prints it verbatim
+    Confirms that the base json hook captures the error JSON and prints it verbatim.
     """
     response = RegisteredResponse(
         service="transfer",
@@ -21,7 +21,7 @@ def test_base_json_hook(run_line):
 @pytest.mark.parametrize("output_format", ("json", "text"))
 def test_base_json_hook_when_no_body_is_present(run_line, output_format):
     """
-    confirms that the base json hook captures the error JSON and prints it verbatim
+    Confirms that the base json hook captures the error JSON and prints it verbatim.
     """
     RegisteredResponse(
         service="transfer",

@@ -31,7 +31,7 @@ def _register_dbq_responses():
 @pytest.mark.parametrize("advanced_mode", [True, False])
 def test_dbq_query_string(run_line, advanced_mode):
     """
-    Runs 'globus search query -q ...' and validates results
+    Runs 'globus search query -q ...' and validates results.
     """
     meta = load_response("delete_by_query").metadata
     index_id = meta["index_id"]
@@ -58,7 +58,7 @@ def test_dbq_query_string(run_line, advanced_mode):
 
 def test_dbq_query_document(run_line, tmp_path):
     """
-    Runs 'globus search query --query-document ...' and validates results
+    Runs 'globus search query --query-document ...' and validates results.
     """
     meta = load_response("delete_by_query").metadata
     index_id = meta["index_id"]
@@ -80,7 +80,7 @@ def test_dbq_query_document(run_line, tmp_path):
 
 def test_dbq_query_string_and_document_mutex(run_line, tmp_path):
     """
-    Check that `-q` and `--query-document` cannot be used together
+    Check that `-q` and `--query-document` cannot be used together.
     """
     meta = load_response("delete_by_query").metadata
     index_id = meta["index_id"]
@@ -125,7 +125,7 @@ def test_dbq_rejects_non_object_document(run_line, tmp_path):
 
 def test_query_required(run_line):
     """
-    Check that at least one of `-q` or `--query-document` must be provided
+    Check that at least one of `-q` or `--query-document` must be provided.
     """
     meta = load_response("delete_by_query").metadata
     index_id = meta["index_id"]
