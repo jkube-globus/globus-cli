@@ -11,4 +11,4 @@ from globus_cli.parsing import group
     },
 )
 def role_command() -> None:
-    """Manage Globus Connect Server (GCS) roles"""
+    """Manage Globus Connect Server (GCS) roles."""
