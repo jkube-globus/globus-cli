@@ -7,12 +7,12 @@ from globus_cli.parsing import command, run_id_arg
 from globus_cli.termio import Field, display, formatters
 
 
-@command("delete", short_help="Delete a run")
+@command("delete")
 @run_id_arg
 @LoginManager.requires_login("flows")
 def delete_command(login_manager: LoginManager, *, run_id: uuid.UUID) -> None:
     """
-    Delete a run
+    Delete a run.
     """
 
     flows_client = login_manager.get_flows_client()

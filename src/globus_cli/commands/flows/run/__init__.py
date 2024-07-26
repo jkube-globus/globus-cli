@@ -15,4 +15,4 @@ from globus_cli.parsing import group
     },
 )
 def run_command() -> None:
-    """Interact with a run in the Globus Flows service"""
+    """Interact with a run in the Globus Flows service."""

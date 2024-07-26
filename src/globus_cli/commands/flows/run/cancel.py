@@ -7,12 +7,12 @@ from globus_cli.parsing import command, run_id_arg
 from globus_cli.termio import Field, display, formatters
 
 
-@command("cancel", short_help="Cancel a run")
+@command("cancel")
 @run_id_arg
 @LoginManager.requires_login("flows")
 def cancel_command(login_manager: LoginManager, *, run_id: uuid.UUID) -> None:
     """
-    Cancel a run
+    Cancel a run.
     """
 
     flows_client = login_manager.get_flows_client()

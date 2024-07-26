@@ -9,7 +9,7 @@ from globus_cli.parsing import JSONStringOrFile, ParsedJSONData, command
 from globus_cli.termio import Field, display
 
 
-@command("validate", short_help="Validate a flow definition")
+@command("validate", short_help="Validate a flow definition.")
 @click.argument(
     "definition",
     type=JSONStringOrFile(),

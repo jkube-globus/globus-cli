@@ -42,7 +42,7 @@ def show_logs_command(
     limit: int,
 ) -> None:
     """
-    List run logs entries
+    List run logs entries.
 
     Enumerates the run log entries for a given run.
     """

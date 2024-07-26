@@ -9,7 +9,7 @@ from globus_cli.parsing import command, run_id_arg
 from globus_cli.termio import Field, display, formatters
 
 
-@command("show", short_help="Show a run")
+@command("show")
 @run_id_arg
 @click.option(
     "--include-flow-description",
@@ -21,7 +21,7 @@ def show_command(
     login_manager: LoginManager, *, run_id: uuid.UUID, include_flow_description: bool
 ) -> None:
     """
-    Show a run
+    Show a run.
     """
 
     flows_client = login_manager.get_flows_client()

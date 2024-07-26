@@ -9,7 +9,7 @@ from globus_cli.parsing import CommaDelimitedList, command, run_id_arg
 from globus_cli.termio import Field, display, formatters
 
 
-@command("update", short_help="Update a run")
+@command("update")
 @run_id_arg
 @click.option(
     "--label",
