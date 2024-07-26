@@ -64,7 +64,7 @@ def endpoint_update(
     user_message: str | None | ExplicitNullType,
     user_message_link: str | None | ExplicitNullType,
 ) -> None:
-    """Update attributes of an endpoint"""
+    """Update attributes of an endpoint."""
     from globus_cli.services.transfer import assemble_generic_doc
 
     transfer_client = login_manager.get_transfer_client()

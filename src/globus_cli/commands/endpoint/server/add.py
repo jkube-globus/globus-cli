@@ -13,7 +13,7 @@ from ._common import server_add_opts
 @command(
     "add",
     deprecated=True,
-    short_help="Add a server to an endpoint",
+    short_help="Add a server to an endpoint.",
     adoc_examples="""Add a server with a url of gridftp.example.org to an endpoint
 
 [source,bash]

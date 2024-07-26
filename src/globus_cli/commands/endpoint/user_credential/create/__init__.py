@@ -10,4 +10,4 @@ from globus_cli.parsing import group
     },
 )
 def user_credential_create() -> None:
-    """Create a User Credential on an Endpoint"""
+    """Create a User Credential on an Endpoint."""

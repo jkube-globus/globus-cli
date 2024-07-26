@@ -9,4 +9,4 @@ from globus_cli.parsing import group
     hidden=True,
 )
 def user_credential_update() -> None:
-    """Update a User Credential on an Endpoint"""
+    """Update a User Credential on an Endpoint."""

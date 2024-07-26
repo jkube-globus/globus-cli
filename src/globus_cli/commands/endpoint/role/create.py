@@ -12,7 +12,7 @@ from globus_cli.termio import display
 
 @command(
     "create",
-    short_help="Add a role to an endpoint",
+    short_help="Add a role to an endpoint.",
     adoc_output=(
         "Textual output is a simple success message in the absence of errors, "
         "containing the ID of the created role."

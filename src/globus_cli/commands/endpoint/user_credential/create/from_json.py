@@ -12,7 +12,7 @@ from globus_cli.parsing import (
 from globus_cli.termio import display
 
 
-@command("from-json", short_help="Create a User Credential from a JSON document")
+@command("from-json")
 @endpoint_id_arg
 @click.argument("user_credential_json", type=JSONStringOrFile())
 @LoginManager.requires_login("auth", "transfer")
@@ -23,7 +23,7 @@ def from_json(
     user_credential_json: ParsedJSONData,
 ) -> None:
     """
-    Create a User Credential on an endpoint from a JSON document
+    Create a User Credential on an endpoint from a JSON document.
     """
     if not isinstance(user_credential_json.data, dict):
         raise click.UsageError("User Credential JSON must be a JSON object")

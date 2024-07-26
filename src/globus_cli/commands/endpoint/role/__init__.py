@@ -11,4 +11,4 @@ from globus_cli.parsing import group
     },
 )
 def role_command() -> None:
-    """Manage endpoint roles"""
+    """Manage endpoint roles."""

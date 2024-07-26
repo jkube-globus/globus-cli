@@ -6,7 +6,7 @@ from globus_cli.parsing import command, one_use_option
 
 @command(
     "local-id",
-    short_help="Display UUID of locally installed endpoint",
+    short_help="Display UUID of locally installed endpoint.",
     disable_options=["format", "map_http_status"],
     adoc_examples="""Do a Globus ls command on the current local endpoint.
 

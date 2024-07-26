@@ -55,7 +55,7 @@ class PortRangeFormatter(
 @command(
     "show",
     deprecated=True,
-    short_help="Show an endpoint server",
+    short_help="Show an endpoint server.",
     adoc_examples="""[source,bash]
 ----
 $ ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb

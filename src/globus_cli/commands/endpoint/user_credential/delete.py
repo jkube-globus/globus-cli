@@ -7,7 +7,7 @@ from globus_cli.termio import display
 from ._common import user_credential_id_arg
 
 
-@command("delete", short_help="Delete a specific User Credential on an Endpoint")
+@command("delete", short_help="Delete a specific User Credential on an Endpoint.")
 @endpoint_id_arg
 @user_credential_id_arg()
 @LoginManager.requires_login("auth", "transfer")
@@ -18,7 +18,7 @@ def user_credential_delete(
     user_credential_id: uuid.UUID,
 ) -> None:
     """
-    Delete a specific User Credential on a given Globus Connect Server v5 Endpoint
+    Delete a specific User Credential on a given Globus Connect Server v5 Endpoint.
     """
     gcs_client = login_manager.get_gcs_client(endpoint_id=endpoint_id)
 

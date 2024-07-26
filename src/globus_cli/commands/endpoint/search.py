@@ -13,7 +13,7 @@ from globus_cli.utils import PagingWrapper
 
 @command(
     "search",
-    short_help="Find and discover endpoints",
+    short_help="Find and discover endpoints.",
     adoc_synopsis="""
 `globus endpoint search [OPTIONS] FILTER_FULLTEXT`
 

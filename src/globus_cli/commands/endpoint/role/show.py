@@ -11,7 +11,7 @@ from ._common import RolePrincipalFormatter, role_id_arg
 
 @command(
     "show",
-    short_help="Show full info for a role on an endpoint",
+    short_help="Show full info for a role on an endpoint.",
     adoc_output="""Textual output has the following fields:
 
 - 'Principal Type'

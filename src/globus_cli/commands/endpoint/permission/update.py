@@ -10,7 +10,7 @@ from globus_cli.termio import display
 
 @command(
     "update",
-    short_help="Update an access control rule",
+    short_help="Update an access control rule.",
     adoc_examples="""Change existing access control rule to read only:
 
 [source,bash]

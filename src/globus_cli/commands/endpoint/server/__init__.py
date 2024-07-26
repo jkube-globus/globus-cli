@@ -5,7 +5,7 @@ from globus_cli.parsing import group
     "server",
     deprecated=True,
     hidden=True,
-    short_help="Manage servers for a Globus endpoint",
+    short_help="Manage servers for a Globus endpoint.",
     lazy_subcommands={
         "add": (".add", "server_add"),
         "delete": (".delete", "server_delete"),
