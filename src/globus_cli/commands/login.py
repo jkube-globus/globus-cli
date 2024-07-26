@@ -96,7 +96,7 @@ class GCSEndpointType(click.ParamType):
 
 @command(
     "login",
-    short_help="Log into Globus to get credentials for the Globus CLI",
+    short_help="Log into Globus to get credentials for the Globus CLI.",
     disable_options=["format", "map_http_status"],
 )
 @no_local_server_option

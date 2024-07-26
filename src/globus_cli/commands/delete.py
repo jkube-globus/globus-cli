@@ -21,7 +21,7 @@ from globus_cli.termio import Field, display, err_is_terminal, term_is_interacti
 
 @command(
     "delete",
-    short_help="Submit a delete task (asynchronous)",
+    short_help="Submit a delete task (asynchronous).",
     adoc_examples="""Delete a single file.
 
 [source,bash]

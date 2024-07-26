@@ -11,7 +11,7 @@ from globus_cli.termio import display
 
 @command(
     "rename",
-    short_help="Rename a file or directory on an endpoint",
+    short_help="Rename a file or directory on an endpoint.",
     adoc_examples="""Rename a directory:
 
 [source,bash]

@@ -345,7 +345,7 @@ def _handle_scope_string(
 
 @group("api")
 def api_command() -> None:
-    """Make API calls to Globus services"""
+    """Make API calls to Globus services."""
 
 
 # note: this must be written as a separate call and not inlined into the loop body

@@ -32,7 +32,7 @@ def _print_tree(
 
 @command(
     "list-commands",
-    short_help="List all CLI Commands",
+    short_help="List all CLI Commands.",
     help=(
         "List all Globus CLI Commands with short help output. "
         "For full command help, run the command with the "

@@ -22,7 +22,7 @@ STAT_FIELDS = [
 
 @command(
     "stat",
-    short_help="Get the status of a path",
+    short_help="Get the status of a path.",
     adoc_examples=r"""Get the status of a path on a collection.
 
 [source,bash]

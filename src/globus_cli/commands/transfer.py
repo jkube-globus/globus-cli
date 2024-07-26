@@ -32,7 +32,7 @@ from globus_cli.termio import Field, display
         "include": "filter_rules",
         "exclude": "filter_rules",
     },
-    short_help="Submit a transfer task (asynchronous)",
+    short_help="Submit a transfer task (asynchronous).",
     adoc_examples="""Transfer a single file:
 
 [source,bash]

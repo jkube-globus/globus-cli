@@ -11,7 +11,7 @@ from globus_cli.termio import display
 
 @command(
     "mkdir",
-    short_help="Create a directory on an endpoint",
+    short_help="Create a directory on an endpoint.",
     adoc_examples="""Create a directory under your home directory:
 
 [source,bash]

@@ -21,7 +21,7 @@ from ._common import transfer_task_wait_with_io
 
 @command(
     "rm",
-    short_help="Delete a single path; wait for it to complete",
+    short_help="Delete a single path; wait for it to complete.",
     adoc_examples="""Delete a single file.
 
 [source,bash]

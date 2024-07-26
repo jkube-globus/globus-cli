@@ -74,7 +74,7 @@ def _get_post_message(current: Version, latest: Version) -> str:
 @command(
     "version",
     disable_options=["format", "map_http_status"],
-    short_help="Show the version and exit",
+    short_help="Show the version and exit.",
 )
 def version_command() -> None:
     """
