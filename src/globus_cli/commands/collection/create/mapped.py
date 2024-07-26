@@ -43,7 +43,7 @@ def _posix_staging_policy_options_present(params: dict[str, t.Any]) -> bool:
     )
 
 
-@command("create", short_help="Create a new Mapped Collection")
+@command("create", short_help="Create a new Mapped Collection.")
 @endpoint_id_arg
 @endpointish_params.create(name="collection")
 @identity_id_option

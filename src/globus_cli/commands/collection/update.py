@@ -30,7 +30,7 @@ class _FullDataField(Field):
         return super().get_value(data.full_data)
 
 
-@command("update", short_help="Update a Collection definition")
+@command("update", short_help="Update a Collection definition.")
 @collection_id_arg
 @endpointish_params.update(name="collection")
 @click.option(
@@ -139,7 +139,7 @@ def collection_update(
     sharing_users_deny: list[str] | None,
 ) -> None:
     """
-    Update a Mapped or Guest Collection
+    Update a Mapped or Guest Collection.
     """
     if isinstance(sharing_restrict_paths, ParsedJSONData) and not isinstance(
         sharing_restrict_paths.data, dict

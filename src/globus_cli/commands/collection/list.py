@@ -32,7 +32,7 @@ class ChoiceSlugified(click.Choice):
         return value.replace("-", "_")
 
 
-@command("list", short_help="List all Collections on an Endpoint")
+@command("list", short_help="List all Collections on an Endpoint.")
 @endpoint_id_arg
 @click.option(
     "--filter",
@@ -108,7 +108,7 @@ def collection_list(
     limit: int,
 ) -> None:
     """
-    List the Collections on a given Globus Connect Server v5 Endpoint
+    List the Collections on a given Globus Connect Server v5 Endpoint.
     """
     gcs_client = login_manager.get_gcs_client(endpoint_id=endpoint_id)
     auth_client = login_manager.get_auth_client()

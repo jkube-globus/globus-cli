@@ -27,7 +27,7 @@ PRIVATE_FIELDS: list[Field] = [
 ]
 
 
-@command("show", short_help="Show a Collection definition")
+@command("show", short_help="Show a Collection definition.")
 @collection_id_arg
 @click.option(
     "--include-private-policies",
@@ -44,9 +44,7 @@ def collection_show(
     include_private_policies: bool,
     collection_id: uuid.UUID,
 ) -> None:
-    """
-    Display a Mapped or Guest Collection
-    """
+    """Display a Mapped or Guest Collection."""
     gcs_client = login_manager.get_gcs_client(collection_id=collection_id)
 
     query_params = {}
