@@ -45,11 +45,11 @@ output:
 $ globus bookmark list --jmespath='DATA[*].[name, endpoint_id]' --format=unix
 ----
 """,
-    short_help="List your bookmarks",
+    short_help="List your bookmarks.",
 )
 @LoginManager.requires_login("transfer")
 def bookmark_list(login_manager: LoginManager) -> None:
-    """List all bookmarks for the current user"""
+    """List all bookmarks for the current user."""
     from globus_cli.services.transfer import iterable_response_to_dict
 
     transfer_client = login_manager.get_transfer_client()

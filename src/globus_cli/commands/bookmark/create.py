@@ -32,7 +32,7 @@ $ globus bookmark create \
      -F unix --jmespath 'id'
 ----
 """,
-    short_help="Create a bookmark for the current user",
+    short_help="Create a bookmark for the current user.",
 )
 @click.argument("endpoint_plus_path", type=ENDPOINT_PLUS_REQPATH)
 @click.argument("bookmark_name")

@@ -20,7 +20,7 @@ from ._common import resolve_id_or_name
 $ globus bookmark delete "Bookmark Name"
 ----
 """,
-    short_help="Delete a bookmark",
+    short_help="Delete a bookmark.",
 )
 @click.argument("bookmark_id_or_name")
 @LoginManager.requires_login("transfer")

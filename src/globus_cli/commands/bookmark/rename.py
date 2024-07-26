@@ -28,7 +28,7 @@ $ globus bookmark rename oldname newname
 def bookmark_rename(
     login_manager: LoginManager, *, bookmark_id_or_name: str, new_bookmark_name: str
 ) -> None:
-    """Change a bookmark's name"""
+    """Change a bookmark's name."""
     transfer_client = login_manager.get_transfer_client()
     bookmark_id = resolve_id_or_name(transfer_client, bookmark_id_or_name)["id"]
 
