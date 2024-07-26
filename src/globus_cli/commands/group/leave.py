@@ -33,7 +33,7 @@ def group_leave_formatter(data: globus_sdk.GlobusHTTPResponse) -> None:
             click.echo(f"  {v}")
 
 
-@command("leave", short_help="Leave a group")
+@command("leave", short_help="Leave a group.")
 @group_id_arg
 @click.option(
     "--identity",

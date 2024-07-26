@@ -15,7 +15,7 @@ APPROVED_USER_FIELDS = [
 ]
 
 
-@command("approve", short_help="Approve a member to join a group")
+@command("approve", short_help="Approve a member to join a group.")
 @group_id_arg
 @click.argument("user", type=IdentityType())
 @LoginManager.requires_login("groups")

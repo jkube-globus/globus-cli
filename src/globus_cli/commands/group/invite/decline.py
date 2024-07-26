@@ -12,7 +12,7 @@ from .._common import group_id_arg
 from ._common import build_invite_actions, get_invite_formatter
 
 
-@command("decline", short_help="Decline an invitation")
+@command("decline", short_help="Decline an invitation.")
 @group_id_arg
 @click.option(
     "--identity",

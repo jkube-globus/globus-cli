@@ -32,7 +32,7 @@ def member_list(
     group_id: uuid.UUID,
     fields: list[str] | None,
 ) -> None:
-    """List group members"""
+    """List group members."""
     groups_client = login_manager.get_groups_client()
 
     group = groups_client.get_group(group_id, include="memberships")

@@ -16,7 +16,7 @@ ADD_USER_FIELDS = [
 ]
 
 
-@command("add", short_help="Add a member to a group")
+@command("add", short_help="Add a member to a group.")
 @group_id_arg
 @click.argument("user", type=IdentityType())
 @click.option(

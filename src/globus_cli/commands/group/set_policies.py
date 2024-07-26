@@ -70,7 +70,7 @@ def group_set_policies(
     join_requests: bool | None,
     signup_fields: list[str] | None,
 ) -> None:
-    """Update an existing group's policies"""
+    """Update an existing group's policies."""
     groups_client = login_manager.get_groups_client()
 
     # get the current state of the group's policies

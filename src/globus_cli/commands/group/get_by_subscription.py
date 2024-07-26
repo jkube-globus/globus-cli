@@ -61,7 +61,7 @@ def group_get_by_subscription(
 def try_resolve_group(
     groups_client: globus_sdk.GroupsClient, group_id: str
 ) -> globus_sdk.GlobusHTTPResponse | None:
-    """Attempt to get a group"""
+    """Attempt to get a group."""
     try:
         return groups_client.get_group(group_id, include="my_memberships")
     except globus_sdk.GlobusAPIError as e:

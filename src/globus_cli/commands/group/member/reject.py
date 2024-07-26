@@ -15,7 +15,7 @@ REJECTED_USER_FIELDS = [
 ]
 
 
-@command("reject", short_help="Reject a member from a group")
+@command("reject", short_help="Reject a member from a group.")
 @group_id_arg
 @click.argument("user", type=IdentityType())
 @LoginManager.requires_login("groups")

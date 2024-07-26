@@ -13,4 +13,4 @@ from globus_cli.parsing import group
     },
 )
 def group_member() -> None:
-    """Manage members in a Globus Group"""
+    """Manage members in a Globus Group."""

@@ -15,7 +15,7 @@ def group_delete(
     *,
     group_id: uuid.UUID,
 ) -> None:
-    """Delete a group"""
+    """Delete a group."""
     groups_client = login_manager.get_groups_client()
 
     response = groups_client.delete_group(group_id)
