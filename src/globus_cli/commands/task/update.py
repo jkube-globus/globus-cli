@@ -13,7 +13,7 @@ from ._common import task_id_arg
 
 @command(
     "update",
-    short_help="Update a task",
+    short_help="Update a task.",
     adoc_output=(
         "When text output is requested, the output will be a simple success "
         "message (or an error)."

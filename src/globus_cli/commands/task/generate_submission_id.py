@@ -5,7 +5,7 @@ from globus_cli.termio import display
 
 @command(
     "generate-submission-id",
-    short_help="Get a task submission ID",
+    short_help="Get a task submission ID.",
     adoc_output=(
         "When text output is requested, the generated 'UUID' is the only output."
     ),

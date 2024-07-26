@@ -103,7 +103,7 @@ def print_task_detail(client: globus_sdk.TransferClient, task_id: uuid.UUID) -> 
 
 @command(
     "show",
-    short_help="Show detailed information about a task",
+    short_help="Show detailed information about a task.",
     adoc_output="""
 When text output is requested, output varies slightly between 'TRANSFER' and
 'DELETE' tasks, and between active and completed tasks.
