@@ -9,7 +9,7 @@ from globus_cli.termio import Field, display
 from ._common import index_id_arg
 
 
-@command("ingest", short_help="Ingest a document into Globus Search")
+@command("ingest", short_help="Ingest a document into Globus Search.")
 @index_id_arg
 @click.argument("DOCUMENT", type=JSONStringOrFile())
 @LoginManager.requires_login("search")

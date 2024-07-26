@@ -17,7 +17,7 @@ from globus_cli.termio import Field, display, formatters
 from ._common import index_id_arg
 
 
-@command("delete-by-query", short_help="Perform a delete-by-query")
+@command("delete-by-query", short_help="Perform a delete-by-query.")
 @click.option("-q", help="The query-string to use to search the index.")
 @click.option(
     "--query-document",

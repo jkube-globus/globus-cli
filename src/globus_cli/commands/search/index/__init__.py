@@ -12,4 +12,4 @@ from globus_cli.parsing import group
     },
 )
 def index_command() -> None:
-    """View and manage indices"""
+    """View and manage indices."""

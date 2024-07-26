@@ -26,7 +26,7 @@ def _print_subjects(data: dict[str, JsonValue]) -> None:
         click.echo(item["subject"])
 
 
-@command("query", short_help="Perform a search")
+@command("query", short_help="Perform a search.")
 @click.option("-q", help="The query-string to use to search the index.")
 @click.option(
     "--query-document",

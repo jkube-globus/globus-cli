@@ -14,7 +14,7 @@ from .._common import INDEX_FIELDS
 def create_command(
     login_manager: LoginManager, *, display_name: str, description: str
 ) -> None:
-    """Create a new Index"""
+    """Create a new Index."""
     search_client = login_manager.get_search_client()
     display(
         search_client.create_index(display_name=display_name, description=description),

@@ -12,7 +12,7 @@ INDEX_LIST_FIELDS = INDEX_FIELDS + [
 @command("list")
 @LoginManager.requires_login("search")
 def list_command(login_manager: LoginManager) -> None:
-    """List indices where you have some permissions"""
+    """List indices where you have some permissions."""
     search_client = login_manager.get_search_client()
     display(
         search_client.get("/v1/index_list"),
