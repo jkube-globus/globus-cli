@@ -9,7 +9,7 @@ from globus_cli.termio import display
 from ._common import DELETED_TIMER_FORMAT_FIELDS
 
 
-@command("delete", short_help="Delete a timer")
+@command("delete", short_help="Delete a timer.")
 @click.argument("TIMER_ID", type=click.UUID)
 @LoginManager.requires_login("timer")
 def delete_command(login_manager: LoginManager, *, timer_id: uuid.UUID) -> None:

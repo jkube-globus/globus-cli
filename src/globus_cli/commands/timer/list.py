@@ -5,7 +5,7 @@ from globus_cli.termio import display
 from ._common import TIMER_FORMAT_FIELDS
 
 
-@command("list", short_help="List your timers")
+@command("list", short_help="List your timers.")
 @LoginManager.requires_login("timer")
 def list_command(login_manager: LoginManager) -> None:
     """

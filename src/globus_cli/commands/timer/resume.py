@@ -21,7 +21,7 @@ if t.TYPE_CHECKING:
     )
 
 
-@command("resume", short_help="Resume a timer")
+@command("resume", short_help="Resume a timer.")
 @click.argument("TIMER_ID", type=click.UUID)
 @click.option(
     "--skip-inactive-reason-check",

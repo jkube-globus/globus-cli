@@ -65,7 +65,7 @@ def resolve_optional_local_time(
     return start_with_tz
 
 
-@command("transfer", short_help="Create a recurring transfer timer")
+@command("transfer", short_help="Create a recurring transfer timer.")
 @click.argument(
     "source", metavar="SOURCE_ENDPOINT_ID[:SOURCE_PATH]", type=ENDPOINT_PLUS_OPTPATH
 )

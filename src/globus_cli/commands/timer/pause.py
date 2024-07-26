@@ -7,7 +7,7 @@ from globus_cli.parsing import command
 from globus_cli.termio import display
 
 
-@command("pause", short_help="Pause a timer")
+@command("pause", short_help="Pause a timer.")
 @click.argument("TIMER_ID", type=click.UUID)
 @LoginManager.requires_login("timer")
 def pause_command(login_manager: LoginManager, *, timer_id: uuid.UUID) -> None:

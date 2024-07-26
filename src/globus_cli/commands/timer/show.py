@@ -9,7 +9,7 @@ from globus_cli.termio import display
 from ._common import TIMER_FORMAT_FIELDS
 
 
-@command("show", short_help="Display a timer")
+@command("show", short_help="Display a timer.")
 @click.argument("TIMER_ID", type=click.UUID)
 @LoginManager.requires_login("timer")
 def show_command(login_manager: LoginManager, *, timer_id: uuid.UUID) -> None:
