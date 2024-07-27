@@ -38,7 +38,7 @@ def create_command(
     principal_type: t.Literal["identity", "group"] | None,
 ) -> None:
     """
-    Create a role (requires admin or owner)
+    Create a role (requires admin or owner).
 
     PRINCIPAL is expected to be an identity or group ID, a principal URN, or a username.
 

@@ -12,7 +12,10 @@ from globus_cli.parsing import (
 from globus_cli.termio import display
 
 
-@command("from-json")
+@command(
+    "from-json",
+    short_help="Create a User Credential from a JSON document.",
+)
 @endpoint_id_arg
 @click.argument("user_credential_json", type=JSONStringOrFile())
 @LoginManager.requires_login("auth", "transfer")

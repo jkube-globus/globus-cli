@@ -251,7 +251,7 @@ def test_login_manager_respects_context_error_message(patched_tokenstorage):
 
 
 def test_client_login_two_requirements(client_login):
-    @LoginManager.requires_login("transfer", "auth")
+    @LoginManager.requires_login("auth", "transfer")
     def dummy_command(login_manager):
         transfer_client = login_manager.get_transfer_client()
         auth_client = login_manager.get_auth_client()

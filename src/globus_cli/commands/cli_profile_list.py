@@ -81,7 +81,7 @@ class ProfileIndicatorFormatter(formatters.FieldFormatter[bool]):
 @click.option("--all", is_flag=True, hidden=True)
 def cli_profile_list(*, all: bool) -> None:
     """
-    List all CLI profiles which have been used
+    List all CLI profiles which have been used.
 
     These are the values for GLOBUS_PROFILE which have been recorded, as well as
     GLOBUS_CLI_CLIENT_ID values which have been used.
