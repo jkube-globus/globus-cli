@@ -8,7 +8,7 @@ from globus_cli.parsing import collection_id_arg, command, endpointish_params
 from globus_cli.termio import display
 
 
-@command("guest", short_help="Update a Guest Collection on GCP")
+@command("guest", short_help="Update a Guest Collection on GCP.")
 @collection_id_arg
 @endpointish_params.update(
     name="collection",
@@ -33,7 +33,7 @@ def guest_command(
     verify: dict[str, bool],
 ) -> None:
     """
-    Update a Guest Collection on a Globus Connect Personal Mapped Collection
+    Update a Guest Collection on a Globus Connect Personal Mapped Collection.
     """
     from globus_cli.services.transfer import assemble_generic_doc
 

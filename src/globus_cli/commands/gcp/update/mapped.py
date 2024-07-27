@@ -10,7 +10,7 @@ from globus_cli.parsing import collection_id_arg, command, endpointish_params
 from globus_cli.termio import display
 
 
-@command("mapped", short_help="Update a GCP Mapped Collection")
+@command("mapped", short_help="Update a GCP Mapped Collection.")
 @collection_id_arg
 @endpointish_params.update(name="collection", keyword_style="string")
 @click.option(

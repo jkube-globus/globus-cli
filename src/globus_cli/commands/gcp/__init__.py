@@ -10,4 +10,4 @@ from globus_cli.parsing import group
     },
 )
 def gcp_command() -> None:
-    """Manage Globus Connect Personal endpoints"""
+    """Manage Globus Connect Personal endpoints."""

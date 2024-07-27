@@ -35,7 +35,7 @@ class GCPSubscriptionIdType(click.ParamType):
             self.fail(msg, param, ctx)
 
 
-@command("set-subscription-id", short_help="Update a GCP endpoint's subscription")
+@command("set-subscription-id", short_help="Update a GCP endpoint's subscription.")
 @endpoint_id_arg
 @click.argument("SUBSCRIPTION_ID", type=GCPSubscriptionIdType())
 @LoginManager.requires_login("transfer")
