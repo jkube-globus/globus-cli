@@ -5,12 +5,19 @@ A Flake8 Plugin for use in globus-cli
 
 import ast
 
+# this is the limit used for the length of shorthelp text
+# 60 is the limit we see in the live application derived from the helptext formatter
+_SHORTHELP_LENGTH_LIMIT = 60
+
 CODEMAP = {
     "CLI001": "CLI001 import from globus_sdk module, defeats lazy importer",
     "CLI002": "CLI002 names in `requires_login` were out of sorted order",
-    # this rule helps ensure that short-help is uniform about '.' endings
-    "CLI003": "CLI003 single-line function docstring did not end in period",
-    "CLI004": "CLI004 short_help string did not end in period",
+    # these rules ensure that helptext styling is uniform
+    "CLI003": "CLI003 single-line function docstring did not end in '.'",
+    "CLI004": "CLI004 short_help string did not end in '.'",
+    "CLI005": "CLI005 command function implicit short_help too long",
+    "CLI006": "CLI006 command function implicit short_help does not end in '.'",
+    "CLI007": "CLI007 command function missing expected docstring",
 }
 
 
@@ -85,19 +92,31 @@ class CLIVisitor(ErrorRecordingVisitor):
     def visit_FunctionDef(self, node):  # a function definition
         self._check_docstring_cli003(node)
 
-        if not node.decorator_list:
-            return
-
-        for decorator_call in node.decorator_list:
-            if not isinstance(decorator_call, ast.Call):
-                continue  # e.g. a Name node, for a decorator w/ no args
-            if not isinstance(decorator_call.func, ast.Attribute):
-                # a decorator which is not accessed as an attr
-                # unlike `LoginManager.requires_login`
-                continue
-            if decorator_call.func.attr != "requires_login":
-                continue  # wrong name
-            self._check_requires_login_decorator(decorator_call)
+        for decorator in node.decorator_list:
+            if isinstance(decorator, ast.Name) and decorator.id == "command":
+                self._check_command_docstring_implicit_shorthelp(node)
+            elif isinstance(decorator, ast.Call):
+                # only Name nodes can match `@command(...)` usage
+                if isinstance(decorator.func, ast.Name):
+                    keyword_args = [kw.arg for kw in decorator.keywords]
+                    # limit ourselves to commands where the short_help will be derived
+                    # from the function docstring
+                    if (
+                        decorator.func.id == "command"
+                        and "short_help" not in keyword_args
+                        # technically, `help=...` could also be parsed for implicit
+                        # short_help but since we never use this style, simply skip
+                        # it for now
+                        and "help" not in keyword_args
+                        # do not check on hidden commands
+                        and "hidden" not in keyword_args
+                    ):
+                        self._check_command_docstring_implicit_shorthelp(node)
+                # a decorator which is accessed as an attr
+                # like `LoginManager.requires_login`
+                elif isinstance(decorator.func, ast.Attribute):
+                    if decorator.func.attr == "requires_login":
+                        self._check_requires_login_decorator(decorator)
 
         self.generic_visit(node)
 
@@ -123,7 +142,7 @@ class CLIVisitor(ErrorRecordingVisitor):
         if docstring.count("\n") != 0:
             return
         if not docstring.endswith("."):
-            self._record(node, "CLI003")
+            self._record(node.body[0], "CLI003")
 
     def _check_stringnode_cli004(self, node):
         if isinstance(node, ast.Constant):
@@ -137,3 +156,21 @@ class CLIVisitor(ErrorRecordingVisitor):
                 and not last.value.endswith(".")
             ):
                 self._record(node, "CLI004")
+
+    def _check_command_docstring_implicit_shorthelp(self, node):
+        docstring = ast.get_docstring(node)
+        if not docstring:
+            self._record(node, "CLI007")
+            return
+
+        # click uses a more sophisticated technique than the one below
+        # for the original, see:
+        #   https://github.com/pallets/click/blob/14f735cf59618941cf2930e633eb77651b1dc7cb/src/click/utils.py#L59
+        #
+        # for our purposes, just take the first line
+        firstline = docstring.split("\n")[0]
+        if len(firstline) > _SHORTHELP_LENGTH_LIMIT:
+            self._record(node.body[0], "CLI005")
+        else:
+            if not firstline.endswith("."):
+                self._record(node.body[0], "CLI006")
