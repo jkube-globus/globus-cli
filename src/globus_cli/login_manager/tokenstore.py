@@ -36,7 +36,7 @@ def _template_client_id() -> str:
 
 def internal_native_client() -> globus_sdk.NativeAppAuthClient:
     """
-    This is the client that represents the CLI itself (prior to templating)
+    This is the client that represents the CLI itself (prior to templating).
     """
     template_id = _template_client_id()
     return globus_sdk.NativeAppAuthClient(

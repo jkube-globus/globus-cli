@@ -11,7 +11,7 @@ def simplefilter(
     filterstr: t.Literal["default", "error", "ignore", "always", "module", "once"]
 ) -> None:
     """
-    wrap `warnings.simplefilter` with a check on `_TEST_WARNING_CONTROL`
+    Wrap `warnings.simplefilter` with a check on `_TEST_WARNING_CONTROL`.
     """
     if not _TEST_WARNING_CONTROL:
         warnings.simplefilter(filterstr)
