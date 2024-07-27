@@ -15,7 +15,7 @@ CODEMAP = {
     # these rules ensure that helptext styling is uniform
     "CLI003": "CLI003 single-line function docstring did not end in '.'",
     "CLI004": "CLI004 short_help string did not end in '.'",
-    "CLI005": "CLI005 command function implicit short_help too long",
+    "CLI005": "CLI005 command function short_help too long",
     "CLI006": "CLI006 command function implicit short_help does not end in '.'",
     "CLI007": "CLI007 command function missing expected docstring",
 }
@@ -123,7 +123,7 @@ class CLIVisitor(ErrorRecordingVisitor):
     def visit_Call(self, node):
         for keyword in node.keywords:
             if keyword.arg == "short_help":
-                self._check_stringnode_cli004(keyword.value)
+                self._check_stringnode_explicit_short_help(keyword.value)
                 break
 
     # a function call already identified as a decorator named "X.requires_login"
@@ -144,10 +144,13 @@ class CLIVisitor(ErrorRecordingVisitor):
         if not docstring.endswith("."):
             self._record(node.body[0], "CLI003")
 
-    def _check_stringnode_cli004(self, node):
+    def _check_stringnode_explicit_short_help(self, node):
         if isinstance(node, ast.Constant):
-            if isinstance(node.value, str) and not node.value.endswith("."):
-                self._record(node, "CLI004")
+            if isinstance(node.value, str):
+                if not node.value.endswith("."):
+                    self._record(node, "CLI004")
+                if len(node.value) > _SHORTHELP_LENGTH_LIMIT:
+                    self._record(node, "CLI005")
         elif isinstance(node, ast.JoinedStr):
             last = node.values[-1]
             if (
