@@ -85,8 +85,7 @@ entry_title_template = '{{ version }} ({{ date.strftime("%Y-%m-%d") }})'
 # `strict=true` in effect
 warn_unused_configs = true
 
-# TODO: enable disallow_any_generics (currently fails)
-# disallow_any_generics = true
+disallow_any_generics = true
 disallow_subclassing_any = true
 
 # do not disallow_untyped_calls, as we have untyped defs of our own
@@ -107,6 +106,13 @@ extra_checks = true
 
 # additional settings (not part of strict=true)
 warn_unreachable = true
+
+[[tool.mypy.overrides]]
+disallow_any_generics = false
+module = [
+    "globus_cli.exception_handling.registry",
+    "globus_cli.exception_handling.hooks",
+]
 
 [[tool.mypy.overrides]]
 disallow_untyped_defs = false
