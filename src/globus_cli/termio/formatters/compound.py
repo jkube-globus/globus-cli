@@ -27,11 +27,11 @@ class ArrayFormatter(FieldFormatter[t.List[str]]):
         *,
         delimiter: str = ",",
         sort: bool = False,
-        element_formatter: FieldFormatter | None = None,
+        element_formatter: FieldFormatter[t.Any] | None = None,
     ) -> None:
         self.delimiter = delimiter
         self.sort = sort
-        self.element_formatter: FieldFormatter = (
+        self.element_formatter: FieldFormatter[t.Any] = (
             element_formatter if element_formatter is not None else StrFormatter()
         )
 
