@@ -5,8 +5,9 @@ import typing as t
 import click
 
 from globus_cli.termio import Field, formatters
+from globus_cli.types import AnyCommand
 
-C = t.TypeVar("C", bound=t.Union[click.Command, t.Callable])
+C = t.TypeVar("C", bound=AnyCommand)
 
 # cannot do this because it causes immediate imports and ruins the lazy import
 # performance gain

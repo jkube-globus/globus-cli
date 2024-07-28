@@ -5,7 +5,9 @@ import typing as t
 
 import click
 
-C = t.TypeVar("C", bound=t.Union[t.Callable, click.Command])
+from globus_cli.types import AnyCommand
+
+C = t.TypeVar("C", bound=AnyCommand)
 
 
 def sync_level_option(*, aliases: tuple[str, ...] = ()) -> t.Callable[[C], C]:

@@ -6,8 +6,9 @@ import click
 import globus_sdk
 
 from globus_cli.termio import Field, formatters
+from globus_cli.types import AnyCommand
 
-C = t.TypeVar("C", bound=t.Callable)
+C = t.TypeVar("C", bound=AnyCommand)
 
 
 def index_id_arg(f: C) -> C:

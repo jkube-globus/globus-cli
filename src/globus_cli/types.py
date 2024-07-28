@@ -21,12 +21,16 @@ if t.TYPE_CHECKING:
     import globus_sdk
 
 
+AnyCallable: TypeAlias = t.Callable[..., t.Any]
+AnyCommand: TypeAlias = t.Union[click.Command, AnyCallable]
+
+
 ClickContextTree: TypeAlias = t.Tuple[
     click.Context, t.List[click.Context], t.List["ClickContextTree"]
 ]
 
 
-DATA_CONTAINER_T = t.Union[
+DATA_CONTAINER_T: TypeAlias = t.Union[
     t.Mapping[str, t.Any],
     "globus_sdk.GlobusHTTPResponse",
 ]

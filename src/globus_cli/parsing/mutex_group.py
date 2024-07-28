@@ -5,9 +5,11 @@ import typing as t
 
 import click
 
+from globus_cli.types import AnyCommand
+
 from ..utils import format_list_of_words
 
-C = t.TypeVar("C", bound=t.Callable)
+C = t.TypeVar("C", bound=AnyCommand)
 
 
 class MutexInfo:
@@ -76,6 +78,6 @@ def mutex_option_group(*options: str | MutexInfo) -> t.Callable[[C], C]:
                 raise click.UsageError(f"{option_str} are mutually exclusive")
             return func(*args, **kwargs)
 
-        return t.cast(C, wrapped)
+        return wrapped  # type: ignore[return-value]
 
     return decorator

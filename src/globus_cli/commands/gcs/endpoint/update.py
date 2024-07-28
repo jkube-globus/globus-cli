@@ -13,6 +13,9 @@ from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import CommaDelimitedList, command, endpoint_id_arg
 from globus_cli.parsing.param_types.nullable import IntOrNull
 from globus_cli.termio import display
+from globus_cli.types import AnyCallable
+
+F = t.TypeVar("F", bound=AnyCallable)
 
 
 class SubscriptionIdType(click.ParamType):
@@ -38,7 +41,7 @@ class SubscriptionIdType(click.ParamType):
             self.fail(f"{value} is not a valid Subscription ID", param, ctx)
 
 
-def network_use_constraints(func: t.Callable) -> t.Callable:
+def network_use_constraints(func: F) -> F:
     """
     Enforces that custom network use related parameters are present when network use is
     set to custom.
@@ -64,7 +67,7 @@ def network_use_constraints(func: t.Callable) -> t.Callable:
                 )
         return func(*args, **kwargs)
 
-    return wrapped
+    return wrapped  # type: ignore[return-value]
 
 
 @command("update")
