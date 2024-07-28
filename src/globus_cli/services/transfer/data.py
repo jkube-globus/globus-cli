@@ -7,6 +7,7 @@ import globus_sdk
 
 from globus_cli.constants import ExplicitNullType
 from globus_cli.parsing import TaskPath, mutex_option_group
+from globus_cli.types import JsonValue
 from globus_cli.utils import shlex_process_stream
 
 
@@ -44,8 +45,10 @@ def add_batch_to_transfer_data(
     shlex_process_stream(process_batch_line, batch, "--batch")
 
 
-def display_name_or_cname(ep_doc: dict | globus_sdk.GlobusHTTPResponse) -> str:
-    return t.cast(str, ep_doc["display_name"] or ep_doc["canonical_name"])
+def display_name_or_cname(
+    ep_doc: dict[str, JsonValue] | globus_sdk.GlobusHTTPResponse
+) -> str:
+    return str(ep_doc["display_name"] or ep_doc["canonical_name"])
 
 
 def iterable_response_to_dict(iterator: t.Iterable[t.Any]) -> dict[str, list[t.Any]]:

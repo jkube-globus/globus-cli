@@ -194,7 +194,7 @@ class LoginManager:
         no_local_server: bool = False,
         local_server_message: str | None = None,
         epilog: str | None = None,
-        session_params: dict | None = None,
+        session_params: dict[str, str] | None = None,
         scopes: list[str | MutableScope] | None = None,
     ) -> None:
         if is_client_login():

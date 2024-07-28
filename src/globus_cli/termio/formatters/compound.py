@@ -3,21 +3,21 @@ from __future__ import annotations
 import json
 import typing as t
 
+from globus_cli.types import JsonValue
+
 from .base import FieldFormatter
 from .primitive import StrFormatter
 
-JSON = t.Union[None, bool, dict, float, int, list, str]
 
-
-class SortedJsonFormatter(FieldFormatter[JSON]):
+class SortedJsonFormatter(FieldFormatter[JsonValue]):
     parse_null_values = True
 
-    def parse(self, value: t.Any) -> JSON:
+    def parse(self, value: t.Any) -> JsonValue:
         if value is None or isinstance(value, (bool, dict, float, int, list, str)):
-            return t.cast(JSON, value)
-        raise ValueError("bad JSON value")
+            return value
+        raise ValueError("bad JsonValue value")
 
-    def render(self, value: JSON) -> str:
+    def render(self, value: JsonValue) -> str:
         return json.dumps(value, sort_keys=True)
 
 

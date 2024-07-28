@@ -12,7 +12,7 @@ C = t.TypeVar("C", bound=AnyCommand)
 
 
 def validate_endpoint_create_and_update_params(
-    entity_type: EntityType, managed: bool, params: dict
+    entity_type: EntityType, managed: bool, params: dict[str, t.Any]
 ) -> None:
     """
     Given an endpoint type and option values
