@@ -10,12 +10,13 @@ import globus_sdk
 from globus_cli.endpointish import WrongEntityTypeError
 from globus_cli.login_manager import MissingLoginError
 from globus_cli.termio import PrintableErrorField, outformat_is_json, write_error_info
+from globus_cli.types import JsonValue
 from globus_cli.utils import CLIAuthRequirementsError
 
 from .registry import error_handler, sdk_error_handler
 
 
-def _pretty_json(data: dict, compact: bool = False) -> str:
+def _pretty_json(data: JsonValue, compact: bool = False) -> str:
     if compact:
         return json.dumps(data, separators=(",", ":"), sort_keys=True)
     return json.dumps(data, indent=2, separators=(",", ": "), sort_keys=True)
@@ -276,12 +277,10 @@ def searchapi_validationerror_hook(exception: globus_sdk.SearchAPIError) -> None
         PrintableErrorField("code", exception.code),
         PrintableErrorField("message", exception.message, multiline=True),
     ]
-    # FIXME: type cast because error_data type is incorrect
-    # (needs upstream fix in SDK)
-    error_data = t.cast(t.Optional[dict], exception.error_data)
+    error_data: dict[str, JsonValue] | None = exception.error_data
     if error_data is not None:
         messages = error_data.get("messages")
-        if messages is not None and len(messages) == 1:
+        if isinstance(messages, dict) and len(messages) == 1:
             error_location, details = next(iter(messages.items()))
             fields += [
                 PrintableErrorField("location", error_location),
@@ -304,9 +303,7 @@ def searchapi_hook(exception: globus_sdk.SearchAPIError) -> None:
         PrintableErrorField("code", exception.code),
         PrintableErrorField("message", exception.message, multiline=True),
     ]
-    # FIXME: type cast because error_data type is incorrect
-    # (needs upstream fix in SDK)
-    error_data = t.cast(t.Optional[dict], exception.error_data)
+    error_data: dict[str, JsonValue] | None = exception.error_data
     if error_data is not None:
         fields += [
             PrintableErrorField("error_data", _pretty_json(error_data, compact=True))

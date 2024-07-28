@@ -111,7 +111,6 @@ warn_unreachable = true
 disallow_any_generics = false
 module = [
     "globus_cli.exception_handling.registry",
-    "globus_cli.exception_handling.hooks",
 ]
 
 [[tool.mypy.overrides]]
