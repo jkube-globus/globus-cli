@@ -84,12 +84,6 @@ strict = true
 warn_unreachable = true
 
 [[tool.mypy.overrides]]
-disallow_any_generics = false
-module = [
-    "globus_cli.exception_handling.registry",
-]
-
-[[tool.mypy.overrides]]
 disallow_untyped_calls = false
 disallow_untyped_defs = false
 disallow_incomplete_defs = false

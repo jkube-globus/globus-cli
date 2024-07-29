@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import dataclasses
 import functools
 import typing as t
 
@@ -9,6 +10,7 @@ import globus_sdk
 from globus_cli.parsing.command_state import CommandState
 
 E = t.TypeVar("E", bound=Exception)
+E_Globus = t.TypeVar("E_Globus", bound="globus_sdk.GlobusAPIError")
 
 HOOK_TYPE = t.Callable[[E], t.NoReturn]
 # something which can be decorated to become a hook
@@ -16,15 +18,15 @@ _HOOK_SRC_TYPE = t.Union[t.Callable[[E], None], t.Callable[[E], t.Optional[int]]
 
 CONDITION_TYPE = t.Callable[[E], bool]
 
-_REGISTERED_HOOKS: list[tuple[HOOK_TYPE, CONDITION_TYPE]] = []
+_REGISTERED_HOOKS: list[_RegisteredHook[t.Any]] = []
 
 
 def sdk_error_handler(
     *,
     error_class: str = "GlobusAPIError",
-    condition: t.Callable[[globus_sdk.GlobusAPIError], bool] | None = None,
+    condition: t.Callable[[E_Globus], bool] | None = None,
     exit_status: int = 1,
-) -> t.Callable[[_HOOK_SRC_TYPE], HOOK_TYPE]:
+) -> t.Callable[[_HOOK_SRC_TYPE[E_Globus]], HOOK_TYPE[E_Globus]]:
     return _error_handler(
         condition=_build_condition(condition, error_class), exit_status=exit_status
     )
@@ -32,36 +34,35 @@ def sdk_error_handler(
 
 def error_handler(
     *,
-    error_class: type[Exception] | None = None,
-    condition: t.Callable[[globus_sdk.GlobusAPIError], bool] | None = None,
+    error_class: type[E],
     exit_status: int = 1,
-) -> t.Callable[[_HOOK_SRC_TYPE], HOOK_TYPE]:
+) -> t.Callable[[_HOOK_SRC_TYPE[E]], HOOK_TYPE[E]]:
     return _error_handler(
-        condition=_build_condition(condition, error_class), exit_status=exit_status
+        condition=_build_condition(None, error_class), exit_status=exit_status
     )
 
 
-def find_handler(exception: Exception) -> HOOK_TYPE | None:
-    for handler, condition in _REGISTERED_HOOKS:
-        if not condition(exception):
+def find_handler(exception: Exception) -> HOOK_TYPE[E] | None:
+    for hook in _REGISTERED_HOOKS:
+        if not hook.condition(exception):
             continue
-        return handler
+        return hook.hook_func
     return None
 
 
 def _error_handler(
     *,
-    condition: t.Callable[[Exception], bool],
+    condition: t.Callable[[E], bool],
     exit_status: int = 1,
-) -> t.Callable[[_HOOK_SRC_TYPE], HOOK_TYPE]:
+) -> t.Callable[[_HOOK_SRC_TYPE[E]], HOOK_TYPE[E]]:
     """decorator for excepthooks
 
     register each one, in order, with any relevant "condition"
     """
 
-    def inner_decorator(fn: _HOOK_SRC_TYPE) -> HOOK_TYPE:
+    def inner_decorator(fn: _HOOK_SRC_TYPE[E]) -> HOOK_TYPE[E]:
         @functools.wraps(fn)
-        def wrapped(exception: Exception) -> t.NoReturn:
+        def wrapped(exception: E) -> t.NoReturn:
             hook_result = fn(exception)
             ctx = click.get_current_context()
 
@@ -79,16 +80,39 @@ def _error_handler(
 
             ctx.exit(exit_status)
 
-        _REGISTERED_HOOKS.append((wrapped, condition))
+        _REGISTERED_HOOKS.append(_RegisteredHook(wrapped, condition))
         return wrapped
 
     return inner_decorator
 
 
+@t.overload
 def _build_condition(
-    condition: CONDITION_TYPE | None, error_class: str | type[Exception] | None
-) -> CONDITION_TYPE:
-    inner_condition: CONDITION_TYPE
+    condition: CONDITION_TYPE[E],
+    error_class: str | None,
+) -> CONDITION_TYPE[E]: ...
+
+
+@t.overload
+def _build_condition(
+    condition: CONDITION_TYPE[E], error_class: type[E]
+) -> CONDITION_TYPE[E]: ...
+
+
+@t.overload
+def _build_condition(condition: None, error_class: type[E]) -> CONDITION_TYPE[E]: ...
+
+
+@t.overload
+def _build_condition(
+    condition: None, error_class: str | None
+) -> CONDITION_TYPE[t.Any]: ...
+
+
+def _build_condition(
+    condition: CONDITION_TYPE[E] | None, error_class: str | type[E] | None
+) -> CONDITION_TYPE[E]:
+    inner_condition: CONDITION_TYPE[E]
 
     if condition is None:
         if error_class is None:
@@ -110,13 +134,19 @@ def _build_condition(
     return inner_condition
 
 
-def _resolve_error_class(error_class: str | type[Exception]) -> type[Exception]:
+def _resolve_error_class(error_class: str | type[E]) -> type[E]:
     if isinstance(error_class, str):
         resolved = getattr(globus_sdk, error_class, None)
         if resolved is None:
             raise LookupError(f"no such globus_sdk error class '{error_class}'")
         if not (isinstance(resolved, type) and issubclass(resolved, Exception)):
             raise ValueError(f"'globus_sdk.{error_class}' is not an error class")
-        return resolved
+        return resolved  # type: ignore[return-value]
     else:
         return error_class
+
+
+@dataclasses.dataclass
+class _RegisteredHook(t.Generic[E]):
+    hook_func: HOOK_TYPE[E]
+    condition: CONDITION_TYPE[E]

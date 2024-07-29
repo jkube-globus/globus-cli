@@ -218,7 +218,7 @@ class TopLevelGroup(GlobusCommandGroup):
             raise
         except Exception:
             # mypy thinks that exc_info could be (None, None, None), but... nope. False.
-            custom_except_hook(sys.exc_info())  # type: ignore[arg-type]
+            custom_except_hook(sys.exc_info())  # type: ignore[arg-type,type-var]
 
 
 def main_group(**kwargs: t.Any) -> t.Callable[[C], TopLevelGroup]:
