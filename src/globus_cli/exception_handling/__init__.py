@@ -22,12 +22,12 @@ from globus_cli.parsing.command_state import CommandState
 from .hooks import register_all_hooks
 from .registry import find_handler
 
+E = t.TypeVar("E", bound=Exception)
+
 register_all_hooks()
 
 
-def custom_except_hook(
-    exc_info: tuple[type[Exception], Exception, types.TracebackType]
-) -> t.NoReturn:
+def custom_except_hook(exc_info: tuple[type[E], E, types.TracebackType]) -> t.NoReturn:
     """
     A custom excepthook to present python errors produced by the CLI.
     We don't want to show end users big scary stacktraces if they aren't python
@@ -45,7 +45,7 @@ def custom_except_hook(
     # we're not in debug mode, do custom handling
 
     # look for a relevant registered handler
-    handler = find_handler(exception)
+    handler: t.Callable[[E], t.NoReturn] | None = find_handler(exception)
     if handler:
         handler(exception)
 
