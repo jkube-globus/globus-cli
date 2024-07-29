@@ -83,7 +83,7 @@ def print_json_response(
 def print_unix_response(res: JsonValue | globus_sdk.GlobusHTTPResponse) -> None:
     res = _jmespath_preprocess(res)
     try:
-        unix_display(res)
+        unix_display(res)  # type: ignore[no-untyped-call]
     # Attr errors indicate that we got data which cannot be unix formatted
     # likely a scalar + non-scalar in an array, though there may be other cases
     # print good error and exit(2) (Count this as UsageError!)
