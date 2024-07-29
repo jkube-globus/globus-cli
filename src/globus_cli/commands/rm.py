@@ -74,8 +74,6 @@ def rm_command(
     on a *globus rm* which timed out.
 
     Symbolic links are never followed - only unlinked (deleted).
-
-    {AUTOMATIC_ACTIVATION}
     """
     endpoint_id, path = endpoint_plus_path
     transfer_client = login_manager.get_transfer_client()

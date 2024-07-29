@@ -318,8 +318,6 @@ def transfer_command(
 
     For example, `globus transfer --include "*.txt" --exclude "*" ...` will
     only transfer files ending in .txt found within the directory structure.
-
-    {AUTOMATIC_ACTIVATION}
     """
     from globus_cli.services.transfer import add_batch_to_transfer_data
 

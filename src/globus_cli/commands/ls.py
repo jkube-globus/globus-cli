@@ -214,8 +214,6 @@ def ls_command(
 
     \b
     "~*.txt" matches all .txt files, for example
-
-    {AUTOMATIC_ACTIVATION}
     """
     from globus_sdk.services.transfer.response import IterableTransferResponse
 

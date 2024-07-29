@@ -117,8 +117,6 @@ def delete_command(
     \b
     If you use `--batch` and supply a PATH via the commandline, the commandline PATH is
     treated as a prefix to all of the paths read from the `--batch` input.
-
-    {AUTOMATIC_ACTIVATION}
     """
     endpoint_id, path = endpoint_plus_path
     transfer_client = login_manager.get_transfer_client()

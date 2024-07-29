@@ -57,13 +57,6 @@ class GlobusCommand(click.Command):
 
     """
 
-    AUTOMATIC_ACTIVATION_HELPTEXT = """=== Automatic Endpoint Activation
-
-    This command requires all endpoints it uses to be activated. It will attempt to
-    auto-activate any endpoints that are not active, but if auto-activation fails,
-    you will need to manually activate the endpoint. See 'globus endpoint activate'
-    for more details."""
-
     def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
         self.adoc_output = kwargs.pop("adoc_output", None)
         self.adoc_examples = kwargs.pop("adoc_examples", None)
@@ -72,11 +65,6 @@ class GlobusCommand(click.Command):
         self.adoc_synopsis = kwargs.pop("adoc_synopsis", None)
         self.opts_to_combine = kwargs.pop("opts_to_combine", {})
 
-        helptext = kwargs.pop("help", None)
-        if helptext:
-            kwargs["help"] = helptext.format(
-                AUTOMATIC_ACTIVATION=self.AUTOMATIC_ACTIVATION_HELPTEXT
-            )
         if "context_settings" not in kwargs:
             kwargs["context_settings"] = {}
         if "max_content_width" not in kwargs["context_settings"]:
