@@ -205,7 +205,7 @@ def synchronous_task_wait_options(f: C) -> C:
         type=int,
         metavar="N",
         help=(
-            "Wait N seconds. If the Task does not terminate by "
+            "Wait N seconds. If the task does not terminate by "
             "then, or terminates with an unsuccessful status, "
             "exit with status 1"
         ),
@@ -216,7 +216,7 @@ def synchronous_task_wait_options(f: C) -> C:
         type=int,
         show_default=True,
         callback=polling_interval_callback,
-        help="Number of seconds between Task status checks.",
+        help="Number of seconds between task status checks.",
     )(f)
     f = click.option(
         "--heartbeat",

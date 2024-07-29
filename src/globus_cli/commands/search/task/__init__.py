@@ -9,4 +9,4 @@ from globus_cli.parsing import group
     },
 )
 def task_command() -> None:
-    """View Task documents."""
+    """View task documents."""

@@ -67,7 +67,7 @@ def rm_command(
     timeout_exit_code: int,
 ) -> None:
     """
-    Submit a Delete Task to delete a single path, and then block and wait for it to
+    Submit a 'delete task' to delete a single path, and then block and wait for it to
     complete.
 
     Output is similar to *globus task wait*, and it is safe to *globus task wait*

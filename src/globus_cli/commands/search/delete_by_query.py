@@ -41,7 +41,7 @@ def delete_by_query_command(
     advanced: bool,
 ) -> None:
     """
-    Perform a Delete-By-Query on a Globus Search Index using either a simple query
+    Perform a Delete-By-Query on a Globus Search index using either a simple query
     string or a complex query document. The operation will be submitted as a task and
     can be monitored via the task_id returned.
 
