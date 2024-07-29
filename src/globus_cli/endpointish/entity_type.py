@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from enum import Enum
 
+from globus_cli.types import JsonValue
+
 
 class EntityType(Enum):
     # endpoint / collection types, strings match entity_type value in
@@ -46,7 +48,7 @@ class EntityType(Enum):
         }.get(entitytype, "UNRECOGNIZED")
 
     @classmethod
-    def determine_entity_type(cls, ep_doc: dict) -> EntityType:
+    def determine_entity_type(cls, ep_doc: dict[str, JsonValue]) -> EntityType:
         try:
             return cls(ep_doc.get("entity_type"))
         except ValueError:

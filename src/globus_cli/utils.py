@@ -5,6 +5,8 @@ import uuid
 
 import click
 
+from globus_cli.types import AnyCallable
+
 if t.TYPE_CHECKING:
     from globus_cli.services.auth import CustomAuthClient
 
@@ -15,7 +17,7 @@ if t.TYPE_CHECKING:
         GlobusAuthRequirementsError,
     )
 
-F = t.TypeVar("F", bound=t.Callable)
+F = t.TypeVar("F", bound=AnyCallable)
 
 
 def str2bool(v: str) -> bool | None:
@@ -63,7 +65,7 @@ def get_current_option_help(
     return [o.get_error_hint(ctx) for o in opts]
 
 
-def supported_parameters(c: t.Callable) -> list[str]:
+def supported_parameters(c: AnyCallable) -> list[str]:
     import inspect
 
     sig = inspect.signature(c)

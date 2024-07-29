@@ -16,8 +16,9 @@ from globus_cli.parsing.command_state import (
     verbose_option,
 )
 from globus_cli.parsing.param_types import NotificationParamType
+from globus_cli.types import AnyCommand
 
-C = t.TypeVar("C", bound=t.Union[t.Callable, click.Command])
+C = t.TypeVar("C", bound=AnyCommand)
 
 
 def common_options(*, disable_options: list[str] | None = None) -> t.Callable[[C], C]:
@@ -285,7 +286,7 @@ def security_principal_opts(
 
             return f(*args, **kwargs)
 
-        return t.cast(C, wrapper)
+        return wrapper  # type: ignore[return-value]
 
     def decorate(f: C) -> C:
         # order matters here -- the preprocessor must run after option

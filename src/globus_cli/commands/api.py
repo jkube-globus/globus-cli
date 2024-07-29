@@ -13,9 +13,9 @@ from globus_cli.login_manager import LoginManager, is_client_login
 from globus_cli.login_manager.scopes import CLI_SCOPE_REQUIREMENTS
 from globus_cli.parsing import command, endpoint_id_arg, group, mutex_option_group
 from globus_cli.termio import display
-from globus_cli.types import ServiceNameLiteral
+from globus_cli.types import AnyCommand, ServiceNameLiteral
 
-C = t.TypeVar("C", bound=t.Union[t.Callable, click.Command])
+C = t.TypeVar("C", bound=AnyCommand)
 
 
 class QueryParamType(click.ParamType):

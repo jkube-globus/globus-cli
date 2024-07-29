@@ -4,7 +4,9 @@ import typing as t
 
 import click
 
-C = t.TypeVar("C", bound=t.Union[click.BaseCommand, t.Callable])
+from globus_cli.types import AnyCommand
+
+C = t.TypeVar("C", bound=AnyCommand)
 
 
 class OneUseOption(click.Option):

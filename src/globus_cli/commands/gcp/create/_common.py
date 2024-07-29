@@ -7,8 +7,9 @@ import click
 from globus_cli import utils
 from globus_cli.parsing import MutexInfo, mutex_option_group
 from globus_cli.termio import print_command_hint
+from globus_cli.types import AnyCommand
 
-F = t.TypeVar("F", bound=t.Union[click.BaseCommand, t.Callable])
+F = t.TypeVar("F", bound=AnyCommand)
 
 
 def deprecated_verify_option(f: F) -> F:

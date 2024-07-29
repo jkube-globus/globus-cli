@@ -3,8 +3,9 @@ import typing as t
 import click
 
 from globus_cli.termio import formatters
+from globus_cli.types import AnyCommand
 
-C = t.TypeVar("C", bound=t.Union[t.Callable, click.Command])
+C = t.TypeVar("C", bound=AnyCommand)
 
 
 class RolePrincipalFormatter(formatters.auth.PrincipalDictFormatter):

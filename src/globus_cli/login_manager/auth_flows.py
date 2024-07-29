@@ -19,7 +19,7 @@ from .tokenstore import (
 def do_link_auth_flow(
     scopes: str | t.Sequence[str | MutableScope],
     *,
-    session_params: dict[str, t.Any] | None = None,
+    session_params: dict[str, str] | None = None,
 ) -> bool:
     """
     Prompts the user with a link to authenticate with globus auth
@@ -60,7 +60,7 @@ def do_link_auth_flow(
 def do_local_server_auth_flow(
     scopes: str | t.Sequence[str | MutableScope],
     *,
-    session_params: dict[str, t.Any] | None = None,
+    session_params: dict[str, str] | None = None,
 ) -> bool:
     """
     Starts a local http server, opens a browser to have the user authenticate,

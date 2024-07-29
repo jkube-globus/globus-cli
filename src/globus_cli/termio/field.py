@@ -21,7 +21,7 @@ class Field:
         key: str,
         *,
         wrap_enabled: bool = False,
-        formatter: formatters.FieldFormatter = formatters.Str,
+        formatter: formatters.FieldFormatter[t.Any] = formatters.Str,
     ):
         self.name = name
         self.key = key

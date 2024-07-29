@@ -6,12 +6,13 @@ import click
 
 from globus_cli.constants import EXPLICIT_NULL
 from globus_cli.endpointish import EntityType
+from globus_cli.types import AnyCommand
 
-C = t.TypeVar("C", bound=t.Union[t.Callable, click.Command])
+C = t.TypeVar("C", bound=AnyCommand)
 
 
 def validate_endpoint_create_and_update_params(
-    entity_type: EntityType, managed: bool, params: dict
+    entity_type: EntityType, managed: bool, params: dict[str, t.Any]
 ) -> None:
     """
     Given an endpoint type and option values

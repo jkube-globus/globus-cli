@@ -6,6 +6,7 @@ import typing as t
 import click
 
 from globus_cli import _warnings
+from globus_cli.types import AnyCommand
 
 # Format Enum for output formatting
 # could use a namedtuple, but that's overkill
@@ -13,7 +14,7 @@ JSON_FORMAT = "json"
 TEXT_FORMAT = "text"
 UNIX_FORMAT = "unix"
 
-F = t.TypeVar("F", bound=t.Union[t.Callable, click.Command])
+F = t.TypeVar("F", bound=AnyCommand)
 
 
 def _setup_logging(level: str = "DEBUG") -> None:
