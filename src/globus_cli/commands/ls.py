@@ -39,7 +39,7 @@ class PathItemFormatter(formatters.StrFormatter):
 
 @command(
     "ls",
-    short_help="List endpoint directory contents",
+    short_help="List endpoint directory contents.",
     adoc_examples=r"""List files and dirs in your default directory on an endpoint
 
 [source,bash]

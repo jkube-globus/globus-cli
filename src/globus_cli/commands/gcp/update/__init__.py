@@ -9,4 +9,4 @@ from globus_cli.parsing import group
     },
 )
 def update_command() -> None:
-    """Update Globus Connect Personal collections"""
+    """Update Globus Connect Personal collections."""

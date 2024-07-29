@@ -46,7 +46,7 @@ def endpoint_show(
     endpoint_id: uuid.UUID,
     skip_endpoint_type_check: bool,
 ) -> None:
-    """Display a detailed endpoint definition"""
+    """Display a detailed endpoint definition."""
     transfer_client = login_manager.get_transfer_client()
     if not skip_endpoint_type_check:
         Endpointish(

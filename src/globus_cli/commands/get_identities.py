@@ -11,7 +11,7 @@ from globus_cli.termio import Field, display, is_verbose
 
 @command(
     "get-identities",
-    short_help="Lookup Globus Auth Identities",
+    short_help="Lookup Globus Auth Identities.",
     adoc_examples="""Resolve a user ID (outputs the user's username)
 
 [source,bash]
@@ -77,12 +77,12 @@ def get_identities_command(
 
     def _custom_text_format(identities: list[dict[str, t.Any]]) -> None:
         """
-        Non-verbose text output is customized
+        Non-verbose text output is customized.
         """
 
         def resolve_identity(value: dict[str, t.Any]) -> str:
             """
-            helper to deal with variable inputs and uncertain response order
+            Helper to deal with variable inputs and uncertain response order.
             """
             for identity in identities:
                 if identity["id"] == value:

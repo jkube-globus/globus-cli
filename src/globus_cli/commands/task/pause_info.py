@@ -56,7 +56,7 @@ PAUSE_RULE_DISPLAY_FIELDS = [
 
 @command(
     "pause-info",
-    short_help="Show why an in-progress task is currently paused",
+    short_help="Show why an in-progress task is currently paused.",
     adoc_output="""
 When text output is requested, output is broken apart into explicit pause rules
 applied to the specific task (explicit pauses), and "effective pause rules"

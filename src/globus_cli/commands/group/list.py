@@ -5,10 +5,10 @@ from globus_cli.termio import Field, display, formatters
 from ._common import SESSION_ENFORCEMENT_FIELD
 
 
-@command("list", short_help="List groups you belong to")
+@command("list", short_help="List groups you belong to.")
 @LoginManager.requires_login("groups")
 def group_list(login_manager: LoginManager) -> None:
-    """List all groups for the current user"""
+    """List all groups for the current user."""
     groups_client = login_manager.get_groups_client()
 
     groups = groups_client.get_my_groups()

@@ -35,7 +35,7 @@ def list_command(
     login_manager: LoginManager, *, limit: int, filter_flow_id: tuple[uuid.UUID, ...]
 ) -> None:
     """
-    List runs
+    List runs.
 
     Enumerates runs visible to the current user, potentially filtered by the ID of
     the flow which was used to start the run.

@@ -26,4 +26,4 @@ from globus_cli.parsing import group
     },
 )
 def endpoint_command() -> None:
-    """Manage Globus endpoint definitions"""
+    """Manage Globus endpoint definitions."""

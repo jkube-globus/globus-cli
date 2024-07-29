@@ -12,7 +12,7 @@ from globus_cli.termio import display
 from .._common import user_credential_create_and_update_params
 
 
-@command("s3", short_help="Create a User Credential for an S3 Storage Gateway")
+@command("s3")
 @endpoint_id_arg
 @user_credential_create_and_update_params(create=True)
 @click.argument("s3_key_id")
@@ -30,7 +30,7 @@ def s3(
     display_name: str | None,
 ) -> None:
     """
-    Create a User Credential for an S3 Storage Gateway
+    Create a User Credential for an S3 Storage Gateway.
     """
     gcs_client = login_manager.get_gcs_client(endpoint_id=endpoint_id)
     auth_client = login_manager.get_auth_client()

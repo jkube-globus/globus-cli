@@ -21,7 +21,7 @@ from ._common import transfer_task_wait_with_io
 
 @command(
     "rm",
-    short_help="Delete a single path; wait for it to complete",
+    short_help="Delete a single path; wait for it to complete.",
     adoc_examples="""Delete a single file.
 
 [source,bash]
@@ -67,7 +67,7 @@ def rm_command(
     timeout_exit_code: int,
 ) -> None:
     """
-    Submit a Delete Task to delete a single path, and then block and wait for it to
+    Submit a 'delete task' to delete a single path, and then block and wait for it to
     complete.
 
     Output is similar to *globus task wait*, and it is safe to *globus task wait*

@@ -12,4 +12,4 @@ from globus_cli.parsing import group
     },
 )
 def bookmark_command() -> None:
-    """Manage endpoint bookmarks"""
+    """Manage endpoint bookmarks."""

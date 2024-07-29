@@ -9,7 +9,7 @@ from ._common import role_id_arg
 
 @command(
     "delete",
-    short_help="Remove a role from an endpoint",
+    short_help="Remove a role from an endpoint.",
     adoc_output="Textual output is a simple success message in the absence of errors.",
     adoc_examples="""Delete role '0f007eec-1aeb-11e7-aec4-3c970e0c9cc4' on endpoint
 'aa752cea-8222-5bc8-acd9-555b090c0ccb':

@@ -22,4 +22,4 @@ from globus_cli.parsing import group
     },
 )
 def group_command() -> None:
-    """Manage Globus Groups"""
+    """Manage Globus Groups."""

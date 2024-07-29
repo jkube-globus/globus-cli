@@ -9,4 +9,4 @@ from globus_cli.parsing import group
     },
 )
 def collection_create() -> None:
-    """Create a new Collection"""
+    """Create a new Collection."""

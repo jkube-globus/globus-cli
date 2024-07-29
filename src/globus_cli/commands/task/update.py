@@ -13,7 +13,7 @@ from ._common import task_id_arg
 
 @command(
     "update",
-    short_help="Update a task",
+    short_help="Update a task.",
     adoc_output=(
         "When text output is requested, the output will be a simple success "
         "message (or an error)."
@@ -41,7 +41,7 @@ def update_task(
     """
     Update label and/or deadline on an active task.
 
-    If a Task has completed, these attributes may no longer be updated.
+    If a task has completed, these attributes may no longer be updated.
     """
     from globus_cli.services.transfer import assemble_generic_doc
 

@@ -26,7 +26,7 @@ from globus_cli.types import JsonValue
 ROLE_TYPES = ("flow_viewer", "flow_starter", "flow_administrator", "flow_owner")
 
 
-@command("update", short_help="Update a flow")
+@command("update", short_help="Update a flow.")
 @flow_id_arg
 @click.option("--title", type=str, help="The name of the flow.")
 @click.option(

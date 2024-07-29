@@ -15,4 +15,4 @@ from globus_cli.parsing import group
     },
 )
 def task_command() -> None:
-    """Manage asynchronous tasks"""
+    """Manage asynchronous tasks."""

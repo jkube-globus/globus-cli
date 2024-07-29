@@ -12,4 +12,4 @@ from globus_cli.parsing import group
     },
 )
 def collection_command() -> None:
-    """Manage your Collections"""
+    """Manage your Collections."""

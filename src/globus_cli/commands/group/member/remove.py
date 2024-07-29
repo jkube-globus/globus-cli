@@ -15,7 +15,7 @@ REMOVED_USER_FIELDS = [
 ]
 
 
-@command("remove", short_help="Remove a member from a group")
+@command("remove", short_help="Remove a member from a group.")
 @group_id_arg
 @click.argument("user", type=IdentityType())
 @LoginManager.requires_login("groups")

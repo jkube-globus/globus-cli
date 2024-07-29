@@ -7,7 +7,7 @@ from globus_cli.parsing import command, run_id_arg
 from globus_cli.termio import display
 
 
-@command("show-definition", short_help="Show a run's flow definition and input schema")
+@command("show-definition", short_help="Show a run's flow definition and input schema.")
 @run_id_arg
 @LoginManager.requires_login("flows")
 def show_definition_command(login_manager: LoginManager, *, run_id: uuid.UUID) -> None:

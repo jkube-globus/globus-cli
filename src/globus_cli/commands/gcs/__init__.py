@@ -13,4 +13,4 @@ from globus_cli.parsing import group
     },
 )
 def gcs_command() -> None:
-    """Manage Globus Connect Server (GCS) resources"""
+    """Manage Globus Connect Server (GCS) resources."""

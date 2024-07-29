@@ -3,7 +3,7 @@ from globus_sdk._testing import load_response_set
 
 def test_group_list(run_line):
     """
-    Runs globus group list and validates results
+    Runs globus group list and validates results.
     """
     meta = load_response_set("cli.groups").metadata
 

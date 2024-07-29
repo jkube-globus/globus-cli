@@ -41,7 +41,7 @@ flow.
 
 @command(
     "logout",
-    short_help="Logout of the Globus CLI",
+    short_help="Logout of the Globus CLI.",
     disable_options=["format", "map_http_status"],
 )
 @click.confirmation_option(

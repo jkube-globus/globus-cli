@@ -28,7 +28,7 @@ If *-v* or *--verbose* is given, output has the following fields:
 $ globus ls "$(globus bookmark show BOOKMARK_NAME)"
 ----
 """,
-    short_help="Resolve a bookmark name or ID to an endpoint:path",
+    short_help="Resolve a bookmark name or ID to an endpoint:path.",
 )
 @click.argument("bookmark_id_or_name")
 @LoginManager.requires_login("transfer")

@@ -12,7 +12,7 @@ from globus_cli.types import JsonValue
 ROLE_TYPES = ("flow_viewer", "flow_starter", "flow_administrator", "flow_owner")
 
 
-@command("start", short_help="Start a flow")
+@command("start", short_help="Start a flow.")
 @flow_id_arg
 @click.option(
     "--input",

@@ -8,7 +8,7 @@ from globus_sdk._testing import get_last_request, load_response_set
 @pytest.mark.parametrize("parent_group_id", (None, str(uuid.UUID(int=0))))
 def test_group_create(run_line, parent_group_id):
     """
-    Basic success test for globus group create
+    Basic success test for globus group create.
     """
     meta = load_response_set("cli.groups").metadata
 

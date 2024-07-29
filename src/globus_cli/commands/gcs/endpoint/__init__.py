@@ -11,4 +11,4 @@ from globus_cli.parsing import group
     },
 )
 def endpoint_command() -> None:
-    """Manage Globus Connect Server (GCS) endpoints"""
+    """Manage Globus Connect Server (GCS) endpoints."""

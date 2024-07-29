@@ -12,7 +12,7 @@ from globus_cli.termio import Field, display, formatters
 @LoginManager.requires_login("flows")
 def show_command(login_manager: LoginManager, *, flow_id: uuid.UUID) -> None:
     """
-    Show a flow
+    Show a flow.
     """
     flows_client = login_manager.get_flows_client()
     auth_client = login_manager.get_auth_client()

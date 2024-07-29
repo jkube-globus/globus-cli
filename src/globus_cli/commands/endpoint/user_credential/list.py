@@ -9,7 +9,7 @@ from globus_cli.parsing import command, endpoint_id_arg
 from globus_cli.termio import Field, display, formatters
 
 
-@command("list", short_help="List all User Credentials on an Endpoint")
+@command("list", short_help="List all User Credentials on an Endpoint.")
 @endpoint_id_arg
 @click.option(
     "--storage-gateway",
@@ -28,7 +28,7 @@ def user_credential_list(
     storage_gateway: uuid.UUID | None,
 ) -> None:
     """
-    List all of your User Credentials on a Globus Connect Server v5 Endpoint
+    List all of your User Credentials on a Globus Connect Server v5 Endpoint.
     """
     gcs_client = login_manager.get_gcs_client(endpoint_id=endpoint_id)
     auth_client = login_manager.get_auth_client()

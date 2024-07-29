@@ -9,7 +9,7 @@ from globus_cli.termio import Field, display, is_verbose, print_command_hint
 @command(
     "whoami",
     disable_options=["map_http_status"],
-    short_help="Show the currently logged-in identity",
+    short_help="Show the currently logged-in identity.",
     adoc_output="""\
 Note: this output is not affected by sessions in any way. For information
 on which of your identities are in session use *globus session show*

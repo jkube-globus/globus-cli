@@ -22,7 +22,7 @@ from globus_cli.services.gcs import CustomGCSClient
 from globus_cli.termio import display
 
 
-@command("guest", short_help="Create a GCSv5 Guest Collection")
+@command("guest", short_help="Create a GCSv5 Guest Collection.")
 @click.argument("MAPPED_COLLECTION_ID", type=click.UUID)
 @click.argument("COLLECTION_BASE_PATH", type=str)
 @click.option(

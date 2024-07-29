@@ -10,7 +10,7 @@ from globus_cli.parsing import command, no_local_server_option
 
 @command(
     "consent",
-    short_help="Update your session with specific consents",
+    short_help="Update your session with specific consents.",
     disable_options=["format", "map_http_status"],
 )
 @no_local_server_option

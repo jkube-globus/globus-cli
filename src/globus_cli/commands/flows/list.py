@@ -26,7 +26,7 @@ ORDER_BY_FIELDS = (
 )
 
 
-@command("list", short_help="List flows")
+@command("list")
 @click.option(
     "--filter-role",
     type=click.Choice(ROLE_TYPES),
@@ -92,7 +92,7 @@ def list_command(
     limit: int,
 ) -> None:
     """
-    List flows
+    List flows.
     """
     flows_client = login_manager.get_flows_client()
     paginator = Paginator.wrap(flows_client.list_flows)

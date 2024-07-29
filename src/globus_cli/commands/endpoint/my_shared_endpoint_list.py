@@ -7,7 +7,7 @@ from globus_cli.termio import display
 
 @command(
     "my-shared-endpoint-list",
-    short_help="List all shared endpoints on an endpoint by the current user",
+    short_help="List the current user's shared endpoints.",
     adoc_examples="""[source,bash]
 ----
 $ ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb

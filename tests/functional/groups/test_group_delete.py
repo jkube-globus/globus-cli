@@ -3,7 +3,7 @@ from globus_sdk._testing import load_response_set
 
 def test_group_delete(run_line):
     """
-    Basic success test for globus group delete
+    Basic success test for globus group delete.
     """
     meta = load_response_set("cli.groups").metadata
 

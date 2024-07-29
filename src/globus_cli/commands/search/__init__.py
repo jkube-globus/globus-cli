@@ -13,4 +13,4 @@ from globus_cli.parsing import group
     },
 )
 def search_command() -> None:
-    """Use Globus Search to store and query for data"""
+    """Use Globus Search to store and query for data."""

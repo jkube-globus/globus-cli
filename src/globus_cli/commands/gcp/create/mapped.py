@@ -10,7 +10,7 @@ from globus_cli.termio import Field, display
 from ._common import deprecated_verify_option
 
 
-@command("mapped", short_help="Create a new GCP Mapped Collection")
+@command("mapped", short_help="Create a new GCP Mapped Collection.")
 @endpointish_params.create(name="collection", keyword_style="string")
 @click.option(
     "--subscription-id",

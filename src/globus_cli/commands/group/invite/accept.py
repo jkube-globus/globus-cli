@@ -12,7 +12,7 @@ from .._common import group_id_arg
 from ._common import build_invite_actions, get_invite_formatter
 
 
-@command("accept", short_help="Accept an invitation")
+@command("accept", short_help="Accept an invitation.")
 @group_id_arg
 @click.option(
     "--identity",

@@ -80,7 +80,7 @@ def task_notify_option(f: C) -> C:
 
 def task_submission_options(f: C) -> C:
     """
-    Options shared by both transfer and delete task submission
+    Options shared by both transfer and delete task submission.
     """
 
     def format_deadline_callback(
@@ -127,7 +127,7 @@ def delete_and_rm_options(
     default_enable_globs: bool = False,
 ) -> t.Callable[[C], C]:
     """
-    Options which apply both to `globus delete` and `globus rm`
+    Options which apply both to `globus delete` and `globus rm`.
     """
 
     def decorator(f: C) -> C:
@@ -206,7 +206,7 @@ def synchronous_task_wait_options(f: C) -> C:
         type=int,
         metavar="N",
         help=(
-            "Wait N seconds. If the Task does not terminate by "
+            "Wait N seconds. If the task does not terminate by "
             "then, or terminates with an unsuccessful status, "
             "exit with status 1"
         ),
@@ -217,7 +217,7 @@ def synchronous_task_wait_options(f: C) -> C:
         type=int,
         show_default=True,
         callback=polling_interval_callback,
-        help="Number of seconds between Task status checks.",
+        help="Number of seconds between task status checks.",
     )(f)
     f = click.option(
         "--heartbeat",
@@ -368,7 +368,7 @@ def no_local_server_option(f: C) -> C:
 
 def local_user_option(f: C) -> C:
     """
-    Option for setting the mapped local user used across multiple Transfer commands
+    Option for setting the mapped local user used across multiple Transfer commands.
     """
     return click.option(
         "--local-user",

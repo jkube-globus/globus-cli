@@ -14,7 +14,7 @@ from globus_cli.termio import display
 from .._common import user_credential_id_arg
 
 
-@command("from-json", short_help="Update a User Credential with a JSON document")
+@command("from-json", short_help="Update a User Credential with a JSON document.")
 @endpoint_id_arg
 @user_credential_id_arg()
 @click.argument("user_credential_json", type=JSONStringOrFile())
@@ -27,7 +27,7 @@ def from_json(
     user_credential_json: ParsedJSONData,
 ) -> None:
     """
-    Update a User Credential on an endpoint with a JSON document
+    Update a User Credential on an endpoint with a JSON document.
     """
     if not isinstance(user_credential_json.data, dict):
         raise click.UsageError("User Credential JSON must be a JSON object")

@@ -7,10 +7,6 @@ from globus_sdk._testing import RegisteredResponse, load_response, load_response
 
 
 def test_parsing(run_line):
-    """
-    Runs --help and confirms the option is parsed
-    """
-    # globus --help
     result = run_line("globus --help")
     assert "-h, --help" in result.output
     assert "Show this message and exit." in result.output
@@ -18,7 +14,7 @@ def test_parsing(run_line):
 
 def test_command(run_line):
     """
-    Runs list-commands and confirms the command is run
+    Runs list-commands and confirms the command is run.
     """
     result = run_line("globus list-commands")
     assert "=== globus ===" in result.output
@@ -34,25 +30,16 @@ def test_command_parsing(run_line):
 
 
 def test_command_missing_args(run_line):
-    """
-    Runs get-identities without values, confirms exit_code 2
-    """
     result = run_line("globus get-identities", assert_exit_code=2)
     assert "Missing argument" in result.stderr
 
 
 def test_invalid_command(run_line):
-    """
-    Runs globus invalid-command, confirms Error
-    """
     result = run_line("globus invalid-command", assert_exit_code=2)
     assert "Error: No such command" in result.stderr
 
 
 def test_whoami(run_line):
-    """
-    Runs whoami to confirm test config successfully setup
-    """
     load_response_set("cli.foo_user_info")
     result = run_line("globus whoami")
     assert result.output == "foo@globusid.org\n"
@@ -60,7 +47,7 @@ def test_whoami(run_line):
 
 def test_json_raw_string_output(run_line):
     """
-    Get single-field jmespath output and make sure it's quoted
+    Get single-field jmespath output and make sure it's quoted.
     """
     load_response_set("cli.foo_user_info")
     result = run_line("globus whoami --jmespath name")
@@ -120,7 +107,7 @@ def test_transfer_call(run_line):
 @pytest.mark.parametrize("output_format", ["json", "text"])
 def test_transfer_batch_stdin_dryrun(run_line, go_ep1_id, go_ep2_id, output_format):
     """
-    Dry-runs a transfer in batchmode, confirms batchmode inputs received
+    Dry-runs a transfer in batchmode, confirms batchmode inputs received.
     """
     # put a submission ID and autoactivate response in place
     load_response_set("cli.get_submission_id")
@@ -169,7 +156,7 @@ def test_transfer_batch_file_dryrun(run_line, go_ep1_id, go_ep2_id, tmp_path):
 
 def test_delete_batchmode_dryrun(run_line, go_ep1_id):
     """
-    Dry-runs a delete in batchmode
+    Dry-runs a delete in batchmode.
     """
     # put a submission ID and autoactivate response in place
     load_response_set("cli.get_submission_id")

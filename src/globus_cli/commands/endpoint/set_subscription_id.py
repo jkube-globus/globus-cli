@@ -31,7 +31,7 @@ class SubscriptionIdType(click.ParamType):
 @command(
     "set-subscription-id",
     deprecated=True,
-    short_help="Set an endpoint's subscription",
+    short_help="Set an endpoint's subscription.",
 )
 @endpoint_id_arg
 @click.argument("SUBSCRIPTION_ID", type=SubscriptionIdType())

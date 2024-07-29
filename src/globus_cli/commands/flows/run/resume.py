@@ -37,7 +37,7 @@ def resume_command(
     login_manager: LoginManager, *, run_id: uuid.UUID, skip_inactive_reason_check: bool
 ) -> None:
     """
-    Resume a run
+    Resume a run.
     """
     flows_client = login_manager.get_flows_client()
     run_doc = flows_client.get_run(run_id)

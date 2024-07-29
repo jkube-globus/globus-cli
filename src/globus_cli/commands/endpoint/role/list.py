@@ -9,7 +9,7 @@ from ._common import RolePrincipalFormatter
 
 @command(
     "list",
-    short_help="List roles on an endpoint",
+    short_help="List roles on an endpoint.",
     adoc_output="""Textual output has the following fields:
 
 - 'Principal Type'

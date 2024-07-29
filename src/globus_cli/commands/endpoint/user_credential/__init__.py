@@ -12,4 +12,4 @@ from globus_cli.parsing import group
     },
 )
 def user_credential_command() -> None:
-    """Manage User Credentials on a GCS Endpoint"""
+    """Manage User Credentials on a GCS Endpoint."""

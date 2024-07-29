@@ -5,7 +5,7 @@ from globus_cli.termio import display
 
 @command(
     "generate-submission-id",
-    short_help="Get a task submission ID",
+    short_help="Get a task submission ID.",
     adoc_output=(
         "When text output is requested, the generated 'UUID' is the only output."
     ),
@@ -28,7 +28,7 @@ def generate_submission_id(login_manager: LoginManager) -> None:
     submissions.
 
     \b
-    Important Note: Submission IDs are not the same as Task IDs.
+    Important Note: submission IDs are not the same as task IDs.
     """
     transfer_client = login_manager.get_transfer_client()
 

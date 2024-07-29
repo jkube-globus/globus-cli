@@ -11,7 +11,7 @@ from ._common import task_id_arg
 
 @command(
     "wait",
-    short_help="Wait for a task to complete",
+    short_help="Wait for a task to complete.",
     adoc_output="""
 When text output is requested, no output is written to standard out. All output
 is written to standard error.

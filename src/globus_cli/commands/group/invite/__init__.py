@@ -9,4 +9,4 @@ from globus_cli.parsing import group
     },
 )
 def group_invite() -> None:
-    """Manage invitations to a Globus Group"""
+    """Manage invitations to a Globus Group."""

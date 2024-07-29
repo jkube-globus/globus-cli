@@ -5,7 +5,7 @@ from globus_cli.parsing import collection_id_arg, command
 from globus_cli.termio import display
 
 
-@command("delete", short_help="Delete an existing Collection")
+@command("delete", short_help="Delete an existing Collection.")
 @collection_id_arg
 @LoginManager.requires_login("transfer")
 def collection_delete(login_manager: LoginManager, *, collection_id: uuid.UUID) -> None:

@@ -13,7 +13,7 @@ from ._common import server_id_arg, server_update_opts
 @command(
     "update",
     deprecated=True,
-    short_help="Update an endpoint server",
+    short_help="Update an endpoint server.",
     adoc_examples="""Change an existing server's scheme to use ftp:
 
 [source,bash]

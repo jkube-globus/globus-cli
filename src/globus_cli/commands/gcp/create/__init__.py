@@ -9,4 +9,4 @@ from globus_cli.parsing import group
     },
 )
 def create_command() -> None:
-    """Create Globus Connect Personal collections"""
+    """Create Globus Connect Personal collections."""

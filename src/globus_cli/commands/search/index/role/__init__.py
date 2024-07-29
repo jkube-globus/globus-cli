@@ -10,4 +10,4 @@ from globus_cli.parsing import group
     },
 )
 def role_command() -> None:
-    """View and manage index roles"""
+    """View and manage index roles."""

@@ -15,7 +15,7 @@ from ._common import task_id_arg
 
 @command(
     "cancel",
-    short_help="Cancel a task",
+    short_help="Cancel a task.",
     adoc_synopsis="""
 `globus task cancel [OPTIONS] TASK_ID`
 

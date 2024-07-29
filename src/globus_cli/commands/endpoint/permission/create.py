@@ -12,7 +12,7 @@ from globus_cli.termio import Field, display
 
 @command(
     "create",
-    short_help="Create an access control rule",
+    short_help="Create an access control rule.",
     adoc_examples="""Give anyone read access to a directory.
 
 [source,bash]

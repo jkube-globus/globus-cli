@@ -60,7 +60,7 @@ def _detect_mode(server: str) -> t.Literal["id", "uri", "hostname", "hostname_po
 @command(
     "delete",
     deprecated=True,
-    short_help="Delete a server belonging to an endpoint",
+    short_help="Delete a server belonging to an endpoint.",
     adoc_examples="""[source,bash]
 ----
 $ ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb

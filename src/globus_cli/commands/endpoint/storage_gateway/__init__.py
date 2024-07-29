@@ -8,4 +8,4 @@ from globus_cli.parsing import group
     },
 )
 def storage_gateway_command() -> None:
-    """Manage Storage Gateways on a GCS Endpoint"""
+    """Manage Storage Gateways on a GCS Endpoint."""

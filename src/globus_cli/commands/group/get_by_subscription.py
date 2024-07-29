@@ -13,14 +13,18 @@ from ._common import GROUP_FIELDS_W_SUBSCRIPTION, SUBSCRIPTION_FIELDS
 
 
 @click.argument("subscription_id", type=click.UUID)
-@command("get-by-subscription")
+@command(
+    "get-by-subscription",
+    short_help="Show the group for a specific subscription.",
+)
 @LoginManager.requires_login("groups")
 def group_get_by_subscription(
     login_manager: LoginManager, *, subscription_id: uuid.UUID
 ) -> None:
-    """Show the Group which provides a specific Subscription.
+    """
+    Show the group which provides a specific subscription.
 
-    If the Group is not visible to the current user, only the Group ID will be shown.
+    If the group is not visible to the current user, only the group ID will be shown.
     """
     groups_client = login_manager.get_groups_client()
 
@@ -61,7 +65,7 @@ def group_get_by_subscription(
 def try_resolve_group(
     groups_client: globus_sdk.GroupsClient, group_id: str
 ) -> globus_sdk.GlobusHTTPResponse | None:
-    """Attempt to get a group"""
+    """Attempt to get a group."""
     try:
         return groups_client.get_group(group_id, include="my_memberships")
     except globus_sdk.GlobusAPIError as e:

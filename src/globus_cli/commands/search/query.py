@@ -26,7 +26,7 @@ def _print_subjects(data: dict[str, JsonValue]) -> None:
         click.echo(item["subject"])
 
 
-@command("query", short_help="Perform a search")
+@command("query", short_help="Perform a search.")
 @click.option("-q", help="The query-string to use to search the index.")
 @click.option(
     "--query-document",
@@ -73,7 +73,7 @@ def query_command(
     filter_principal_sets: list[str] | None,
 ) -> None:
     """
-    Query a Globus Search Index by ID using either a simple query string, or a complex
+    Query a Globus Search index by ID using either a simple query string, or a complex
     query document. At least one of `-q` or `--query-document` must be provided.
 
     If a query document and command-line options are provided, the options used will

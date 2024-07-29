@@ -11,7 +11,7 @@ from ._common import AclPrincipalFormatter
 
 @command(
     "list",
-    short_help="List access control rules",
+    short_help="List access control rules.",
     adoc_examples="""[source,bash]
 ----
 $ ep_id=aa752cea-8222-5bc8-acd9-555b090c0ccb

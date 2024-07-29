@@ -13,4 +13,4 @@ from globus_cli.parsing import group
     },
 )
 def timer_command() -> None:
-    """Schedule and manage timers in Globus Timers"""
+    """Schedule and manage timers in Globus Timers."""

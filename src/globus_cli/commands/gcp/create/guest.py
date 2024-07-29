@@ -12,7 +12,7 @@ from globus_cli.termio import Field, display
 from ._common import deprecated_verify_option
 
 
-@command("guest", short_help="Create a new Guest Collection on GCP")
+@command("guest", short_help="Create a new Guest Collection on GCP.")
 @endpointish_params.create(
     name="collection",
     keyword_style="string",

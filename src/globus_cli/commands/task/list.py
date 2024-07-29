@@ -38,7 +38,7 @@ def _process_filterval(
 
 @command(
     "list",
-    short_help="List your tasks",
+    short_help="List your tasks.",
     adoc_output="""When text output is requested, the following fields are used:
 
 - 'Task ID'

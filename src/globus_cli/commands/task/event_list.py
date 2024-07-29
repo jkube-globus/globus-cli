@@ -42,7 +42,7 @@ class SquashedJsonFormatter(formatters.FieldFormatter[t.Tuple[t.Any, bool]]):
 
 @command(
     "event-list",
-    short_help="List events for a given task",
+    short_help="List events for a given task.",
     adoc_synopsis="""
 `globus task event-list [OPTIONS] TASK_ID`
 

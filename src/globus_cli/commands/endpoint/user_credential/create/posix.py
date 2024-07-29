@@ -11,7 +11,7 @@ from globus_cli.termio import display
 from .._common import user_credential_create_and_update_params
 
 
-@command("posix", short_help="Create a User Credential for a POSIX storage gateway")
+@command("posix")
 @endpoint_id_arg
 @user_credential_create_and_update_params(create=True)
 @LoginManager.requires_login("auth", "transfer")
@@ -25,7 +25,7 @@ def posix(
     display_name: str | None,
 ) -> None:
     """
-    Create a User Credential for a POSIX storage gateway
+    Create a User Credential for a POSIX storage gateway.
     """
     gcs_client = login_manager.get_gcs_client(endpoint_id=endpoint_id)
     auth_client = login_manager.get_auth_client()

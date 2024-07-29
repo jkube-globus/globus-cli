@@ -28,7 +28,7 @@ def group_create(
     description: str | None,
     parent_id: uuid.UUID | None,
 ) -> None:
-    """Create a new group"""
+    """Create a new group."""
     groups_client = login_manager.get_groups_client()
 
     response = groups_client.create_group(

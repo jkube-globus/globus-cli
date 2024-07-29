@@ -16,7 +16,7 @@ INVITED_USER_FIELDS = [
 ]
 
 
-@command("invite", short_help="Invite a user to a group")
+@command("invite", short_help="Invite a user to a group.")
 @group_id_arg
 @click.argument("user", type=IdentityType())
 @click.option(

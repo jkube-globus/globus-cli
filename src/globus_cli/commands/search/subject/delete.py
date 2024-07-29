@@ -19,7 +19,8 @@ def delete_command(
     index_id: uuid.UUID,
     subject: str,
 ) -> None:
-    """Delete a subject (requires writer, admin, or owner)
+    """
+    Delete a subject (requires writer, admin, or owner).
 
     Delete a submit a delete_by_subject task on an index. This requires writer or
     stronger privileges on the index.

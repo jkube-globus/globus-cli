@@ -17,7 +17,7 @@ from globus_cli.termio import Field, display, formatters
 from ._common import index_id_arg
 
 
-@command("delete-by-query", short_help="Perform a delete-by-query")
+@command("delete-by-query", short_help="Perform a delete-by-query.")
 @click.option("-q", help="The query-string to use to search the index.")
 @click.option(
     "--query-document",
@@ -41,7 +41,7 @@ def delete_by_query_command(
     advanced: bool,
 ) -> None:
     """
-    Perform a Delete-By-Query on a Globus Search Index using either a simple query
+    Perform a Delete-By-Query on a Globus Search index using either a simple query
     string or a complex query document. The operation will be submitted as a task and
     can be monitored via the task_id returned.
 

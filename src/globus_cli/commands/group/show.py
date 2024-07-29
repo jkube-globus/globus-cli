@@ -11,7 +11,7 @@ from ._common import GROUP_FIELDS, GROUP_FIELDS_W_SUBSCRIPTION, group_id_arg
 @command("show")
 @LoginManager.requires_login("groups")
 def group_show(login_manager: LoginManager, *, group_id: uuid.UUID) -> None:
-    """Show a group definition"""
+    """Show a group definition."""
     groups_client = login_manager.get_groups_client()
 
     group = groups_client.get_group(group_id, include="my_memberships")

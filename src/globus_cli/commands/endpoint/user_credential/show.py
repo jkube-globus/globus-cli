@@ -7,7 +7,7 @@ from globus_cli.termio import Field, display, formatters
 from ._common import user_credential_id_arg
 
 
-@command("show", short_help="Show a specific User Credential on an Endpoint")
+@command("show", short_help="Show a specific User Credential on an Endpoint.")
 @endpoint_id_arg
 @user_credential_id_arg()
 @LoginManager.requires_login("auth", "transfer")
@@ -18,7 +18,7 @@ def user_credential_show(
     user_credential_id: uuid.UUID,
 ) -> None:
     """
-    Show a specific User Credential on a given Globus Connect Server v5 Endpoint
+    Show a specific User Credential on a given Globus Connect Server v5 Endpoint.
     """
     from globus_cli.services.gcs import ConnectorIdFormatter
 

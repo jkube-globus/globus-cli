@@ -134,7 +134,7 @@ def handle_internal_auth_requirements(
 )
 def session_hook(exception: globus_sdk.GlobusAPIError) -> None:
     """
-    Expects an exception with a valid authorization_paramaters info field
+    Expects an exception with a valid authorization_paramaters info field.
     """
     message = exception.info.authorization_parameters.session_message
     if message:
@@ -156,7 +156,7 @@ def session_hook(exception: globus_sdk.GlobusAPIError) -> None:
 )
 def consent_required_hook(exception: globus_sdk.GlobusAPIError) -> int | None:
     """
-    Expects an exception with a required_scopes field in its raw_json
+    Expects an exception with a required_scopes field in its raw_json.
     """
     if not exception.info.consent_required.required_scopes:
         click.secho(

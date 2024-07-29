@@ -200,7 +200,7 @@ def test_create_timer_simple(run_line, ep_for_timer, extra_args):
 
 
 def test_create_endless_timer(run_line, ep_for_timer):
-    """Create a timer which has no end condition"""
+    """Create a timer which has no end condition."""
     create_route = f"{get_service_url('timer')}v2/timer"
     patched_response = requests.post(create_route).json()
     patched_response["timer"]["schedule"]["end"] = None

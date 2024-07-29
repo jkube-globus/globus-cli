@@ -16,4 +16,4 @@ from globus_cli.parsing import group
     },
 )
 def flows_command() -> None:
-    """Interact with the Globus Flows service"""
+    """Interact with the Globus Flows service."""

@@ -81,8 +81,8 @@ def endpoint_activate(
     force: bool,
 ) -> None:
     """
-    Activate an endpoint using Autoactivation, Myproxy, Delegate Proxy,
-    or Web activation.
+    Activate an endpoint.
+
     Note that --web and --myproxy activation are mutually
     exclusive options.
 

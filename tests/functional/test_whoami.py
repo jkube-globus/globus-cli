@@ -16,7 +16,7 @@ def test_verbose(run_line):
 
 def test_linked_identities(run_line):
     """
-    Confirms --linked-identities sees foo2
+    Confirms --linked-identities sees foo2.
     """
     meta = load_response_set("cli.foo_user_info").metadata
     username = meta["username"]

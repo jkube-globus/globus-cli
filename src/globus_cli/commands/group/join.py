@@ -17,7 +17,7 @@ JOIN_USER_FIELDS = [
 ]
 
 
-@command("join", short_help="Join a group")
+@command("join", short_help="Join a group.")
 @group_id_arg
 @click.option(
     "--identity",

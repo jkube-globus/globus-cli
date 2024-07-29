@@ -36,7 +36,7 @@ def test_main_group_reraises_epipe_errors_without_invoking_custom_handler(runner
 def test_custom_command_missing_param_helptext(runner):
     @command()
     @click.option("--bar", help="BAR-STRING-HERE", required=True)
-    def foo(bar):
+    def foo(bar):  # noqa: CLI007
         click.echo(bar or "none")
 
     # call with `--help` to confirm help behavior
@@ -56,7 +56,7 @@ def test_custom_command_missing_param_helptext_suppressed_when_args_present(runn
     @command()
     @click.option("--bar", help="BAR-STRING-HERE", required=True)
     @click.option("--baz", help="BAZ-STRING-HERE", required=True)
-    def foo(bar, baz):
+    def foo(bar, baz):  # noqa: CLI007
         click.echo(bar or "none")
         click.echo(baz or "none")
 
