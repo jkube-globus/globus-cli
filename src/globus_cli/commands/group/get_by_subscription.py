@@ -24,7 +24,7 @@ def group_get_by_subscription(
     """
     Show the group which provides a specific subscription.
 
-    If the group is not visible to the current user, only the Group ID will be shown.
+    If the group is not visible to the current user, only the group ID will be shown.
     """
     groups_client = login_manager.get_groups_client()
 
