@@ -40,10 +40,11 @@ def set_endpoint_subscription_id(
     login_manager: LoginManager, *, endpoint_id: uuid.UUID, subscription_id: str
 ) -> None:
     """
-    For GCS endpoints, refer to ``globus gcs endpoint set-subscription-id``. For
-    GCP endpoints, refer to ``globus gcp set-subscription-id``.
-
-    -----------------------------
+    [NOTE]
+    ====
+    For GCS endpoints, refer to ``globus gcs endpoint set-subscription-id``.
+    For GCP endpoints, refer to ``globus gcp set-subscription-id``.
+    ====
 
     Set an endpoint's subscription ID.
 
