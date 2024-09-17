@@ -37,14 +37,14 @@ class _FullDataField(Field):
     "--force-encryption/--no-force-encryption",
     "force_encryption",
     default=None,
-    help="When set, all transfers to and from this collection are always encrypted",
+    help="When set, all transfers to and from this collection are always encrypted.",
 )
 @click.option(
     "--sharing-restrict-paths",
     type=JSONStringOrFile(null="null"),
     help=(
         "Path restrictions for sharing data on guest collections "
-        "based on this collection. This option is only usable on Mapped Collections"
+        "based on this collection. This option is only usable on Mapped Collections."
     ),
 )
 @click.option(
@@ -55,7 +55,7 @@ class _FullDataField(Field):
         "Allow Guest Collections to be created on this Collection. This option "
         "is only usable on Mapped Collections. If this option is disabled on a "
         "Mapped Collection which already has associated Guest Collections, "
-        "those collections will no longer be accessible"
+        "those collections will no longer be accessible."
     ),
 )
 @click.option(
@@ -66,7 +66,7 @@ class _FullDataField(Field):
         "Mapped Collection. This option is only usable on non high assurance "
         "Mapped Collections and the setting is inherited by the hosted Guest "
         "Collections. Anonymous write ACLs are enabled by default "
-        "(requires an endpoint with API v1.8.0)"
+        "(requires an endpoint with API v1.8.0)."
     ),
 )
 @click.option(
@@ -74,10 +74,9 @@ class _FullDataField(Field):
     "domain_name",
     default=None,
     help=(
-        "DNS host name for the collection (mapped "
-        "collections only). This may be either a host name "
-        "or a fully-qualified domain name, but if it is the latter "
-        "it must be a subdomain of the endpoint's domain"
+        "DNS host name for the collection (mapped collections only). "
+        "This may be either a host name or a fully-qualified domain name, "
+        "but if it is the latter it must be a subdomain of the endpoint's domain."
     ),
 )
 @click.option(
@@ -85,8 +84,8 @@ class _FullDataField(Field):
     "enable_https",
     default=None,
     help=(
-        "Explicitly enable or disable  HTTPS support (requires a managed endpoint "
-        "with API v1.1.0)"
+        "Explicitly enable or disable HTTPS support "
+        "(requires a managed endpoint with API v1.1.0)."
     ),
 )
 @click.option(
@@ -95,9 +94,9 @@ class _FullDataField(Field):
     multiple=True,
     callback=emptyable_opt_list_callback,
     help=(
-        "Connector-specific username allowed to create guest collections."
+        "Connector-specific username allowed to create guest collections. "
         f"{_MULTI_USE_OPTION_STR} to allow multiple users. "
-        'Set a value of "" to clear this'
+        'Set a value of "" to clear this.'
     ),
 )
 @click.option(
@@ -106,9 +105,9 @@ class _FullDataField(Field):
     multiple=True,
     callback=emptyable_opt_list_callback,
     help=(
-        "Connector-specific username denied permission to create guest "
-        f"collections. {_MULTI_USE_OPTION_STR} to deny multiple users. "
-        'Set a value of "" to clear this'
+        "Connector-specific username denied permission to create guest collections. "
+        f"{_MULTI_USE_OPTION_STR} to deny multiple users. "
+        'Set a value of "" to clear this.'
     ),
 )
 @LoginManager.requires_login("auth", "transfer")
