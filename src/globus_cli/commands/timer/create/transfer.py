@@ -6,7 +6,7 @@ import uuid
 
 import click
 import globus_sdk
-from globus_sdk.scopes import GCSCollectionScopeBuilder, MutableScope
+from globus_sdk.scopes import GCSCollectionScopeBuilder, Scope
 
 from globus_cli.endpointish import Endpointish
 from globus_cli.login_manager import LoginManager, is_client_login
@@ -314,7 +314,7 @@ def resolve_optional_local_time(
 
 def _derive_needed_scopes(
     needs_data_access: list[str],
-) -> dict[str, MutableScope]:
+) -> dict[str, Scope]:
     # Render the fully nested scope strings for each target
     scopes_needed = {}
     for target in needs_data_access:
@@ -330,7 +330,7 @@ def _derive_needed_scopes(
 
 def _derive_missing_scopes(
     auth_client: CustomAuthClient,
-    scopes_needed: dict[str, MutableScope],
+    scopes_needed: dict[str, Scope],
 ) -> list[str]:
     # read the identity ID stored from the login flow
     user_identity_id = get_current_identity_id()
@@ -350,8 +350,8 @@ def _derive_missing_scopes(
 
 
 # shorthand helper for constructing a nested scope
-def _ez_make_nested_scope(*scope_strings: str) -> MutableScope:
-    current_node = MutableScope(scope_strings[-1])
+def _ez_make_nested_scope(*scope_strings: str) -> Scope:
+    current_node = Scope(scope_strings[-1])
     for current_scope in scope_strings[-2::-1]:
-        current_node = MutableScope(current_scope, dependencies=[current_node])
+        current_node = Scope(current_scope, dependencies=[current_node])
     return current_node

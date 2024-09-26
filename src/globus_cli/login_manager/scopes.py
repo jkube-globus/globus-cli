@@ -7,7 +7,7 @@ from globus_sdk.scopes import (
     FlowsScopes,
     GCSCollectionScopeBuilder,
     GroupsScopes,
-    MutableScope,
+    Scope,
     SearchScopes,
     TimersScopes,
     TransferScopes,
@@ -22,17 +22,17 @@ TRANSFER_AP_SCOPE_STR: str = (
 
 def compute_timer_scope(
     *, data_access_collection_ids: t.Sequence[str] | None = None
-) -> MutableScope:
-    transfer_scope = TransferScopes.make_mutable("all")
+) -> Scope:
+    transfer_scope = Scope(TransferScopes.all)
     for cid in data_access_collection_ids or ():
         transfer_scope.add_dependency(
-            GCSCollectionScopeBuilder(cid).make_mutable("data_access", optional=True)
+            Scope(GCSCollectionScopeBuilder(cid).data_access, optional=True)
         )
 
-    transfer_ap_scope = MutableScope(TRANSFER_AP_SCOPE_STR)
+    transfer_ap_scope = Scope(TRANSFER_AP_SCOPE_STR)
     transfer_ap_scope.add_dependency(transfer_scope)
 
-    timer_scope: MutableScope = TimersScopes.make_mutable("timer")
+    timer_scope = Scope(TimersScopes.timer)
     timer_scope.add_dependency(transfer_ap_scope)
     return timer_scope
 
@@ -46,7 +46,7 @@ class _ServiceRequirement(t.TypedDict):
     min_contract_version: int
     resource_server: str
     nice_server_name: str
-    scopes: list[str | MutableScope]
+    scopes: list[str | Scope]
 
 
 class _CLIScopeRequirements(t.Dict[ServiceNameLiteral, _ServiceRequirement]):

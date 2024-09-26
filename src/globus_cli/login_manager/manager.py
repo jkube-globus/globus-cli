@@ -7,19 +7,25 @@ import uuid
 
 import click
 import globus_sdk
-from globus_sdk.experimental.consents import ConsentForest
-from globus_sdk.experimental.scope_parser import Scope
 from globus_sdk.scopes import (
     AuthScopes,
     FlowsScopes,
     GCSCollectionScopeBuilder,
     GCSEndpointScopeBuilder,
     GroupsScopes,
-    MutableScope,
+    Scope,
     SearchScopes,
     TimersScopes,
     TransferScopes,
 )
+
+# TODO: remove this after an SDK release provides scopes.consents
+try:
+    from globus_sdk.scopes.consents import (  # type: ignore[import-not-found]
+        ConsentForest,
+    )
+except ImportError:
+    from globus_sdk.experimental.consents import ConsentForest
 
 from globus_cli.endpointish import Endpointish, EntityType
 from globus_cli.types import ServiceNameLiteral
@@ -54,21 +60,19 @@ R = t.TypeVar("R")
 class LoginManager:
     def __init__(self) -> None:
         self._token_storage = token_storage_adapter()
-        self._nonstatic_requirements: dict[str, list[str | MutableScope]] = {}
+        self._nonstatic_requirements: dict[str, list[str | Scope]] = {}
 
-    def add_requirement(
-        self, rs_name: str, scopes: t.Sequence[str | MutableScope]
-    ) -> None:
+    def add_requirement(self, rs_name: str, scopes: t.Sequence[str | Scope]) -> None:
         self._nonstatic_requirements[rs_name] = list(scopes)
 
     @property
-    def login_requirements(self) -> t.Iterator[tuple[str, list[str | MutableScope]]]:
+    def login_requirements(self) -> t.Iterator[tuple[str, list[str | Scope]]]:
         for req in CLI_SCOPE_REQUIREMENTS.values():
             yield req["resource_server"], req["scopes"]
         yield from self._nonstatic_requirements.items()
 
     @property
-    def always_required_scopes(self) -> t.Iterator[str | MutableScope]:
+    def always_required_scopes(self) -> t.Iterator[str | Scope]:
         """
         scopes which are required on all login flows, regardless of the specified
         scopes for that flow
@@ -179,7 +183,9 @@ class LoginManager:
         else:
             # If there are dependent scopes all required scope paths are present in the
             #   user's cached consent forest.
-            return self._cached_consent_forest.meets_scope_requirements(required_scopes)
+            return (  # type: ignore[no-any-return]
+                self._cached_consent_forest.meets_scope_requirements(required_scopes)
+            )
 
     @property
     @functools.lru_cache(maxsize=1)  # noqa: B019
@@ -195,7 +201,7 @@ class LoginManager:
         local_server_message: str | None = None,
         epilog: str | None = None,
         session_params: dict[str, str] | None = None,
-        scopes: list[str | MutableScope] | None = None,
+        scopes: list[str | Scope] | None = None,
     ) -> None:
         if is_client_login():
             click.echo(
@@ -455,7 +461,7 @@ class LoginManager:
 
         if not include_data_access:
             # Just require an endpoint:manage_collections scope
-            scope = GCSEndpointScopeBuilder(gcs_id).make_mutable("manage_collections")
+            scope = Scope(GCSEndpointScopeBuilder(gcs_id).manage_collections)
             login_context = LoginContext(
                 login_command=f"globus login --gcs {gcs_id}",
                 error_message="Missing 'manage_collections' consent on an endpoint.",
@@ -463,7 +469,7 @@ class LoginManager:
         else:
             # Require an endpoint:manage_collections scope with a dependent
             #   collection[data_access] scope
-            scope = GCSEndpointScopeBuilder(gcs_id).make_mutable("manage_collections")
+            scope = Scope(GCSEndpointScopeBuilder(gcs_id).manage_collections)
             data_access = GCSCollectionScopeBuilder(str(collection_id)).data_access
             scope.add_dependency(data_access)
 
