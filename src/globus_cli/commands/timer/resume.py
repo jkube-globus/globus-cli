@@ -103,9 +103,12 @@ def check_inactive_reason(
 def _get_inactive_reason(
     timer_doc: dict[str, t.Any] | globus_sdk.GlobusHTTPResponse
 ) -> GlobusAuthRequirementsError | None:
-    from globus_sdk.experimental.auth_requirements_error import (
-        to_auth_requirements_error,
-    )
+    try:
+        from globus_sdk.gare import to_gare  # type: ignore[import-not-found]
+    except ImportError:
+        from globus_sdk.experimental.auth_requirements_error import (
+            to_auth_requirements_error as to_gare,
+        )
 
     if timer_doc.get("status") != "inactive":
         return None
@@ -114,7 +117,7 @@ def _get_inactive_reason(
     if reason.get("cause") != "globus_auth_requirements":
         return None
 
-    return to_auth_requirements_error(reason.get("detail", {}))
+    return to_gare(reason.get("detail", {}))  # type: ignore[no-any-return]
 
 
 def _has_required_consent(

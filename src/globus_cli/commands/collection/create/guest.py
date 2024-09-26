@@ -5,7 +5,6 @@ import uuid
 
 import click
 import globus_sdk
-import globus_sdk.experimental.auth_requirements_error
 
 from globus_cli.commands.collection._common import (
     LazyCurrentIdentity,
