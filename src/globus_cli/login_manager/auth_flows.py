@@ -6,7 +6,7 @@ import typing as t
 
 import click
 import globus_sdk
-from globus_sdk.scopes import MutableScope
+from globus_sdk.scopes import Scope
 
 from .tokenstore import (
     internal_auth_client,
@@ -17,7 +17,7 @@ from .tokenstore import (
 
 
 def do_link_auth_flow(
-    scopes: str | t.Sequence[str | MutableScope],
+    scopes: str | t.Sequence[str | Scope],
     *,
     session_params: dict[str, str] | None = None,
 ) -> bool:
@@ -58,7 +58,7 @@ def do_link_auth_flow(
 
 
 def do_local_server_auth_flow(
-    scopes: str | t.Sequence[str | MutableScope],
+    scopes: str | t.Sequence[str | Scope],
     *,
     session_params: dict[str, str] | None = None,
 ) -> bool:
