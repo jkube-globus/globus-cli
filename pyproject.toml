@@ -79,6 +79,7 @@ entry_title_template = '{{ version }} ({{ date.strftime("%Y-%m-%d") }})'
 
 [tool.mypy]
 strict = true
+sqlite_cache = true
 
 # additional settings (not part of strict=true)
 warn_unreachable = true
