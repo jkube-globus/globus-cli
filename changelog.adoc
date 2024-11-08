@@ -6,8 +6,7 @@
 
 Bugfixes:
 
-* Remove the legacy Automate Transfer AP scope from Timers' scope dependencies.
-* Update `CURRENT_SCOPE_CONTRACT_VERSION` and Timers' `min_contract_version` from 1 to 2.
+* Timers' scope data have changed. Users interacting with Timers will be prompted to login again.
 
 Enhancements:
 
