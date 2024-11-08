@@ -66,7 +66,7 @@ attr = "globus_cli.version.__version__"
 profile = "black"
 
 [tool.pytest.ini_options]
-addopts = "--timeout 3"
+addopts = "--timeout 3 --color=yes"
 filterwarnings = ["error"]
 
 [tool.scriv]

@@ -1,0 +1,68 @@
+name: "🧪 Test"
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+  # build weekly at 4:00 AM UTC
+  schedule:
+    - cron: '0 4 * * 1'
+
+jobs:
+  test:
+    name: "${{ matrix.name }}"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "Linux"
+            runner: "ubuntu-latest"
+            cpythons:
+              - "3.8"
+              - "3.9"
+              - "3.10"
+              - "3.11"
+              - "3.12"
+            tox-post-environments:
+              - "py3.8-mindeps"
+              - "py3.8-sdkmain"
+              - "py3.12-sdkmain"
+            cache-key-prefix: "linux"
+            cache-key-hash-files:
+              - "setup.py"
+
+          - name: "macOS"
+            runner: "macos-latest"
+            cpythons:
+              - "3.12"
+            tox-environments-from-pythons: true
+            cache-key-prefix: "macos"
+            cache-key-hash-files:
+              - "setup.py"
+
+          - name: "Windows"
+            runner: "windows-latest"
+            cpythons:
+              - "3.12"
+            tox-environments-from-pythons: true
+            cache-key-prefix: "windows"
+            cache-key-hash-files:
+              - "setup.py"
+
+          - name: "Quality"
+            runner: "ubuntu-latest"
+            cpythons:
+              - "3.12"
+            tox-environments:
+              - "mypy"
+              - "reference"
+              - "twine-check"
+            cache-key-prefix: "quality"
+            cache-files:
+              - ".mypy_cache/"
+            cache-key-hash-files:
+              - "setup.py"
+
+    uses: "globus/workflows/.github/workflows/tox.yaml@04b4abd6fcb9b4be7263bc9d6994ae2ada220739" # v1.1
+    with:
+      config: "${{ toJSON(matrix) }}"
