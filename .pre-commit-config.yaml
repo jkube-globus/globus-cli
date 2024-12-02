@@ -9,7 +9,7 @@ repos:
     - id: trailing-whitespace
     - id: end-of-file-fixer
 - repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: 0.29.4
+  rev: 0.30.0
   hooks:
     - id: check-github-workflows
     - id: check-dependabot
@@ -39,7 +39,7 @@ repos:
   hooks:
     - id: slyp
 - repo: https://github.com/sirosen/texthooks
-  rev: 0.6.7
+  rev: 0.6.8
   hooks:
     - id: alphabetize-codeowners
 - repo: https://github.com/codespell-project/codespell
