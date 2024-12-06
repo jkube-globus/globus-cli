@@ -74,7 +74,9 @@ def test_login_gcs_different_identity(
     mock_auth_client = mock.MagicMock(spec=globus_sdk.NativeAppAuthClient)
     mock_auth_client.oauth2_exchange_code_for_tokens = lambda _: MockToken()
     mock_local_server_flow.side_effect = (
-        lambda *args, **kwargs: exchange_code_and_store(mock_auth_client, "bogus_code")
+        lambda *args, **kwargs: exchange_code_and_store(
+            manager.token_storage, mock_auth_client, "bogus_code"
+        )
     )
     mock_remote_session.return_value = False
     result = run_line(f"globus login --gcs {uuid.UUID(int=0)}", assert_exit_code=1)

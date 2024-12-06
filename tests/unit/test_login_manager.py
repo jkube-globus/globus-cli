@@ -392,6 +392,8 @@ def test_immature_signature_during_jwt_decode_skips_notice_if_date_cannot_parse(
 
     This should result in a clear error emitted to stderr.
     """
+    manager = LoginManager()
+
     mock_token_response = mock.Mock()
     mock_token_response.decode_id_token = mock.Mock(
         side_effect=jwt.exceptions.ImmatureSignatureError("test")
@@ -411,7 +413,7 @@ def test_immature_signature_during_jwt_decode_skips_notice_if_date_cannot_parse(
     )
 
     with pytest.raises(jwt.exceptions.ImmatureSignatureError):
-        exchange_code_and_store(mock_auth_client, "bogus_code")
+        exchange_code_and_store(manager.token_storage, mock_auth_client, "bogus_code")
 
     stderr = capsys.readouterr().err
     assert "This may indicate a clock skew problem." not in stderr
