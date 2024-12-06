@@ -41,7 +41,9 @@ def pytest_configure(config):
 
 @pytest.fixture
 def test_click_context():
-    with click.Context():
+    from globus_cli.commands import main
+
+    with click.Context(main):
         yield
 
 
