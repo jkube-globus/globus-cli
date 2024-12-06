@@ -16,7 +16,9 @@ def test_login_validates_token(
     # undo the validate_token disabling patch which is done for most tests
     disable_login_manager_validate_token.undo()
 
-    with mock.patch("globus_cli.login_manager.manager.internal_auth_client") as m:
+    with mock.patch(
+        "globus_cli.login_manager.tokenstore.CLITokenstorage.internal_auth_client"
+    ) as m:
         ac = mock.MagicMock(spec=globus_sdk.ConfidentialAppAuthClient)
         m.return_value = ac
 
@@ -91,7 +93,8 @@ def test_login_gcs_different_identity(
     )
 
     monkeypatch.setattr(
-        "globus_cli.commands.logout.internal_native_client", lambda: mock_auth_client
+        "globus_cli.login_manager.tokenstore.CLITokenstorage.internal_auth_client",
+        mock_auth_client,
     )
     run_line("globus logout --yes")
     assert manager.token_storage.read_well_known_config("auth_user_data") is None
