@@ -1,4 +1,5 @@
 import uuid
+from unittest import mock
 
 import pytest
 from globus_sdk.tokenstorage import SQLiteAdapter
@@ -6,8 +7,11 @@ from globus_sdk.tokenstorage import SQLiteAdapter
 
 def _add_namespace_to_test_storage(storage, namespace, token_data):
     alt_storage = SQLiteAdapter(":memory:", namespace=namespace)
-    alt_storage._connection = storage._connection
-    alt_storage.store(token_data)
+    try:
+        with mock.patch.object(alt_storage, "_connection", storage._connection):
+            alt_storage.store(token_data)
+    finally:
+        alt_storage.close()
 
 
 @pytest.fixture
