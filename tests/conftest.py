@@ -21,6 +21,7 @@ from globus_sdk.transport import RequestsTransport
 from ruamel.yaml import YAML
 
 import globus_cli
+from globus_cli.login_manager.scopes import CURRENT_SCOPE_CONTRACT_VERSION
 
 yaml = YAML()
 log = logging.getLogger(__name__)
@@ -167,6 +168,13 @@ def test_token_storage(mock_login_token_response, mock_user_data):
     )
     mockstore.store_config("auth_user_data", mock_user_data)
     mockstore.store(mock_login_token_response)
+    mockstore.store_config(
+        "scope_contract_versions",
+        {
+            k: CURRENT_SCOPE_CONTRACT_VERSION
+            for k in mock_login_token_response.by_resource_server
+        },
+    )
     return mockstore
 
 
