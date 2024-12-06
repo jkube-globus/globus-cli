@@ -345,7 +345,7 @@ def test_cli_scope_requirements_min_contract_version_matches_current():
 def test_immature_signature_during_jwt_decode_emits_clock_skew_notice(
     capsys,
     monkeypatch,
-    test_token_storage,
+    test_click_context,
 ):
     """
     Test the `exchange_code_and_store` behavior when the id_token decoding fails
@@ -353,6 +353,8 @@ def test_immature_signature_during_jwt_decode_emits_clock_skew_notice(
 
     This should result in a clear error emitted to stderr.
     """
+    manager = LoginManager()
+
     mock_token_response = mock.Mock()
     mock_token_response.decode_id_token = mock.Mock(
         side_effect=jwt.exceptions.ImmatureSignatureError("test")
@@ -370,7 +372,7 @@ def test_immature_signature_during_jwt_decode_emits_clock_skew_notice(
     )
 
     with pytest.raises(jwt.exceptions.ImmatureSignatureError):
-        exchange_code_and_store(mock_auth_client, "bogus_code")
+        exchange_code_and_store(manager.token_storage, mock_auth_client, "bogus_code")
 
     stderr = capsys.readouterr().err
     assert "out of sync with the local clock" in stderr
