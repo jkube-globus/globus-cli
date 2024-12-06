@@ -290,6 +290,9 @@ class LoginManager:
             @functools.wraps(func)
             def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
                 manager = cls()
+                context = click.get_current_context()
+                context.call_on_close(manager.close)
+
                 manager.assert_logins(*resource_servers)
                 return func(manager, *args, **kwargs)
 

@@ -44,8 +44,6 @@ class CLITokenstorage:
             self._adapter.close()
             self._adapter = None
 
-        del self.internal_native_client
-
     @functools.cached_property
     def internal_native_client(self) -> globus_sdk.NativeAppAuthClient:
         """
