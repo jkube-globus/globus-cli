@@ -26,7 +26,7 @@ from globus_cli.types import ServiceNameLiteral
 
 @pytest.fixture
 def patched_tokenstorage():
-    def mock_get_tokens(resource_server):
+    def fake_get_tokens(self, resource_server):
         fake_tokens = {
             "a.globus.org": {
                 "access_token": "fake_a_access_token",
@@ -42,7 +42,7 @@ def patched_tokenstorage():
 
         return fake_tokens.get(resource_server)
 
-    def mock_read_config(config_name):
+    def fake_read_config(self, config_name):
         if config_name == "scope_contract_versions":
             return {
                 "a.globus.org": 1,
@@ -52,11 +52,13 @@ def patched_tokenstorage():
             raise NotImplementedError
 
     with mock.patch(
-        "globus_cli.login_manager.tokenstore.token_storage_adapter._instance"
-    ) as mock_adapter:
-        mock_adapter.get_token_data = mock_get_tokens
-        mock_adapter.read_config = mock_read_config
-        yield mock_adapter
+        "globus_cli.login_manager.tokenstore.CLITokenstorage.get_token_data",
+        fake_get_tokens,
+    ), mock.patch(
+        "globus_cli.login_manager.tokenstore.CLITokenstorage.read_well_known_config",
+        fake_read_config,
+    ):
+        yield
 
 
 @pytest.fixture
