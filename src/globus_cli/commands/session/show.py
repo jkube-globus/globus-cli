@@ -57,7 +57,7 @@ def session_show(login_manager: LoginManager) -> None:
     except AttributeError:  # if we have no RefreshTokenAuthorizor
         pass
 
-    tokendata = login_manager.token_storage.get_token_data("auth.globus.org")
+    tokendata = login_manager.storage.adapter.get_token_data("auth.globus.org")
     # if there's no token (e.g. not logged in), stub with empty data
     if not tokendata:
         session_info: dict[str, t.Any] = {}
@@ -66,7 +66,7 @@ def session_show(login_manager: LoginManager) -> None:
         if is_client_login():
             introspect_client = get_client_login()
         else:
-            introspect_client = login_manager.token_storage.internal_auth_client()
+            introspect_client = login_manager.storage.cli_confidential_client
 
         access_token = tokendata["access_token"]
         res = introspect_client.oauth2_token_introspect(

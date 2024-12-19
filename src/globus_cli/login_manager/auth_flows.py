@@ -8,11 +8,11 @@ import click
 import globus_sdk
 from globus_sdk.scopes import Scope
 
-from .tokenstore import CLITokenstorage
+from .storage import CLIStorage
 
 
 def do_link_auth_flow(
-    storage: CLITokenstorage,
+    storage: CLIStorage,
     scopes: str | t.Sequence[str | Scope],
     *,
     session_params: dict[str, str] | None = None,
@@ -24,7 +24,7 @@ def do_link_auth_flow(
     session_params = session_params or {}
 
     # get the ConfidentialApp client object
-    auth_client = storage.internal_auth_client()
+    auth_client = storage.cli_confidential_client
 
     # start the Confidential App Grant flow
     auth_client.oauth2_start_flow(
@@ -54,7 +54,7 @@ def do_link_auth_flow(
 
 
 def do_local_server_auth_flow(
-    storage: CLITokenstorage,
+    storage: CLIStorage,
     scopes: str | t.Sequence[str | Scope],
     *,
     session_params: dict[str, str] | None = None,
@@ -75,7 +75,7 @@ def do_local_server_auth_flow(
         redirect_uri = f"http://localhost:{port}"
 
         # get the ConfidentialApp client object and start a flow
-        auth_client = storage.internal_auth_client()
+        auth_client = storage.cli_confidential_client
         auth_client.oauth2_start_flow(
             refresh_tokens=True,
             redirect_uri=redirect_uri,
@@ -105,7 +105,7 @@ def do_local_server_auth_flow(
 
 
 def exchange_code_and_store(
-    storage: CLITokenstorage,
+    storage: CLIStorage,
     auth_client: globus_sdk.ConfidentialAppAuthClient | globus_sdk.NativeAppAuthClient,
     auth_code: str,
 ) -> None:

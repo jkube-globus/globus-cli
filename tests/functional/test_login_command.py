@@ -16,12 +16,10 @@ def test_login_validates_token(
     # undo the validate_token disabling patch which is done for most tests
     disable_login_manager_validate_token.undo()
 
+    ac = mock.MagicMock(spec=globus_sdk.ConfidentialAppAuthClient)
     with mock.patch(
-        "globus_cli.login_manager.tokenstore.CLITokenstorage.internal_auth_client"
-    ) as m:
-        ac = mock.MagicMock(spec=globus_sdk.ConfidentialAppAuthClient)
-        m.return_value = ac
-
+        "globus_cli.login_manager.storage.CLIStorage.cli_confidential_client", ac
+    ):
         run_line("globus login")
 
         by_rs = mock_login_token_response.by_resource_server
@@ -70,14 +68,14 @@ def test_login_gcs_different_identity(
     """
     load_response_set("cli.logout")
     manager = LoginManager()
-    manager.token_storage.store_well_known_config(
+    manager.storage.store_well_known_config(
         "auth_user_data", {"sub": str(uuid.UUID(int=0))}
     )
     mock_auth_client = mock.MagicMock(spec=globus_sdk.NativeAppAuthClient)
     mock_auth_client.oauth2_exchange_code_for_tokens = lambda _: MockToken()
     mock_local_server_flow.side_effect = (
         lambda *args, **kwargs: exchange_code_and_store(
-            manager.token_storage, mock_auth_client, "bogus_code"
+            manager.storage, mock_auth_client, "bogus_code"
         )
     )
     mock_remote_session.return_value = False
@@ -93,11 +91,11 @@ def test_login_gcs_different_identity(
     )
 
     monkeypatch.setattr(
-        "globus_cli.login_manager.tokenstore.CLITokenstorage.internal_auth_client",
+        "globus_cli.login_manager.storage.CLIStorage.cli_confidential_client",
         mock_auth_client,
     )
     run_line("globus logout --yes")
-    assert manager.token_storage.read_well_known_config("auth_user_data") is None
+    assert manager.storage.read_well_known_config("auth_user_data") is None
 
 
 def test_login_with_flow(monkeypatch, run_line):

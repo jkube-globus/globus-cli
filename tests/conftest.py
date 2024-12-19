@@ -186,7 +186,7 @@ def test_token_storage(mock_login_token_response, mock_user_data):
 @pytest.fixture(autouse=True)
 def patch_tokenstorage(monkeypatch, test_token_storage):
     monkeypatch.setattr(
-        globus_cli.login_manager.tokenstore.CLITokenstorage,
+        globus_cli.login_manager.storage.CLIStorage,
         "_construct_adapter",
         lambda self: test_token_storage,
     )

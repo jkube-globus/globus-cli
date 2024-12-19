@@ -6,46 +6,39 @@ import sys
 import typing as t
 
 import globus_sdk
+from globus_sdk.tokenstorage import SQLiteAdapter
 
+from ._old_config import invalidate_old_config
 from .client_login import get_client_login, is_client_login
 from .scopes import CURRENT_SCOPE_CONTRACT_VERSION
-
-if t.TYPE_CHECKING:
-    from globus_sdk.tokenstorage import SQLiteAdapter  # noqa: F401
 
 # env vars used throughout this module
 GLOBUS_ENV = os.environ.get("GLOBUS_SDK_ENVIRONMENT")
 
 
-class CLITokenstorage:
+class CLIStorage:
     """
     A wrapper over the globus-sdk's v1 tokenstorage which provides simplified
     capabilities specific to the CLI.
     """
 
     def __init__(self) -> None:
-        self._adapter: SQLiteAdapter | None = self._construct_adapter()
+        self.adapter: SQLiteAdapter = self._construct_adapter()
 
     def _construct_adapter(self) -> SQLiteAdapter:
-        from globus_sdk.tokenstorage import SQLiteAdapter  # noqa: F811
-
         # when initializing the token storage adapter, check if the storage file exists
         # if it does not, then use this as a flag to clean the old config
         fname = _get_storage_filename()
         if not os.path.exists(fname):
-            from ._old_config import invalidate_old_config
-
-            invalidate_old_config(self.internal_native_client)
+            invalidate_old_config(self.cli_native_client)
 
         return SQLiteAdapter(fname, namespace=_resolve_namespace())
 
     def close(self) -> None:
-        if self._adapter is not None:
-            self._adapter.close()
-            self._adapter = None
+        self.adapter.close()
 
     @functools.cached_property
-    def internal_native_client(self) -> globus_sdk.NativeAppAuthClient:
+    def cli_native_client(self) -> globus_sdk.NativeAppAuthClient:
         """
         This is the client that represents the CLI itself (prior to templating).
         """
@@ -54,10 +47,12 @@ class CLITokenstorage:
             template_id, app_name="Globus CLI (native client)"
         )
 
-    def internal_auth_client(self) -> globus_sdk.ConfidentialAppAuthClient:
+    @functools.cached_property
+    def cli_confidential_client(self) -> globus_sdk.ConfidentialAppAuthClient:
         """
-        Pull template client credentials from storage and use them to create a
-        ConfidentialAppAuthClient.
+        Get the client which represents the CLI as a templated app, as distinct from a
+        confidential client built from a user's credentials.
+
         In the event that credentials are not found, template a new client via the
         Auth API, save the credentials for that client, and then build and return the
         ConfidentialAppAuthClient.
@@ -71,7 +66,7 @@ class CLITokenstorage:
             client_secret = client_data["client_secret"]
         else:
             # register a new instance client with auth
-            nc = self.internal_native_client
+            nc = self.cli_native_client
             res = nc.post(
                 "/v2/api/clients",
                 data={"client": {"template_id": nc.client_id, "name": "Globus CLI"}},
@@ -92,7 +87,7 @@ class CLITokenstorage:
 
     def delete_templated_client(self) -> None:
         # first, get the templated credentialed client
-        ac = self.internal_auth_client()
+        ac = self.cli_confidential_client
 
         # now, remove its relevant data from storage
         self.remove_well_known_config("auth_client_data")
@@ -110,9 +105,7 @@ class CLITokenstorage:
         ],
         data: dict[str, t.Any],
     ) -> None:
-        if self._adapter is None:
-            raise RuntimeError("cannot store well-known config after closing storage")
-        self._adapter.store_config(name, data)
+        self.adapter.store_config(name, data)
 
     @t.overload
     def read_well_known_config(
@@ -142,9 +135,7 @@ class CLITokenstorage:
         *,
         allow_null: bool = True,
     ) -> dict[str, t.Any] | None:
-        if self._adapter is None:
-            raise RuntimeError("cannot read well-known config after closing storage")
-        data = self._adapter.read_config(name)
+        data = self.adapter.read_config(name)
         if not allow_null and data is None:
             if name == "auth_user_data":
                 alias = "Identity Info"
@@ -163,28 +154,10 @@ class CLITokenstorage:
             "auth_client_data", "auth_user_data", "scope_contract_versions"
         ],
     ) -> None:
-        if self._adapter is None:
-            raise RuntimeError("cannot remove well-known config after closing storage")
-        self._adapter.remove_config(name)
-
-    #
-    # APIs which match the tokenstorage itself
-    #
-
-    def get_token_data(self, resource_server: str) -> dict[str, t.Any] | None:
-        if self._adapter is None:
-            raise RuntimeError("cannot get token data after closing storage")
-        return self._adapter.get_token_data(resource_server)
-
-    def get_by_resource_server(self) -> dict[str, dict[str, t.Any]]:
-        if self._adapter is None:
-            raise RuntimeError("cannot get token data after closing storage")
-        return self._adapter.get_by_resource_server()
+        self.adapter.remove_config(name)
 
     def store(self, token_response: globus_sdk.OAuthTokenResponse) -> None:
-        if self._adapter is None:
-            raise RuntimeError("cannot store token data after closing storage")
-        self._adapter.store(token_response)
+        self.adapter.store(token_response)
         # store contract versions for all of the tokens which were acquired
         # this could overwrite data from another CLI version *earlier or later* than
         # the current one
@@ -204,25 +177,6 @@ class CLITokenstorage:
         for rs_name in token_response.by_resource_server:
             contract_versions[rs_name] = CURRENT_SCOPE_CONTRACT_VERSION
         self.store_well_known_config("scope_contract_versions", contract_versions)
-
-    def on_refresh(self, token_response: globus_sdk.OAuthTokenResponse) -> None:
-        if self._adapter is None:
-            raise RuntimeError("cannot store token data after closing storage")
-        self._adapter.on_refresh(token_response)
-
-    def remove_tokens_for_resource_server(self, resource_server: str) -> bool:
-        if self._adapter is None:
-            raise RuntimeError("cannot delete token data after closing storage")
-        return self._adapter.remove_tokens_for_resource_server(resource_server)
-
-    def iter_namespaces(
-        self, include_config_namespaces: bool = True
-    ) -> t.Iterable[str]:
-        if self._adapter is None:
-            raise RuntimeError("cannot iter namespaces after closing storage")
-        return self._adapter.iter_namespaces(
-            include_config_namespaces=include_config_namespaces
-        )
 
 
 def _template_client_id() -> str:

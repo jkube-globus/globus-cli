@@ -25,8 +25,8 @@ from globus_cli.types import ServiceNameLiteral
 
 
 @pytest.fixture
-def patched_tokenstorage():
-    def fake_get_tokens(self, resource_server):
+def patched_tokenstorage(test_token_storage):
+    def fake_get_tokens(resource_server):
         fake_tokens = {
             "a.globus.org": {
                 "access_token": "fake_a_access_token",
@@ -51,11 +51,11 @@ def patched_tokenstorage():
         else:
             raise NotImplementedError
 
+    test_token_storage.get_token_data = mock.Mock()
+    test_token_storage.get_token_data.side_effect = fake_get_tokens
+
     with mock.patch(
-        "globus_cli.login_manager.tokenstore.CLITokenstorage.get_token_data",
-        fake_get_tokens,
-    ), mock.patch(
-        "globus_cli.login_manager.tokenstore.CLITokenstorage.read_well_known_config",
+        "globus_cli.login_manager.storage.CLIStorage.read_well_known_config",
         fake_read_config,
     ):
         yield
@@ -385,7 +385,7 @@ def test_immature_signature_during_jwt_decode_emits_clock_skew_notice(
     )
 
     with pytest.raises(jwt.exceptions.ImmatureSignatureError):
-        exchange_code_and_store(manager.token_storage, mock_auth_client, "bogus_code")
+        exchange_code_and_store(manager.storage, mock_auth_client, "bogus_code")
 
     stderr = capsys.readouterr().err
     assert "out of sync with the local clock" in stderr
@@ -426,7 +426,7 @@ def test_immature_signature_during_jwt_decode_skips_notice_if_date_cannot_parse(
     )
 
     with pytest.raises(jwt.exceptions.ImmatureSignatureError):
-        exchange_code_and_store(manager.token_storage, mock_auth_client, "bogus_code")
+        exchange_code_and_store(manager.storage, mock_auth_client, "bogus_code")
 
     stderr = capsys.readouterr().err
     assert "This may indicate a clock skew problem." not in stderr

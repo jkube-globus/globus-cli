@@ -36,7 +36,9 @@ def _parse_and_filter_profiles(
 
     client_profiles = []
     user_profiles = []
-    for n in login_manager.token_storage.iter_namespaces():
+    for n in login_manager.storage.adapter.iter_namespaces(
+        include_config_namespaces=True
+    ):
         data = _profilestr_to_datadict(n)
         if not data:  # skip any parse failures
             continue

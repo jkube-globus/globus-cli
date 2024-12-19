@@ -14,13 +14,13 @@ def test_logout(delete_client, run_line, mock_login_token_response, test_click_c
 
     # Collect all of the stored tokens
     stored_tokens = set()
-    for token_data in manager.token_storage.get_by_resource_server().values():
+    for token_data in manager.storage.adapter.get_by_resource_server().values():
         stored_tokens.add(token_data["access_token"])
         stored_tokens.add(token_data["refresh_token"])
 
     assert len(stored_tokens) > 0
 
-    ac_data = manager.token_storage.read_well_known_config("auth_client_data")
+    ac_data = manager.storage.read_well_known_config("auth_client_data")
     client_id = ac_data["client_id"]
 
     additional_args = ["--delete-client"] if delete_client else []
@@ -58,7 +58,7 @@ def test_logout(delete_client, run_line, mock_login_token_response, test_click_c
 
     assert "You are now successfully logged out" in result.output
     # Make sure the storage was cleared out
-    assert manager.token_storage.read_well_known_config("auth_user_data") is None
+    assert manager.storage.read_well_known_config("auth_user_data") is None
 
 
 @pytest.mark.parametrize("delete_client", [True, False])
@@ -70,7 +70,7 @@ def test_logout_with_client_id(
 
     # Collect all of the stored tokens
     stored_tokens = set()
-    for token_data in manager.token_storage.get_by_resource_server().values():
+    for token_data in manager.storage.adapter.get_by_resource_server().values():
         stored_tokens.add(token_data["access_token"])
         stored_tokens.add(token_data["refresh_token"])
 
@@ -98,4 +98,4 @@ def test_logout_with_client_id(
 
     assert "Revoking all CLI tokens for" in result.output
     # Make sure the storage was cleared out
-    assert manager.token_storage.read_well_known_config("auth_user_data") is None
+    assert manager.storage.read_well_known_config("auth_user_data") is None

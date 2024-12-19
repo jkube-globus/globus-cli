@@ -30,7 +30,7 @@ from .client_login import get_client_login, is_client_login
 from .context import LoginContext
 from .errors import MissingLoginError
 from .scopes import CLI_SCOPE_REQUIREMENTS
-from .tokenstore import CLITokenstorage
+from .storage import CLIStorage
 from .utils import is_remote_session
 
 if t.TYPE_CHECKING:
@@ -49,11 +49,11 @@ R = t.TypeVar("R")
 
 class LoginManager:
     def __init__(self) -> None:
-        self.token_storage = CLITokenstorage()
+        self.storage = CLIStorage()
         self._nonstatic_requirements: dict[str, list[str | Scope]] = {}
 
     def close(self) -> None:
-        self.token_storage.close()
+        self.storage.close()
 
     def add_requirement(self, rs_name: str, scopes: t.Sequence[str | Scope]) -> None:
         self._nonstatic_requirements[rs_name] = list(scopes)
@@ -83,7 +83,7 @@ class LoginManager:
         )
 
     def _validate_token(self, token: str) -> bool:
-        auth_client = self.token_storage.internal_auth_client()
+        auth_client = self.storage.cli_confidential_client
         try:
             res = auth_client.post(
                 "/v2/oauth2/token/validate", data={"token": token}, encoding="form"
@@ -105,7 +105,7 @@ class LoginManager:
         if is_client_login():
             return True
 
-        tokens = self.token_storage.get_token_data(resource_server)
+        tokens = self.storage.adapter.get_token_data(resource_server)
         if tokens is None or "refresh_token" not in tokens:
             return False
 
@@ -133,7 +133,7 @@ class LoginManager:
 
         # first, fetch the version data and if it is missing, treat it as empty
         contract_versions = (
-            self.token_storage.read_well_known_config("scope_contract_versions") or {}
+            self.storage.read_well_known_config("scope_contract_versions") or {}
         )
         # determine which version we need, and compare against the version in
         # storage with a default of 0
@@ -215,13 +215,13 @@ class LoginManager:
                 scopes.append(s)
         # use a link login if remote session or user requested
         if no_local_server or is_remote_session():
-            do_link_auth_flow(self.token_storage, scopes, session_params=session_params)
+            do_link_auth_flow(self.storage, scopes, session_params=session_params)
         # otherwise default to a local server login flow
         else:
             if local_server_message is not None:
                 click.echo(local_server_message)
             do_local_server_auth_flow(
-                self.token_storage, scopes, session_params=session_params
+                self.storage, scopes, session_params=session_params
             )
 
         if epilog is not None:
@@ -303,7 +303,7 @@ class LoginManager:
     def _get_client_authorizer(
         self, resource_server: str, *, no_tokens_msg: str | None = None
     ) -> globus_sdk.ClientCredentialsAuthorizer | globus_sdk.RefreshTokenAuthorizer:
-        tokens = self.token_storage.get_token_data(resource_server)
+        tokens = self.storage.adapter.get_token_data(resource_server)
 
         if is_client_login():
             # construct scopes for the specified resource server.
@@ -328,7 +328,7 @@ class LoginManager:
                 scopes=scopes,
                 access_token=access_token,
                 expires_at=expires_at,
-                on_refresh=self.token_storage.on_refresh,
+                on_refresh=self.storage.store,
             )
 
         else:
@@ -344,10 +344,10 @@ class LoginManager:
 
             return globus_sdk.RefreshTokenAuthorizer(
                 tokens["refresh_token"],
-                self.token_storage.internal_auth_client(),
+                self.storage.cli_confidential_client,
                 access_token=tokens["access_token"],
                 expires_at=tokens["expires_at_seconds"],
-                on_refresh=self.token_storage.on_refresh,
+                on_refresh=self.storage.store,
             )
 
     def get_transfer_client(self) -> CustomTransferClient:
@@ -502,7 +502,7 @@ class LoginManager:
         if is_client_login():
             return os.environ["GLOBUS_CLI_CLIENT_ID"]
         else:
-            user_data = self.token_storage.read_well_known_config(
+            user_data = self.storage.read_well_known_config(
                 "auth_user_data", allow_null=False
             )
             sub: str = user_data["sub"]
