@@ -23,10 +23,11 @@ jobs:
               - "3.10"
               - "3.11"
               - "3.12"
+              - "3.13"
             tox-post-environments:
               - "py3.8-mindeps"
               - "py3.8-sdkmain"
-              - "py3.12-sdkmain"
+              - "py3.13-sdkmain"
             cache-key-prefix: "linux"
             cache-key-hash-files:
               - "setup.py"
@@ -34,7 +35,7 @@ jobs:
           - name: "macOS"
             runner: "macos-latest"
             cpythons:
-              - "3.12"
+              - "3.13"
             tox-environments-from-pythons: true
             cache-key-prefix: "macos"
             cache-key-hash-files:
@@ -43,7 +44,7 @@ jobs:
           - name: "Windows"
             runner: "windows-latest"
             cpythons:
-              - "3.12"
+              - "3.13"
             tox-environments-from-pythons: true
             cache-key-prefix: "windows"
             cache-key-hash-files:
@@ -52,7 +53,7 @@ jobs:
           - name: "Quality"
             runner: "ubuntu-latest"
             cpythons:
-              - "3.12"
+              - "3.13"
             tox-environments:
               - "mypy"
               - "reference"
