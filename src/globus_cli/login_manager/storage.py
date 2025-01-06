@@ -98,6 +98,9 @@ class CLIStorage:
         # the caller may or may not want to ignore, so allow it to raise from here
         ac.delete(f"/v2/api/clients/{ac.client_id}")
 
+        # clear the cached_property
+        del self.cli_confidential_client
+
     def store_well_known_config(
         self,
         name: t.Literal[
