@@ -51,7 +51,7 @@ test = [
     "click-type-test==1.0.0;python_version>='3.10'",
     "responses==0.25.3",
     # loading test fixture data
-    "ruamel.yaml==0.18.6",
+    "ruamel.yaml==0.18.9",
     # Python 3.12 needs setuptools.
     "setuptools;python_version>='3.12'",
 ]
