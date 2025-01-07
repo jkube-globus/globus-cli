@@ -60,6 +60,14 @@ test = [
 [project.scripts]
 globus = "globus_cli:main"
 
+[dependency-groups]
+typing = [
+    "mypy==1.14.1",
+    "types-jwt",
+    "types-requests",
+    "types-jmespath",
+]
+
 [tool.setuptools.dynamic.version]
 attr = "globus_cli.version.__version__"
 

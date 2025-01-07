@@ -55,7 +55,8 @@ jobs:
             cpythons:
               - "3.13"
             tox-environments:
-              - "mypy"
+              - "mypy-py38"
+              - "mypy-py313"
               - "reference"
               - "twine-check"
             cache-key-prefix: "quality"
