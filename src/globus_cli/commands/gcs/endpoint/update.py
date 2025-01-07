@@ -19,15 +19,12 @@ F = t.TypeVar("F", bound=AnyCallable)
 
 
 class SubscriptionIdType(click.ParamType):
-    def get_type_annotation(self, _: click.Parameter) -> type:
-        return t.cast(type, str | ExplicitNullType)
-
     def get_metavar(self, _: click.Parameter) -> t.Optional[str]:
         return "[<uuid>|DEFAULT|null]"
 
     def convert(
         self, value: str, param: click.Parameter | None, ctx: click.Context | None
-    ) -> t.Any:
+    ) -> str | ExplicitNullType | None:
         if value is None or (ctx and ctx.resilient_parsing):
             return None
         if value.lower() == "null":

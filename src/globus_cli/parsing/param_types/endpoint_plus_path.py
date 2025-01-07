@@ -23,10 +23,13 @@ class EndpointPlusPath(click.ParamType):
         super().__init__(*args, **kwargs)
 
     def get_type_annotation(self, param: click.Parameter) -> type:
+        # this is a "<typing special form>" vs "type" issue, so type ignore for now
+        # click-type-test has an issue for improving this, with details, see:
+        #   https://github.com/sirosen/click-type-test/issues/14
         if self.path_required:
-            return tuple[uuid.UUID, str]
+            return t.Tuple[uuid.UUID, str]  # type: ignore[return-value]
         else:
-            return tuple[uuid.UUID, str | None]
+            return t.Tuple[uuid.UUID, t.Union[str, None]]  # type: ignore[return-value]
 
     def get_metavar(self, param: click.Parameter | None) -> str:
         """

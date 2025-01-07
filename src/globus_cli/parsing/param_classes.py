@@ -34,7 +34,7 @@ class OneUseOption(click.Option):
             return bool
 
         if isinstance(self.type, EndpointPlusPath):
-            return self.type.get_type_annotation(self) | None  # type: ignore[return-value]  # noqa: E501
+            return t.Union[self.type.get_type_annotation(self), None]  # type: ignore[return-value]  # noqa: E501
 
         raise NotImplementedError(
             "OneUseOption requires a type annotation in this case."
