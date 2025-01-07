@@ -49,7 +49,7 @@ test = [
     "pytest>=7",
     "pytest-xdist<4",
     "pytest-timeout<3",
-    "click-type-test==1.0.0;python_version>='3.10'",
+    "click-type-test==1.1.0;python_version>='3.10'",
     "responses==0.25.3",
     # loading test fixture data
     "ruamel.yaml==0.18.9",
