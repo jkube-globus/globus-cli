@@ -57,15 +57,12 @@ Clients are always "logged in"
 class GCSEndpointType(click.ParamType):
     name = "GCS Server"
 
-    def get_type_annotation(self, _: click.Parameter) -> type:
-        return t.cast(type, t.Union[uuid.UUID, tuple[uuid.UUID, uuid.UUID]])
-
     def get_metavar(self, _: t.Optional[click.Parameter]) -> str:
         return "<endpoint_id>[:<collection_id>]"
 
     def convert(
         self, value: t.Any, param: Parameter | None, ctx: Context | None
-    ) -> t.Any:
+    ) -> uuid.UUID | tuple[uuid.UUID, uuid.UUID]:
         if isinstance(value, uuid.UUID):
             return value
         elif isinstance(value, tuple) and len(value) == 2:

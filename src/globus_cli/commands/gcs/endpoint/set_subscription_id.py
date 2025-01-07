@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 import typing as t
 import uuid
 
@@ -10,17 +11,16 @@ from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, endpoint_id_arg
 from globus_cli.termio import display
 
+if sys.version_info >= (3, 9):
+    from typing import Literal
+else:
+    from typing_extensions import Literal
+
 
 class GCSSubscriptionIdType(click.ParamType):
-    def get_type_annotation(self, _: click.Parameter) -> type:
-        return t.cast(type, uuid.UUID | t.Literal["DEFAULT"] | ExplicitNullType)
-
     def convert(
         self, value: str, param: click.Parameter | None, ctx: click.Context | None
-    ) -> t.Any:
-        if ctx and ctx.resilient_parsing:
-            return None
-
+    ) -> uuid.UUID | Literal["DEFAULT"] | ExplicitNullType:
         if value.lower() == "null":
             return EXPLICIT_NULL
         elif value.lower() == "default":

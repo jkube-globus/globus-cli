@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import typing as t
 import uuid
 
 import click
@@ -13,15 +12,9 @@ from globus_cli.termio import display
 
 
 class GCPSubscriptionIdType(click.ParamType):
-    def get_type_annotation(self, _: click.Parameter) -> type:
-        return t.cast(type, uuid.UUID | ExplicitNullType)
-
     def convert(
         self, value: str, param: click.Parameter | None, ctx: click.Context | None
-    ) -> t.Any:
-        if ctx and ctx.resilient_parsing:
-            return None
-
+    ) -> uuid.UUID | ExplicitNullType:
         if value.lower() == "null":
             return EXPLICIT_NULL
 
