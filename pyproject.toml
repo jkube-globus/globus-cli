@@ -47,8 +47,11 @@ homepage = "https://github.com/globus/globus-cli"
 globus = "globus_cli:main"
 
 [dependency-groups]
+coverage = [
+    "coverage[toml]>=7"
+]
 test = [
-    "coverage>=7",
+    {include-group = "coverage"},
     "pytest>=7",
     "pytest-xdist<4",
     "pytest-timeout<3",
