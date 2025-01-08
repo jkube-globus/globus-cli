@@ -24,9 +24,7 @@ class SubscriptionIdType(click.ParamType):
 
     def convert(
         self, value: str, param: click.Parameter | None, ctx: click.Context | None
-    ) -> str | ExplicitNullType | None:
-        if value is None or (ctx and ctx.resilient_parsing):
-            return None
+    ) -> str | ExplicitNullType:
         if value.lower() == "null":
             return EXPLICIT_NULL
         if value.lower() == "default":

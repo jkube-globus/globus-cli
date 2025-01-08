@@ -80,6 +80,8 @@ compdef _globus_completion globus;
 
 def print_completer_option(f: C) -> C:
     def callback(ctx: click.Context, param: click.Parameter, value: str | None) -> None:
+        # if `resilient_parsing=True`, shell completion is being executed, so we should
+        # be careful to skip the callback contents, which would echo output and exit
         if not value or ctx.resilient_parsing:
             return
 
