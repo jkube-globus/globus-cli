@@ -48,7 +48,7 @@ _all_pkgs = {
     "responses": "pyproject.toml",
     "ruamel.yaml": "pyproject.toml",
     "globus-sdk": "pyproject.toml",
-    "mypy": "tox.ini",
+    "mypy": "pyproject.toml",
 }
 
 

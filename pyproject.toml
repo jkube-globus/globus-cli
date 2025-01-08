@@ -43,7 +43,10 @@ dynamic = ["version"]
 [project.urls]
 homepage = "https://github.com/globus/globus-cli"
 
-[project.optional-dependencies]
+[project.scripts]
+globus = "globus_cli:main"
+
+[dependency-groups]
 test = [
     "coverage>=7",
     "pytest>=7",
@@ -53,14 +56,7 @@ test = [
     "responses==0.25.5",
     # loading test fixture data
     "ruamel.yaml==0.18.10",
-    # Python 3.12 needs setuptools.
-    "setuptools;python_version>='3.12'",
 ]
-
-[project.scripts]
-globus = "globus_cli:main"
-
-[dependency-groups]
 typing = [
     "mypy==1.14.1",
     "types-jwt",
