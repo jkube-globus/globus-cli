@@ -5,7 +5,7 @@ import typing as t
 import uuid
 
 import pytest
-from globus_sdk._testing import RegisteredResponse
+from globus_sdk._testing import RegisteredResponse, get_last_request
 
 
 def _make_mapped_collection_search_result(
@@ -107,3 +107,33 @@ def test_search_shows_collection_id(run_line, singular_search_response):
     assert len(lines) == 3
     assert endpoint_id not in lines[-1]
     assert collection_id in lines[-1]
+
+
+@pytest.mark.parametrize(
+    "entity_type",
+    (
+        "GCP_mapped_collection",
+        "GCP_guest_collection",
+        "GCSv5_endpoint",
+        "GCSv5_mapped_collection",
+        "GCSv5_guest_collection",
+    ),
+)
+def test_search_can_send_entity_type_parameter(
+    run_line, singular_search_response, entity_type
+):
+    singular_search_response.add()
+    run_line(
+        [
+            "globus",
+            "endpoint",
+            "search",
+            "mytestquery",
+            "--filter-entity-type",
+            entity_type,
+        ]
+    )
+
+    # confirm that the entity type is sent in the query string
+    last_req = get_last_request()
+    assert entity_type in last_req.url
