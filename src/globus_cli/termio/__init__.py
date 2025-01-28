@@ -1,5 +1,6 @@
 import click
 
+from ._display import display
 from .context import (
     env_interactive,
     err_is_terminal,
@@ -14,7 +15,6 @@ from .context import (
 )
 from .errors import PrintableErrorField, write_error_info
 from .field import Field
-from .printer import display
 
 
 def print_command_hint(message: str, *, color: str = "yellow") -> None:
