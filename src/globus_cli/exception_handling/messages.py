@@ -4,12 +4,14 @@ Reusable message strings and message printing helpers for exception hooks.
 
 from __future__ import annotations
 
+import json
 import os
 
 import click
 import globus_sdk
 
 from globus_cli.login_manager import is_client_login
+from globus_cli.types import JsonValue
 
 DEFAULT_SESSION_REAUTH_MESSAGE = (
     "The resource you are trying to access requires you to re-authenticate."
@@ -169,3 +171,9 @@ def emit_message_for_gare(
             domains=session_domains,
             message=message or DEFAULT_SESSION_REAUTH_MESSAGE,
         )
+
+
+def pretty_json(data: JsonValue, compact: bool = False) -> str:
+    if compact:
+        return json.dumps(data, separators=(",", ":"), sort_keys=True)
+    return json.dumps(data, indent=2, separators=(",", ": "), sort_keys=True)
