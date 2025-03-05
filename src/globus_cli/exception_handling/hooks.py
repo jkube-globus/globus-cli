@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import os
 import textwrap
 import typing as t
 
@@ -10,11 +9,19 @@ import globus_sdk
 import globus_sdk.gare
 
 from globus_cli.endpointish import WrongEntityTypeError
-from globus_cli.login_manager import MissingLoginError, is_client_login
+from globus_cli.login_manager import MissingLoginError
 from globus_cli.termio import PrintableErrorField, outformat_is_json, write_error_info
 from globus_cli.types import JsonValue
 from globus_cli.utils import CLIAuthRequirementsError
 
+from .messages import (
+    DEFAULT_CONSENT_REAUTH_MESSAGE,
+    DEFAULT_SESSION_REAUTH_MESSAGE,
+    emit_consent_required_message,
+    emit_message_for_gare,
+    emit_session_update_message,
+    emit_unauthorized_message,
+)
 from .registry import error_handler, sdk_error_handler
 
 
@@ -56,18 +63,8 @@ def _jsonpath_from_pydantic_loc(loc: list[str | int]) -> str:
     return path
 
 
-_DEFAULT_SESSION_REAUTH_MESSAGE = (
-    "The resource you are trying to access requires you to re-authenticate."
-)
-_DEFAULT_CONSENT_REAUTH_MESSAGE = (
-    "The resource you are trying to access requires you to "
-    "consent to additional access for the Globus CLI."
-)
-
-
 @sdk_error_handler(
-    error_class="GlobusAPIError",
-    condition=lambda err: err.raw_json is None,
+    error_class="GlobusAPIError", condition=lambda err: err.raw_json is None
 )
 def null_data_error_handler(exception: globus_sdk.GlobusAPIError) -> None:
     write_error_info(
@@ -77,36 +74,24 @@ def null_data_error_handler(exception: globus_sdk.GlobusAPIError) -> None:
 
 
 @sdk_error_handler(
-    error_class="GlobusAPIError",
-    condition=lambda err: outformat_is_json(),
+    error_class="GlobusAPIError", condition=lambda err: outformat_is_json()
 )
 def json_error_handler(exception: globus_sdk.GlobusAPIError) -> None:
-    click.echo(
-        click.style(
-            json.dumps(exception.raw_json, indent=2, separators=(",", ": ")),
-            fg="yellow",
-        ),
-        err=True,
-    )
+    msg = json.dumps(exception.raw_json, indent=2, separators=(",", ": "))
+    click.secho(msg, fg="yellow", err=True)
 
 
-@error_handler(
-    error_class=CLIAuthRequirementsError,
-    exit_status=4,
-)
+@error_handler(error_class=CLIAuthRequirementsError, exit_status=4)
 def handle_internal_auth_requirements(
     exception: CLIAuthRequirementsError,
 ) -> int | None:
     gare = exception.gare
     if not gare:
-        click.secho(
-            "Fatal Error: Unsupported internal auth requirements error!",
-            bold=True,
-            fg="red",
-        )
+        msg = "Fatal Error: Unsupported internal auth requirements error!"
+        click.secho(msg, bold=True, fg="red")
         return 255
 
-    _handle_gare(gare, exception.message)
+    emit_message_for_gare(gare, exception.message)
 
     if exception.epilog:
         click.echo("\n* * *\n")
@@ -125,14 +110,12 @@ def handle_flows_gare(exception: globus_sdk.FlowsAPIError) -> int | None:
     if not gare:
         raise ValueError("Expected a GARE, but got None")
 
-    _handle_gare(gare)
-
+    emit_message_for_gare(gare)
     return None
 
 
 @sdk_error_handler(
-    condition=lambda err: bool(err.info.authorization_parameters),
-    exit_status=4,
+    condition=lambda err: bool(err.info.authorization_parameters), exit_status=4
 )
 def session_hook(exception: globus_sdk.GlobusAPIError) -> None:
     """
@@ -140,30 +123,27 @@ def session_hook(exception: globus_sdk.GlobusAPIError) -> None:
     """
     message = exception.info.authorization_parameters.session_message
     if message:
-        message = f"{_DEFAULT_SESSION_REAUTH_MESSAGE}\nmessage: {message}"
+        message = f"{DEFAULT_SESSION_REAUTH_MESSAGE}\nmessage: {message}"
     else:
-        message = _DEFAULT_SESSION_REAUTH_MESSAGE
+        message = DEFAULT_SESSION_REAUTH_MESSAGE
 
-    return _concrete_session_hook(
+    emit_session_update_message(
         identities=exception.info.authorization_parameters.session_required_identities,
         domains=exception.info.authorization_parameters.session_required_single_domain,
         policies=exception.info.authorization_parameters.session_required_policies,
         message=message,
     )
+    return None
 
 
-@sdk_error_handler(
-    condition=lambda err: bool(err.info.consent_required),
-    exit_status=4,
-)
+@sdk_error_handler(condition=lambda err: bool(err.info.consent_required), exit_status=4)
 def consent_required_hook(exception: globus_sdk.GlobusAPIError) -> int | None:
     """
     Expects an exception with a required_scopes field in its raw_json.
     """
     if not exception.info.consent_required.required_scopes:
-        click.secho(
-            "Fatal Error: ConsentRequired but no required_scopes!", bold=True, fg="red"
-        )
+        msg = "Fatal Error: ConsentRequired but no required_scopes!"
+        click.secho(msg, bold=True, fg="red")
         return 255
 
     # specialized message for data_access errors
@@ -174,63 +154,12 @@ def consent_required_hook(exception: globus_sdk.GlobusAPIError) -> int | None:
             "grant consent for the Globus CLI to access it."
         )
     else:
-        message = f"{_DEFAULT_CONSENT_REAUTH_MESSAGE}\nmessage: {exception.message}"
+        message = f"{DEFAULT_CONSENT_REAUTH_MESSAGE}\nmessage: {exception.message}"
 
-    _concrete_consent_required_hook(
-        required_scopes=exception.info.consent_required.required_scopes,
-        message=message,
+    emit_consent_required_message(
+        required_scopes=exception.info.consent_required.required_scopes, message=message
     )
     return None
-
-
-def _concrete_session_hook(
-    *,
-    policies: list[str] | None,
-    identities: list[str] | None,
-    domains: list[str] | None,
-    message: str = _DEFAULT_SESSION_REAUTH_MESSAGE,
-) -> None:
-    click.echo(message)
-
-    if identities or domains:
-        # cast: mypy can't deduce that `domains` is not None if `identities` is None
-        update_target = (
-            " ".join(identities)
-            if identities
-            else " ".join(t.cast(t.List[str], domains))
-        )
-        click.echo(
-            "\nPlease run:\n\n"
-            f"    globus session update {update_target}\n\n"
-            "to re-authenticate with the required identities."
-        )
-    elif policies:
-        click.echo(
-            "\nPlease run:\n\n"
-            f"    globus session update --policy '{','.join(policies)}'\n\n"
-            "to re-authenticate with the required identities."
-        )
-    else:
-        click.echo(
-            '\nPlease use "globus session update" to re-authenticate '
-            "with specific identities."
-        )
-
-
-def _concrete_consent_required_hook(
-    *,
-    required_scopes: list[str],
-    message: str = _DEFAULT_CONSENT_REAUTH_MESSAGE,
-) -> None:
-    click.echo(message)
-
-    click.echo(
-        "\nPlease run:\n\n"
-        "  globus session consent {}\n\n".format(
-            " ".join(f"'{x}'" for x in required_scopes)
-        )
-        + "to login with the required scopes."
-    )
 
 
 @sdk_error_handler(
@@ -245,7 +174,7 @@ def _concrete_consent_required_hook(
 def authentication_hook(
     exception: globus_sdk.TransferAPIError | globus_sdk.AuthAPIError,
 ) -> None:
-    _emit_unauthorized_message()
+    emit_unauthorized_message()
 
 
 @sdk_error_handler(error_class="TransferAPIError")
@@ -409,7 +338,7 @@ def flows_error_hook(exception: globus_sdk.FlowsAPIError) -> None:
     condition=lambda err: err.message == "invalid_grant",
 )
 def invalidrefresh_hook(exception: globus_sdk.AuthAPIError) -> None:
-    _emit_unauthorized_message()
+    emit_unauthorized_message()
 
 
 @sdk_error_handler(error_class="AuthAPIError")
@@ -449,14 +378,8 @@ def globus_error_hook(exception: globus_sdk.GlobusError) -> None:
 
 @error_handler(error_class=WrongEntityTypeError, exit_status=3)
 def wrong_endpoint_type_error_hook(exception: WrongEntityTypeError) -> None:
-    click.echo(
-        click.style(
-            exception.expected_message + "\n" + exception.actual_message,
-            fg="yellow",
-        )
-        + "\n\n",
-        err=True,
-    )
+    msg = exception.expected_message + "\n" + exception.actual_message + "\n\n"
+    click.secho(msg, fg="yellow", err=True)
 
     should_use = exception.should_use_command()
     if should_use:
@@ -466,14 +389,8 @@ def wrong_endpoint_type_error_hook(exception: WrongEntityTypeError) -> None:
             err=True,
         )
     else:
-        click.echo(
-            click.style(
-                "This operation is not supported on objects of this type.",
-                fg="red",
-                bold=True,
-            ),
-            err=True,
-        )
+        msg = "This operation is not supported on objects of this type."
+        click.secho(msg, fg="red", bold=True, err=True)
 
 
 @error_handler(error_class=MissingLoginError, exit_status=4)
@@ -482,107 +399,6 @@ def missing_login_error_hook(exception: MissingLoginError) -> None:
         click.style("MissingLoginError: ", fg="yellow") + exception.message,
         err=True,
     )
-
-
-def _handle_gare(gare: globus_sdk.gare.GARE, message: str | None = None) -> None:
-    required_scopes = gare.authorization_parameters.required_scopes
-    if required_scopes:
-        _concrete_consent_required_hook(
-            required_scopes=required_scopes,
-            message=message or _DEFAULT_CONSENT_REAUTH_MESSAGE,
-        )
-
-    session_policies = gare.authorization_parameters.session_required_policies
-    session_identities = gare.authorization_parameters.session_required_identities
-    session_domains = gare.authorization_parameters.session_required_single_domain
-    if session_policies or session_identities or session_domains:
-        _concrete_session_hook(
-            policies=session_policies,
-            identities=session_identities,
-            domains=session_domains,
-            message=message or _DEFAULT_SESSION_REAUTH_MESSAGE,
-        )
-
-
-_UNAUTHORIZED_CLIENT_MESSAGE: str = (
-    "Invalid Authentication provided.\n\n"
-    "'GLOBUS_CLI_CLIENT_ID' and 'GLOBUS_CLI_CLIENT_SECRET' are set but do "
-    "not appear to be valid client credentials.\n"
-    "Please check that the values are correctly set with no missing "
-    "characters.\n"
-)
-_UNAUTHORIZED_USER_MESSAGE: str = (
-    "No Authentication provided.\n"
-    "Please run:\n\n"
-    "    globus login\n\n"
-    "to ensure that you are logged in."
-)
-
-
-def _emit_unauthorized_message() -> None:
-    """
-    Emit messaging for unauthorized usage, in which there are no tokens or the
-    provided credentials appear invalid.
-    """
-    if is_client_login():
-        click.echo(
-            click.style("MissingLoginError: ", fg="yellow")
-            + _UNAUTHORIZED_CLIENT_MESSAGE,
-            err=True,
-        )
-        if not _client_id_is_valid():
-            msg = "'GLOBUS_CLI_CLIENT_ID' does not appear to be a valid client ID."
-            click.secho(msg, bold=True, fg="red", err=True)
-        if not _client_secret_appears_valid():
-            msg = (
-                "'GLOBUS_CLI_CLIENT_SECRET' does not appear to "
-                "be a valid client secret."
-            )
-            click.secho(msg, bold=True, fg="red", err=True)
-
-    else:
-        click.echo(
-            click.style("MissingLoginError: ", fg="yellow")
-            + _UNAUTHORIZED_USER_MESSAGE,
-            err=True,
-        )
-
-
-def _client_id_is_valid() -> bool:
-    """
-    Check if the CLI client ID appears to be in an invalid format.
-    Assumes that the client secret env var is set.
-    """
-    import uuid
-
-    try:
-        uuid.UUID(os.environ["GLOBUS_CLI_CLIENT_ID"])
-        return True
-    except ValueError:
-        return False
-
-
-def _client_secret_appears_valid() -> bool:
-    """
-    Check if the CLI client secret appears to be in an invalid format.
-    Assumes that the client secret env var is set.
-
-    This check is known to be sensitive to potential changes in Globus Auth.
-    After discussion with the Auth team, we can use this check as long as we treat it
-    as a fallible heuristic. Messaging should reflect "appears to be invalid", etc.
-    """
-    import base64
-
-    secret = os.environ["GLOBUS_CLI_CLIENT_SECRET"]
-    if len(secret) < 30:
-        return False
-
-    try:
-        base64.b64decode(secret.encode("utf-8"))
-    except ValueError:
-        return False
-
-    return True
 
 
 def register_all_hooks() -> None:
