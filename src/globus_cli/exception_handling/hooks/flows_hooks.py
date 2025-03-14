@@ -31,19 +31,37 @@ def handle_flows_gare(exception: globus_sdk.FlowsAPIError) -> int | None:
     condition=lambda err: err.code == "UNPROCESSABLE_ENTITY",
 )
 def flows_validation_error_hook(exception: globus_sdk.FlowsAPIError) -> None:
-    message_string: str = exception.raw_json["error"]["message"]  # type: ignore[index]
-    details: str | list[dict[str, t.Any]] = exception.raw_json["error"]["detail"]  # type: ignore[index] # noqa: E501
-    message_fields = [PrintableErrorField("message", message_string)]
+    # we know the data must be a dict because `code` parsed (condition above)
+    error_data: dict[str, t.Any] = exception.raw_json  # type: ignore[assignment]
 
-    # conditionally do this work if there are multiple details
-    if isinstance(details, list) and len(details) > 1:
-        num_errors = len(details)
+    # try to pull the details array, empty on failure
+    details_list: list[dict[str, t.Any]] = []
+    try:
+        detail = error_data["error"]["detail"]
+        if isinstance(detail, list):
+            details_list = detail
+    except KeyError:
+        pass
+
+    # try to pull the 'message' string into a list of fields to render
+    message_fields: list[PrintableErrorField] = []
+    try:
+        message_fields = [
+            PrintableErrorField("message", error_data["error"]["message"])
+        ]
+    except KeyError:
+        pass
+
+    # if there are multiple details or we couldn't get a message
+    # then rewrite the messages to display as formatted pydantic error data
+    if len(details_list) > 1 or not message_fields:
+        num_errors = len(details_list)
         # try to extract 'loc' and 'msg' from the details, but only
         # update 'message_fields' if the data are present
         try:
             messages = [
                 f"{_jsonpath_from_pydantic_loc(data['loc'])}: {data['msg']}"
-                for data in details
+                for data in details_list
             ]
         except KeyError:
             pass
@@ -58,6 +76,11 @@ def flows_validation_error_hook(exception: globus_sdk.FlowsAPIError) -> None:
                     multiline=True,
                 ),
             ]
+
+    # ultimate fallback: get the SDK's interpreted message
+    # this only applies if neither $.error.message nor $.error.detail worked
+    if not message_fields:
+        message_fields = [PrintableErrorField("message", exception.message)]
 
     write_error_info(
         "Flows API Error",
