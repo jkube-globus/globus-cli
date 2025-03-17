@@ -176,4 +176,4 @@ def emit_message_for_gare(
 def pretty_json(data: JsonValue, compact: bool = False) -> str:
     if compact:
         return json.dumps(data, separators=(",", ":"), sort_keys=True)
-    return json.dumps(data, indent=2, separators=(",", ": "), sort_keys=True)
+    return json.dumps(data, indent=2, sort_keys=True)

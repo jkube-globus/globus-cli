@@ -24,7 +24,7 @@ def null_data_error_handler(exception: globus_sdk.GlobusAPIError) -> None:
     error_class="GlobusAPIError", condition=lambda err: outformat_is_json()
 )
 def json_error_handler(exception: globus_sdk.GlobusAPIError) -> None:
-    msg = json.dumps(exception.raw_json, indent=2, separators=(",", ": "))
+    msg = json.dumps(exception.raw_json, indent=2)
     click.secho(msg, fg="yellow", err=True)
 
 
