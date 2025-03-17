@@ -63,7 +63,10 @@ def consent_required_hook(exception: globus_sdk.GlobusAPIError) -> int | None:
     Expects an exception with a required_scopes field in its raw_json.
     """
     if not exception.info.consent_required.required_scopes:
-        msg = "Fatal Error: ConsentRequired but no required_scopes!"
+        msg = (
+            "Fatal Error: A ConsentRequired error was encountered "
+            "but the error did not contain a required_scopes field!"
+        )
         click.secho(msg, bold=True, fg="red")
         return 255
 
