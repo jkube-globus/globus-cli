@@ -75,7 +75,7 @@ def consent_required_hook(exception: globus_sdk.GlobusAPIError) -> int | None:
             "grant consent for the Globus CLI to access it."
         )
     else:
-        message = f"{DEFAULT_CONSENT_REAUTH_MESSAGE}\nmessage: {exception.message}"
+        message = f"{DEFAULT_CONSENT_REAUTH_MESSAGE}\nMessage: {exception.message}"
 
     emit_consent_required_message(
         required_scopes=exception.info.consent_required.required_scopes, message=message
