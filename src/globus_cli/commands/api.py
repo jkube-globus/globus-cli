@@ -370,7 +370,7 @@ For example, a call of
 
     globus api {legacy_name} GET /foo/bar
 
-sends a 'GET' request to '{_get_url(service_name)}foo/bar'
+sends a 'GET' request to `{_get_url(service_name)}foo/bar`
 """
 
     if service_name != "gcs":
