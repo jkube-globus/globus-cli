@@ -117,7 +117,7 @@ e.g. '1h30m', '500s', '10d'
     ),
 )
 @mutex_option_group("--delete", "--delete-destination-extra")
-@LoginManager.requires_login("auth", "timer", "transfer")
+@LoginManager.requires_login("auth", "timers", "transfer")
 def transfer_command(
     login_manager: LoginManager,
     *,

@@ -29,7 +29,7 @@ if t.TYPE_CHECKING:
         "if additional steps are required to successfully resume the timer."
     ),
 )
-@LoginManager.requires_login("timer")
+@LoginManager.requires_login("timers")
 def resume_command(
     login_manager: LoginManager,
     *,

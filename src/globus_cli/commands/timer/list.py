@@ -6,7 +6,7 @@ from ._common import TIMER_FORMAT_FIELDS
 
 
 @command("list", short_help="List your timers.")
-@LoginManager.requires_login("timer")
+@LoginManager.requires_login("timers")
 def list_command(login_manager: LoginManager) -> None:
     """
     List your timers.

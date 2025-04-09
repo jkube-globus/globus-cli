@@ -11,7 +11,7 @@ from ._common import DELETED_TIMER_FORMAT_FIELDS
 
 @command("delete", short_help="Delete a timer.")
 @click.argument("TIMER_ID", type=click.UUID)
-@LoginManager.requires_login("timer")
+@LoginManager.requires_login("timers")
 def delete_command(login_manager: LoginManager, *, timer_id: uuid.UUID) -> None:
     """
     Delete a timer.
