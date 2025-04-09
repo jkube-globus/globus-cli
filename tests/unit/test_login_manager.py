@@ -1,6 +1,5 @@
 import datetime
 import re
-import sys
 import typing as t
 import uuid
 from unittest import mock
@@ -340,7 +339,6 @@ def test_compute_timer_scope_multiple_data_access():
     assert computed == f"{start_part}*{foo_scope} *{bar_scope} *{baz_scope}{end_part}"
 
 
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="test requires py3.8+")
 def test_cli_scope_requirements_exactly_match_service_name_literal():
     scope_requirements_keys = list(CLI_SCOPE_REQUIREMENTS)
 
