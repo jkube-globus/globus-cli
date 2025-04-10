@@ -11,7 +11,7 @@ from ._common import TIMER_FORMAT_FIELDS
 
 @command("show", short_help="Display a timer.")
 @click.argument("TIMER_ID", type=click.UUID)
-@LoginManager.requires_login("timer")
+@LoginManager.requires_login("timers")
 def show_command(login_manager: LoginManager, *, timer_id: uuid.UUID) -> None:
     """
     Display information about a particular timer.

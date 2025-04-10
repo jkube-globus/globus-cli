@@ -41,5 +41,5 @@ JsonValue: TypeAlias = t.Union[
 
 
 ServiceNameLiteral: TypeAlias = t.Literal[
-    "auth", "transfer", "groups", "search", "timer", "flows"
+    "auth", "transfer", "groups", "search", "timers", "flows"
 ]

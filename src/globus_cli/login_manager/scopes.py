@@ -79,7 +79,7 @@ class _CLIScopeRequirements(t.Dict[ServiceNameLiteral, _ServiceRequirement]):
                 SearchScopes.all,
             ],
         }
-        self["timer"] = {
+        self["timers"] = {
             "min_contract_version": 2,
             "resource_server": TimersScopes.resource_server,
             "nice_server_name": "Globus Timers",
