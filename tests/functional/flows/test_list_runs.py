@@ -3,6 +3,8 @@ import uuid
 import pytest
 from globus_sdk._testing import load_response
 
+from globus_cli.commands.flows.run.list import ROLE_TYPES
+
 
 def test_list_runs_simple(run_line):
     meta = load_response("flows.list_runs").metadata
@@ -74,3 +76,45 @@ def test_list_runs_paginated_response(run_line, limit_delta):
             uuid.UUID(row[0])
         except ValueError:
             pytest.fail(f"Run ID is not a valid UUID: {row[0]}")
+
+
+def test_list_runs_filter_role(run_line):
+    meta = load_response("flows.list_runs").metadata
+    first_run_id = meta["first_run_id"]
+
+    result = run_line(
+        [
+            "globus",
+            "flows",
+            "run",
+            "list",
+            "--filter-role",
+            "run_owner",
+            "--filter-role",
+            "flow_run_manager",
+        ]
+    )
+
+    expected = (
+        "Run ID                               | Flow Title   | Run Label   | Status   \n"  # noqa: E501
+        "------------------------------------ | ------------ | ----------- | ---------\n"  # noqa: E501
+        f"{first_run_id} | My Cool Flow | My Cool Run | SUCCEEDED\n"  # noqa: E501
+    )
+    assert result.output == expected
+
+
+def test_list_runs_invalid_filter_role(run_line):
+    load_response("flows.list_runs")
+
+    invalid_filter_role = "up-up-down-down-left-right-left-right-b-a"
+    role_types = ", ".join(f"'{role}'" for role in ROLE_TYPES)
+    expected_error = (
+        f"Error: Invalid value for '--filter-role': '{invalid_filter_role}' "
+        f"is not one of {role_types}."
+    )
+
+    result = run_line(
+        f"globus flows run list --filter-role {invalid_filter_role}",
+        assert_exit_code=2,
+    )
+    assert expected_error in result.stderr
