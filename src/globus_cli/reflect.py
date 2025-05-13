@@ -16,13 +16,13 @@ from globus_cli.commands import main as main_entrypoint
 from globus_cli.types import ClickContextTree
 
 
-def load_main_entrypoint() -> click.MultiCommand:
-    return t.cast(click.MultiCommand, main_entrypoint)
+def load_main_entrypoint() -> click.Group:
+    return main_entrypoint
 
 
 def walk_contexts(
     name: str,
-    cmd: click.MultiCommand,
+    cmd: click.Group,
     parent_ctx: click.Context | None = None,
     skip_hidden: bool = True,
 ) -> ClickContextTree:
@@ -57,7 +57,7 @@ def walk_contexts(
 
 def iter_all_commands(
     *,
-    cli_main: click.MultiCommand | None = None,
+    cli_main: click.Group | None = None,
     tree: ClickContextTree | None = None,
     skip_hidden: bool = True,
 ) -> t.Iterator[click.Context]:
