@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 
 import click
 
+from globus_cli._click_compat import shim_get_metavar
 from globus_cli.constants import EXPLICIT_NULL, ExplicitNullType
 
 
@@ -13,7 +14,8 @@ class StringOrNull(click.ParamType):
     be converted into an EXPLICIT_NULL
     """
 
-    def get_metavar(self, param: click.Parameter) -> str:
+    @shim_get_metavar
+    def get_metavar(self, param: click.Parameter, ctx: click.Context) -> str:
         return "TEXT"
 
     def convert(
@@ -31,7 +33,8 @@ class UrlOrNull(StringOrNull):
     http or https URL.
     """
 
-    def get_metavar(self, param: click.Parameter) -> str:
+    @shim_get_metavar
+    def get_metavar(self, param: click.Parameter, ctx: click.Context) -> str:
         return "TEXT"
 
     def convert(
@@ -56,7 +59,8 @@ class IntOrNull(click.ParamType):
     be converted into an EXPLICIT_NULL
     """
 
-    def get_metavar(self, param: click.Parameter) -> str:
+    @shim_get_metavar
+    def get_metavar(self, param: click.Parameter, ctx: click.Context) -> str:
         return "[INT|null]"
 
     def convert(

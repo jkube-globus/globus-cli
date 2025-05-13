@@ -4,6 +4,15 @@ import typing as t
 
 import click
 
+from globus_cli._click_compat import (
+    OLDER_CLICK_API,
+    shim_get_metavar,
+    shim_get_missing_message,
+)
+
+if t.TYPE_CHECKING:
+    from click.shell_completion import CompletionItem
+
 
 class CommaDelimitedList(click.ParamType):
     def __init__(
@@ -16,7 +25,8 @@ class CommaDelimitedList(click.ParamType):
         self.convert_values = convert_values
         self.choices = list(choices) if choices is not None else None
 
-    def get_metavar(self, param: click.Parameter) -> str:
+    @shim_get_metavar
+    def get_metavar(self, param: click.Parameter, ctx: click.Context) -> str:
         if self.choices is not None:
             return "{" + ",".join(self.choices) + "}"
         return "TEXT,TEXT,..."
@@ -52,19 +62,63 @@ class CommaDelimitedList(click.ParamType):
         return resolved
 
 
-class ColonDelimitedChoiceTuple(click.Choice):
+class ColonDelimitedChoiceTuple(click.ParamType):
+    """
+    A colon-delimited choice type which wraps the existing click.Choice type.
+
+    It accepts colon-separated options as its input, and uses the underlying
+    choice type to implement behaviors amongst those options.
+    As its output (`convert()`), it produces tuples, with the elements split on
+    `:` characters.
+
+    It uses the `get_type_annotation()` hook from `click-type-test` to indicate
+    the exact literal type which should be used to annotate the parameter it
+    passes.
+    """
+
+    name = "colon_delimited_choice"
+
     def __init__(
         self,
         *,
         choices: t.Sequence[str],
         case_sensitive: bool = True,
     ) -> None:
-        super().__init__(choices, case_sensitive=case_sensitive)
+        super().__init__()
+        self.inner_choice_param = click.Choice(choices, case_sensitive=case_sensitive)
 
         self.unpacked_choices = self._unpack_choices()
 
+    def to_info_dict(self) -> dict[str, t.Any]:
+        return self.inner_choice_param.to_info_dict()
+
+    @shim_get_metavar
+    def get_metavar(self, param: click.Parameter, ctx: click.Context) -> str | None:
+        if OLDER_CLICK_API:
+            # type checking on newer click versions will flag this, but incorrectly so
+            return self.inner_choice_param.get_metavar(param)  # type: ignore[call-arg]
+        return self.inner_choice_param.get_metavar(param, ctx)
+
+    @shim_get_missing_message
+    def get_missing_message(
+        self, param: click.Parameter, ctx: click.Context | None
+    ) -> str:
+        if OLDER_CLICK_API:
+            # type checking on newer click versions will flag this, but incorrectly so
+            return self.inner_choice_param.get_missing_message(
+                param=param  # type: ignore[call-arg]
+            )
+        return self.inner_choice_param.get_missing_message(param=param, ctx=ctx)
+
+    def shell_complete(
+        self, ctx: click.Context, param: click.Parameter, incomplete: str
+    ) -> list[CompletionItem]:
+        return self.inner_choice_param.shell_complete(ctx, param, incomplete)
+
     def _unpack_choices(self) -> list[tuple[str, ...]]:
-        split_choices = [tuple(choice.split(":")) for choice in self.choices]
+        split_choices = [
+            tuple(choice.split(":")) for choice in self.inner_choice_param.choices
+        ]
         if len(split_choices) == 0:
             raise NotImplementedError("No choices")
         choice_len = len(split_choices[0])
@@ -93,4 +147,4 @@ class ColonDelimitedChoiceTuple(click.Choice):
     def convert(
         self, value: str, param: click.Parameter | None, ctx: click.Context | None
     ) -> tuple[str, ...]:
-        return tuple(super().convert(value, param, ctx).split(":"))
+        return tuple(self.inner_choice_param.convert(value, param, ctx).split(":"))

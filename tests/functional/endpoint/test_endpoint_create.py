@@ -12,7 +12,7 @@ def test_gcp_creation(run_line):
     """
     load_response_set("cli.gcp_create")
     result = run_line("globus endpoint create --personal personal_create -F json")
-    res = json.loads(result.output)
+    res = json.loads(result.stdout)
     assert res["DATA_TYPE"] == "endpoint_create_result"
     assert res["code"] == "Created"
     assert "id" in res
@@ -28,7 +28,7 @@ def test_shared_creation(run_line, go_ep1_id):
         "globus endpoint create share_create "
         "-F json --shared {}:/~/".format(go_ep1_id)
     )
-    res = json.loads(result.output)
+    res = json.loads(result.stdout)
     assert res["DATA_TYPE"] == "endpoint_create_result"
     assert res["code"] == "Created"
     assert "Shared endpoint" in res["message"]
@@ -42,7 +42,7 @@ def test_gcs_creation(run_line):
     """
     load_response_set("cli.endpoint_operations")
     result = run_line("globus endpoint create gcs_create --server -F json")
-    res = json.loads(result.output)
+    res = json.loads(result.stdout)
     assert res["DATA_TYPE"] == "endpoint_create_result"
     assert res["code"] == "Created"
     assert res["globus_connect_setup_key"] is None

@@ -16,6 +16,7 @@ from shutil import get_terminal_size
 
 import click
 
+from globus_cli._click_compat import OLDER_CLICK_API
 from globus_cli.exception_handling import custom_except_hook
 from globus_cli.termio import env_interactive
 
@@ -95,7 +96,7 @@ class GlobusCommand(click.Command):
                 combined_opts: dict[str, list[tuple[str, str]]] = {
                     combined_name: [] for combined_name in self.opts_to_combine.values()
                 }
-                parser: click.parser.OptionParser = self.make_parser(ctx)
+                parser = self.make_parser(ctx)
                 values, _, order = parser.parse_args(args=list(args))
                 # values is a dict of value lists keyed by their option name
                 # in order for that value and order is a list of option names
@@ -175,18 +176,22 @@ class GlobusCommandGroup(click.Group):
             )
         return cmd_object
 
-    def invoke(self, ctx: click.Context) -> t.Any:
-        # if no subcommand was given (but, potentially, flags were passed),
-        # ctx.protected_args will be empty
-        # improves upon the built-in detection given on click.Group by
-        # no_args_is_help , since that treats options (without a subcommand) as
-        # being arguments and blows up with a "Missing command" failure
-        # for reference to the original version (as of 2017-02-26):
-        # https://github.com/pallets/click/blob/02ea9ee7e864581258b4902d6e6c1264b0226b9f/click/core.py#L1039-L1052
-        if self.no_args_is_help and not ctx.protected_args:
-            click.echo(ctx.get_help())
-            ctx.exit()
-        return super().invoke(ctx)
+    # only redefine `invoke()` if we're on click<8.2.0
+    # on newer versions, the behavior is improved upstream
+    if OLDER_CLICK_API:
+
+        def invoke(self, ctx: click.Context) -> t.Any:
+            # if no subcommand was given (but, potentially, flags were passed),
+            # ctx.protected_args will be empty
+            # improves upon the built-in detection given on click.Group by
+            # no_args_is_help , since that treats options (without a subcommand) as
+            # being arguments and blows up with a "Missing command" failure
+            # for reference to the original version (as of 2017-02-26):
+            # https://github.com/pallets/click/blob/02ea9ee7e864581258b4902d6e6c1264b0226b9f/click/core.py#L1039-L1052
+            if self.no_args_is_help and not ctx.protected_args:
+                click.echo(ctx.get_help())
+                ctx.exit()
+            return super().invoke(ctx)
 
 
 class TopLevelGroup(GlobusCommandGroup):

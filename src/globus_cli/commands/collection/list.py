@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 import typing as t
 import uuid
 
@@ -11,8 +12,22 @@ from globus_cli.parsing import command, endpoint_id_arg
 from globus_cli.termio import Field, display, formatters
 from globus_cli.utils import PagingWrapper
 
+if sys.version_info >= (3, 10):
+    from typing import TypeAlias
+else:
+    from typing_extensions import TypeAlias
 
-class ChoiceSlugified(click.Choice):
+# until our minimum click version is 8.2.0+ , we need to handle the fact that
+# click.Choice became a generic in 8.2.0
+# we cannot leave it without a defined type parameter, as we have
+# "no-any-generics" set for mypy
+if t.TYPE_CHECKING:
+    ChoiceType: TypeAlias = click.Choice[str]
+else:
+    ChoiceType = click.Choice
+
+
+class ChoiceSlugified(ChoiceType):
     """
     Allow either hyphens or underscores, e.g. both 'mapped-collections' or
     'mapped_collections'
