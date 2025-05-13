@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import typing as t
-
 import click
 
 from globus_cli.parsing import command
@@ -46,9 +44,8 @@ def list_commands() -> None:
     """
     # get the root context (the click context for the entire CLI tree)
     root_ctx = click.get_current_context().find_root()
-    ctx, subcmds, subgroups = walk_contexts(
-        "globus", t.cast(click.MultiCommand, root_ctx.command)
-    )
+    root_command: click.Group = root_ctx.command  # type: ignore[assignment]
+    ctx, subcmds, subgroups = walk_contexts("globus", root_command)
     _print_tree(ctx, subcmds, subgroups)
     # get an extra newline at the end
     click.echo("")
