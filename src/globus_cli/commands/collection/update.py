@@ -34,12 +34,6 @@ class _FullDataField(Field):
 @collection_id_arg
 @endpointish_params.update(name="collection")
 @click.option(
-    "--force-encryption/--no-force-encryption",
-    "force_encryption",
-    default=None,
-    help="When set, all transfers to and from this collection are always encrypted.",
-)
-@click.option(
     "--sharing-restrict-paths",
     type=JSONStringOrFile(null="null"),
     help=(
