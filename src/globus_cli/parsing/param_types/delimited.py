@@ -4,6 +4,8 @@ import typing as t
 
 import click
 
+from globus_cli._click_compat import shim_get_metavar
+
 
 class CommaDelimitedList(click.ParamType):
     def __init__(
@@ -16,7 +18,8 @@ class CommaDelimitedList(click.ParamType):
         self.convert_values = convert_values
         self.choices = list(choices) if choices is not None else None
 
-    def get_metavar(self, param: click.Parameter) -> str:
+    @shim_get_metavar
+    def get_metavar(self, param: click.Parameter, ctx: click.Context) -> str:
         if self.choices is not None:
             return "{" + ",".join(self.choices) + "}"
         return "TEXT,TEXT,..."

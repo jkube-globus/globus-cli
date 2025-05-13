@@ -8,6 +8,7 @@ from click import Context, Parameter
 from globus_sdk.scopes import GCSCollectionScopeBuilder, GCSEndpointScopeBuilder
 from globus_sdk.services.flows import SpecificFlowClient
 
+from globus_cli._click_compat import shim_get_metavar
 from globus_cli.login_manager import LoginManager, is_client_login
 from globus_cli.parsing import command, no_local_server_option
 from globus_cli.termio import verbosity
@@ -57,7 +58,8 @@ Clients are always "logged in"
 class GCSEndpointType(click.ParamType):
     name = "GCS Server"
 
-    def get_metavar(self, _: t.Optional[click.Parameter]) -> str:
+    @shim_get_metavar
+    def get_metavar(self, param: click.Parameter, ctx: click.Context) -> str:
         return "<endpoint_id>[:<collection_id>]"
 
     def convert(

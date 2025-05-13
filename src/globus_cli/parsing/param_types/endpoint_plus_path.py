@@ -5,6 +5,8 @@ import uuid
 
 import click
 
+from globus_cli._click_compat import shim_get_metavar
+
 
 class EndpointPlusPath(click.ParamType):
     """
@@ -31,7 +33,8 @@ class EndpointPlusPath(click.ParamType):
         else:
             return t.Tuple[uuid.UUID, t.Union[str, None]]  # type: ignore[return-value]
 
-    def get_metavar(self, param: click.Parameter | None) -> str:
+    @shim_get_metavar
+    def get_metavar(self, param: click.Parameter, ctx: click.Context) -> str:
         """
         Default metavar for this instance of the type.
         """
