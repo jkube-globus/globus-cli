@@ -96,7 +96,7 @@ class GlobusCommand(click.Command):
                 combined_opts: dict[str, list[tuple[str, str]]] = {
                     combined_name: [] for combined_name in self.opts_to_combine.values()
                 }
-                parser: click.parser.OptionParser = self.make_parser(ctx)
+                parser = self.make_parser(ctx)
                 values, _, order = parser.parse_args(args=list(args))
                 # values is a dict of value lists keyed by their option name
                 # in order for that value and order is a list of option names
