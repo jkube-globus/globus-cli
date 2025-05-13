@@ -34,3 +34,18 @@ def shim_get_metavar(f: C) -> C:
         return wrapper  # type: ignore[return-value]
 
     return f
+
+
+def shim_get_missing_message(f: C) -> C:
+    """
+    Shim `get_missing_message` in a similar way to `get_metavar` above.
+    """
+    if OLDER_CLICK_API:
+
+        @functools.wraps(f)
+        def wrapper(*args: t.Any, **kwargs: t.Any) -> t.Any:
+            return f(*args, **kwargs, ctx=click.get_current_context())
+
+        return wrapper  # type: ignore[return-value]
+
+    return f
