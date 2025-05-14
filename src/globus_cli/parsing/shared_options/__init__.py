@@ -15,7 +15,11 @@ from globus_cli.parsing.command_state import (
     show_server_timing_option,
     verbose_option,
 )
-from globus_cli.parsing.param_types import NotificationParamType
+from globus_cli.parsing.param_types import (
+    GCSManagerGuestActivityNotificationParamType,
+    NotificationParamType,
+    TransferGuestActivityNotificationParamType,
+)
 from globus_cli.types import AnyCommand
 
 C = t.TypeVar("C", bound=AnyCommand)
@@ -376,3 +380,40 @@ def local_user_option(f: C) -> C:
             "collections."
         ),
     )(f)
+
+
+def activity_notifications_option(
+    gc_type: t.Literal["GCP", "GCS"],
+) -> t.Callable[[C], C]:
+
+    def decorator(f: C) -> C:
+
+        help = (
+            "Comma-separated list of conditions. "
+            "Activity-monitoring roles on a guest collection will receive email "
+            "notifications when a matching transfer task completes.\n\n"
+            "'source' and 'destination' filter to tasks where the collection is the "
+            "source or destination of the transfer, respectively. "
+            "Similarly, 'succeeded' and 'failed' filter based on the task's status. "
+            "'all' enables notifications for all transfer tasks. "
+            'Use "" to remove the activity notification policy.\n\n'
+            "For example, a value of 'destination,failed' sends notifications "
+            "only when the collection is the destination and the transfer failed."
+        )
+
+        if gc_type == "GCP":
+            return click.option(
+                "--activity-notifications",
+                default=None,
+                help=help,
+                type=TransferGuestActivityNotificationParamType(),
+            )(f)
+        else:
+            return click.option(
+                "--activity-notifications",
+                default=None,
+                help=help,
+                type=GCSManagerGuestActivityNotificationParamType(),
+            )(f)
+
+    return decorator
