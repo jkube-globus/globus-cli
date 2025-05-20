@@ -2,6 +2,29 @@
 
 // scriv-insert-here
 
+== 3.35.0 (2025-05-20)
+
+Enhancements:
+
+* Add `--run-manager` and `--run-monitor` options to `globus flows create`.
+* Add `--run-managers` and `--run-monitors` options to `globus flows update`.
+* Add "Run Managers" and "Run Monitors" to the output of `globus flows show`.
+
+* `globus flows start` now accepts `--activity-notification-policy`,
+  which can be a comma-delimited list of statuses or a JSON policy document.
+  When provided, the notification policy allows users to configure
+  when the run will trigger email notifications.
+
+* Guest collections may be configured to send email notifications for transfer tasks
+  to `administrator`, `activity_manager`, and `activity_monitor` roles
+  with the `--activity-notifications` option.
+  The option is supported for both `globus gcp collection` and `globus gcs collection`
+  guest create and update commands.
+
+* Allow the `globus flows list` `--filter-role` parameter to be supplied multiple times
+  to specify multiple roles.
+* Add `--filter-role` parameter to `globus flows run list`.
+
 == 3.34.0 (2025-04-18)
 
 Bugfixes:
