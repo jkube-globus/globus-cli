@@ -59,7 +59,7 @@ def test_shlex_process_stream_success():
         values.append(bar)
 
     text_like = unittest.mock.Mock()
-    text_like.readlines.return_value = ["alpha\n", "beta  # gamma\n"]
+    text_like.read.return_value = "alpha\nbeta  # gamma\n"
     text_like.name = "alphabet.txt"
 
     with outer_main.make_context("main", []):
@@ -80,7 +80,7 @@ def test_shlex_process_stream_error_handling(capsys):
         values.append(bar)
 
     text_like = unittest.mock.Mock()
-    text_like.readlines.return_value = ["alpha beta\n"]
+    text_like.read.return_value = "alpha beta\n"
     text_like.name = "alphabet.txt"
 
     with pytest.raises(click.exceptions.Exit) as excinfo:
