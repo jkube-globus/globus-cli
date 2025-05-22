@@ -165,10 +165,7 @@ def shlex_process_stream(
     """
     import shlex
 
-    # use readlines() rather than implicit file read line looping to force
-    # python to properly capture EOF (otherwise, EOF acts as a flush and
-    # things get weird)
-    for lineno, line in enumerate(stream.readlines()):
+    for lineno, line in enumerate(stream.read().splitlines()):
         # get the argument vector:
         # do a shlex split to handle quoted paths with spaces in them
         # also lets us have comments with #
