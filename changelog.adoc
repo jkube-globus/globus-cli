@@ -7,7 +7,7 @@
 Bugfixes:
 
 * Fix a bug in the latest version of `globus flows list` which caused the
-  command to send malformed query parameters and fail
+  command to send malformed query parameters and fail.
 
 == 3.35.0 (2025-05-20)
 
