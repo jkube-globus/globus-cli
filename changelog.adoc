@@ -6,7 +6,7 @@
 
 Bugfixes:
 
-* Fix the ordering of session error checks in order to handle new API error formats.
+* Fix session error handling to support new API error formats.
 
 == 3.35.1 (2025-05-30)
 
