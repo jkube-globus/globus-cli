@@ -52,7 +52,7 @@ def _sort_all_hooks() -> t.Iterable[DeclaredHook[t.Any]]:
         [null_data_error_handler, json_error_handler],
         # next, authn and session requirements, from most specific to most general
         [handle_internal_auth_requirements, handle_flows_gare],
-        [session_hook, consent_required_hook],
+        [consent_required_hook, session_hook],
         # CLI internal error types, which cannot be confused with external causes
         [missing_login_error_hook, wrong_endpoint_type_error_hook],
         # service-specific hooks uncaptured by earlier checks
