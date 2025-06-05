@@ -2,6 +2,12 @@
 
 // scriv-insert-here
 
+== 3.35.2 (2025-06-05)
+
+Bugfixes:
+
+* Fix session error handling to support new API error formats.
+
 == 3.35.1 (2025-05-30)
 
 Bugfixes:
