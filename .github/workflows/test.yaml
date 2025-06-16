@@ -30,7 +30,7 @@ jobs:
               - "py3.13-sdkmain"
             cache-key-prefix: "linux"
             cache-key-hash-files:
-              - "setup.py"
+              - "pyproject.toml"
 
           - name: "macOS"
             runner: "macos-latest"
@@ -39,7 +39,7 @@ jobs:
             tox-environments-from-pythons: true
             cache-key-prefix: "macos"
             cache-key-hash-files:
-              - "setup.py"
+              - "pyproject.toml"
 
           - name: "Windows"
             runner: "windows-latest"
@@ -48,7 +48,7 @@ jobs:
             tox-environments-from-pythons: true
             cache-key-prefix: "windows"
             cache-key-hash-files:
-              - "setup.py"
+              - "pyproject.toml"
 
           - name: "Quality"
             runner: "ubuntu-latest"
@@ -63,7 +63,7 @@ jobs:
             cache-files:
               - ".mypy_cache/"
             cache-key-hash-files:
-              - "setup.py"
+              - "pyproject.toml"
 
     uses: "globus/workflows/.github/workflows/tox.yaml@f41714f6a8b102569807b348fce50960f9617df8" # v1.2
     with:
