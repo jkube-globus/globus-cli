@@ -27,7 +27,7 @@ def set_collection_subscription_admin_verified(
     Update a GCP collection's subscription verification status.
 
     This operation requires membership in a Globus subscription group and has
-    authorization requirements which depend upon the caller’s roles on the
+    authorization requirements which depend upon the caller's roles on the
     subscription group and the collection.
 
     Subscription administrators can grant or revoke verification on a
@@ -38,8 +38,8 @@ def set_collection_subscription_admin_verified(
     verification on a collection, but must still be a subscription administrator
     to grant verification.
 
-    STATUS Must be a boolean expressing the subscription admin verified status.
-    A value of true grants the status, and a value of false revokes status.
+    STATUS must be a boolean expressing the subscription admin verified status.
+    A value of 'true' grants the status, and a value of 'false' revokes status.
     """
     transfer_client = login_manager.get_transfer_client()
     epish = Endpointish(endpoint_id, transfer_client=transfer_client)

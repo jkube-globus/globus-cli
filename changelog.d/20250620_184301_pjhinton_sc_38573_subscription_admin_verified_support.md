@@ -1,3 +1,3 @@
 ### Enhancements
 
-* Add support for GCP subscription admin verification on collections.
+* Support setting the `subscription_admin_verified` flag on GCP collections.
