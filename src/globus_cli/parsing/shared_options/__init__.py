@@ -382,6 +382,17 @@ def local_user_option(f: C) -> C:
     )(f)
 
 
+def subscription_admin_verified_option(f: C) -> C:
+    """
+    Option for setting the subscription verification status on a GCP collections.
+    """
+    return click.option(
+        "--subscription-admin-verified",
+        help="Update a GCP collection's subscription verification status.",
+        type=bool,
+    )(f)
+
+
 def activity_notifications_option(
     gc_type: t.Literal["GCP", "GCS"],
 ) -> t.Callable[[C], C]:
