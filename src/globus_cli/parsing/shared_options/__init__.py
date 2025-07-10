@@ -388,7 +388,12 @@ def subscription_admin_verified_option(f: C) -> C:
     """
     return click.option(
         "--subscription-admin-verified",
-        help="Update a GCP collection's subscription verification status.",
+        help=(
+            "Grant or revoke subscription verification status. "
+            "Specifying 'true' requires administrator roles on both the "
+            "collection and the subscription group. Specifying 'false' "
+            "requires only an administrator role on the collection."
+        ),
         type=bool,
     )(f)
 
