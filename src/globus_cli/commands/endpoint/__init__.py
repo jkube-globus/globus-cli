@@ -4,11 +4,11 @@ from globus_cli.parsing import group
 @group(
     "endpoint",
     lazy_subcommands={
-        "activate": (".activate", "endpoint_activate"),
+        "activate": ("_removal_stub", "removal_stub_command"),
         "create": (".create", "endpoint_create"),
         "deactivate": ("_removal_stub", "removal_stub_command"),
         "delete": (".delete", "endpoint_delete"),
-        "is-activated": (".is_activated", "endpoint_is_activated"),
+        "is-activated": ("_removal_stub", "removal_stub_command"),
         "local-id": (".local_id", "local_id"),
         "my-shared-endpoint-list": (
             ".my_shared_endpoint_list",

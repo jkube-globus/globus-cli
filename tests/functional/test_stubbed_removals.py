@@ -4,7 +4,11 @@ import pytest
 @pytest.mark.parametrize(
     "command",
     [
+        pytest.param(["globus", "endpoint", "activate"], id="endpoint_activate"),
         pytest.param(["globus", "endpoint", "deactivate"], id="endpoint_deactivate"),
+        pytest.param(
+            ["globus", "endpoint", "is-activated"], id="endpoint_is_activated"
+        ),
     ],
 )
 @pytest.mark.parametrize(
