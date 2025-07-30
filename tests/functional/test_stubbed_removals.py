@@ -10,6 +10,7 @@ import pytest
             ["globus", "endpoint", "is-activated"], id="endpoint_is_activated"
         ),
         pytest.param(["globus", "endpoint", "server"], id="endpoint_server"),
+        pytest.param(["globus", "endpoint", "create"], id="endpoint_create"),
     ],
 )
 @pytest.mark.parametrize(

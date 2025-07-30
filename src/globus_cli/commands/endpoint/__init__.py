@@ -5,7 +5,7 @@ from globus_cli.parsing import group
     "endpoint",
     lazy_subcommands={
         "activate": ("_removal_stub", "removal_stub_command"),
-        "create": (".create", "endpoint_create"),
+        "create": ("_removal_stub", "removal_stub_command"),
         "deactivate": ("_removal_stub", "removal_stub_command"),
         "delete": (".delete", "endpoint_delete"),
         "is-activated": ("_removal_stub", "removal_stub_command"),
