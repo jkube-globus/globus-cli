@@ -17,7 +17,7 @@ from globus_cli.parsing import group
         "permission": (".permission", "permission_command"),
         "role": (".role", "role_command"),
         "search": (".search", "endpoint_search"),
-        "server": (".server", "server_command"),
+        "server": ("_removal_stub", "removal_stub_command"),
         "set-subscription-id": (".set_subscription_id", "set_endpoint_subscription_id"),
         "show": (".show", "endpoint_show"),
         "storage-gateway": (".storage_gateway", "storage_gateway_command"),
