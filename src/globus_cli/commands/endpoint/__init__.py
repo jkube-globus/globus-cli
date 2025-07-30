@@ -6,7 +6,7 @@ from globus_cli.parsing import group
     lazy_subcommands={
         "activate": (".activate", "endpoint_activate"),
         "create": (".create", "endpoint_create"),
-        "deactivate": (".deactivate", "endpoint_deactivate"),
+        "deactivate": ("_removal_stub", "removal_stub_command"),
         "delete": (".delete", "endpoint_delete"),
         "is-activated": (".is_activated", "endpoint_is_activated"),
         "local-id": (".local_id", "local_id"),
