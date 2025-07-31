@@ -167,15 +167,20 @@ def mock_user_data(logged_in_user_id):
     return {"sub": logged_in_user_id}
 
 
+@pytest.fixture(scope="session")
+def logged_in_client_id():
+    return "fakeClientIDString"
+
+
 @pytest.fixture
-def test_token_storage(mock_login_token_response, mock_user_data):
+def test_token_storage(logged_in_client_id, mock_login_token_response, mock_user_data):
     """Put memory-backed sqlite token storage in place for the testsuite to use."""
     mockstore = SQLiteAdapter(":memory:")
     real_close = mockstore.close
     mockstore.close = mock.Mock()
     mockstore.store_config(
         "auth_client_data",
-        {"client_id": "fakeClientIDString", "client_secret": "fakeClientSecret"},
+        {"client_id": logged_in_client_id, "client_secret": "fakeClientSecret"},
     )
     mockstore.store_config("auth_user_data", mock_user_data)
     mockstore.store(mock_login_token_response)
