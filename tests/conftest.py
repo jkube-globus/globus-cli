@@ -159,9 +159,6 @@ def user_profile(monkeypatch):
 
 @pytest.fixture(scope="session")
 def logged_in_user_id():
-    # NB: this carefully matches the ID provided by our "foo_user_info" data fixture
-    # in the future, this should be adjusted such that this is the source of truth
-    # for the response mocks
     return "25de0aed-aa83-4600-a1be-a62a910af116"
 
 
