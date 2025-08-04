@@ -76,7 +76,8 @@ def mapped_command(
         **verify,
     )
 
-    res = transfer_client.create_endpoint(ep_doc)
+    # NOTE: this uses the legacy "create endpoint" route
+    res = transfer_client.post("/v0.10/endpoint", data=ep_doc)
 
     # output
     display(
