@@ -18,15 +18,14 @@ jobs:
           - name: "Linux"
             runner: "ubuntu-latest"
             cpythons:
-              - "3.8"
               - "3.9"
               - "3.10"
               - "3.11"
               - "3.12"
               - "3.13"
             tox-post-environments:
-              - "py3.8-mindeps"
-              - "py3.8-sdkmain"
+              - "py3.9-mindeps"
+              - "py3.9-sdkmain"
               - "py3.13-sdkmain"
             cache-key-prefix: "linux"
             cache-key-hash-files:

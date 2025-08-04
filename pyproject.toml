@@ -20,14 +20,13 @@ classifiers = [
     "Intended Audience :: Developers",
     "Operating System :: POSIX",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
     "globus-sdk==3.62.0",
     "click>=8.1.4,<9",
