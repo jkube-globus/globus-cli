@@ -47,7 +47,7 @@ globus = "globus_cli:main"
 
 [dependency-groups]
 coverage = [
-    "coverage[toml]>=7"
+    "coverage[toml]>=7.10"
 ]
 yaml = ["ruamel.yaml==0.18.14"]
 test = [
@@ -103,6 +103,7 @@ filterwarnings = [
 
 [tool.coverage.run]
 parallel = true
+patch = ["subprocess"]
 source = ["globus_cli"]
 [tool.coverage.paths]
 source = [
