@@ -50,15 +50,15 @@ globus = "globus_cli:main"
 coverage = [
     "coverage[toml]>=7"
 ]
+yaml = ["ruamel.yaml==0.18.14"]
 test = [
     {include-group = "coverage"},
+    {include-group = "yaml"},  # loading test fixture data
     "pytest>=7",
     "pytest-xdist<4",
     "pytest-timeout<3",
     "click-type-test==1.1.0;python_version>='3.10'",
     "responses==0.25.7",
-    # loading test fixture data
-    "ruamel.yaml==0.18.14",
 ]
 test-mindeps = [
     {include-group = "test"},
@@ -74,6 +74,12 @@ typing = [
     "types-jwt",
     "types-requests",
     "types-jmespath",
+]
+check-project-metadata = [
+    "mddj==0.2.0",
+    {include-group = "yaml"},
+    "build",
+    "twine",
 ]
 # `dev` is what's installed if you `make install`
 dev = [
