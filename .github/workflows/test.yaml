@@ -58,6 +58,7 @@ jobs:
               - "mypy-minpython"
               - "mypy-maxpython"
               - "reference"
+              - "check-min-python-is-tested"
               - "twine-check"
             cache-key-prefix: "quality"
             cache-files:
