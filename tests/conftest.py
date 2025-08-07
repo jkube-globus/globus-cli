@@ -481,7 +481,7 @@ class GetIdentitiesMocker:
                         "organization", "Globus Cloning Intergalactic"
                     ),
                     "status": partial.get("status", "used"),
-                    "email": partial.get("email", f"clone{n}+contacme@globus.org"),
+                    "email": partial.get("email", f"clone{n}+contactme@globus.org"),
                     "name": partial.get("name", f"Clone {n}"),
                     "username": partial.get("username", f"clone{n}@globus.org"),
                 }
