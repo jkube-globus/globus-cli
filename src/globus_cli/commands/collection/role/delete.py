@@ -23,14 +23,4 @@ def delete_command(
     auth_client = login_manager.get_auth_client()
 
     res = gcs_client.delete_role(role_id)
-    display(
-        res,
-        text_mode=display.RECORD,
-        fields=[
-            Field("ID", "id"),
-            Field("Role", "role"),
-            Field(
-                "Principal", "principal", formatter=PrincipalURNFormatter(auth_client)
-            ),
-        ],
-    )
+    display(res, text_mode=display.RAW, response_key="code")
