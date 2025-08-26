@@ -34,6 +34,6 @@ def test_successful_gcs_collection_role_delete(
     run_line(
         ["globus", "gcs", "collection", "role", "delete", collection_id, role_id],
         search_stdout=[
-            ("code", "success"),
+            "success",
         ],
     )
