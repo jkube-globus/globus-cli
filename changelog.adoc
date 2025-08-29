@@ -2,6 +2,42 @@
 
 // scriv-insert-here
 
+== 3.36.0 (2025-08-29)
+
+Enhancements:
+
+* The `globus gcp set-subscription-admin-verified` command may be used by a
+  subscription group administrator to grant and revoke verification on a
+  GCP collection. This command does not require that the user have a role
+  on the collection receiving the verification. Supplying a value of `true`
+  grants the verification, and a value of `false` revokes the verification.
+
+* The `globus gcp update mapped` and `globus gcp update guest` commands now
+  accept the option `--subscription-admin-verified`. An administrator on a
+  GCP collection can set the option to `true` to grant verification, provided
+  that the identity also is an administrator in the subscription group. The
+  verification status may be revoked by setting the option to `false`. Revocation
+  does not require an administrator role in the subscription group.
+
+* Add a new command for interacting with collection roles,
+  `globus gcs collection role show`
+
+* Add a new command for interacting with collection roles,
+  `globus gcs collection role list`
+
+Other:
+
+* Commands specific to Globus Connect Server version 4 have been removed.
+  Specifically, the following commands are removed:
+
+  * `globus endpoint activate`
+  * `globus endpoint deactivate`
+  * `globus endpoint is-activated`
+  * `globus endpoint server`
+  * `globus endpoint create`
+
+* Python 3.8 is no longer supported.
+
 == 3.35.2 (2025-06-05)
 
 Bugfixes:
