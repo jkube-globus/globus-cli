@@ -1,5 +1,3 @@
-import uuid
-
 from globus_sdk._testing import RegisteredResponse, load_response_set
 
 
@@ -14,7 +12,7 @@ def test_successful_gcs_collection_role_delete(
     collection_id = meta["mapped_collection_id"]
     add_gcs_login(endpoint_id)
 
-    role_id = str(uuid.UUID(int=1))
+    role_id = meta["role_id"]
 
     # mock the responses for the Get Role API (GCS)
     RegisteredResponse(

@@ -1,4 +1,6 @@
 metadata:
+  role_id: "0174edd0-998c-4147-a123-99ea38068145"
+  role_identity_id: "081cfa08-b857-4f26-bf2b-13d08e581545"
   mapped_collection_id: "1405823f-0597-4a16-b296-46d4f0ae4b15"
   guest_collection_id: "0e4a77f8-b778-4d5c-abaa-e1254e71427f"
   endpoint_id: "cf37806c-572c-47ff-88e2-511c646ef1a4"
@@ -428,6 +430,17 @@ gcs:
             "tlsftp_url": "http://example.com"
           }
         ]
+      }
+  - path: /roles/0174edd0-998c-4147-a123-99ea38068145
+    method: delete
+    json:
+      {
+        "DATA_TYPE": "result#1.1.0",
+        "code": "success",
+        "detail": "success",
+        "has_next_page": false,
+        "http_response_code": 200,
+        "message": "Deleted role 0174edd0-998c-4147-a123-99ea38068145"
       }
   - path: /user_credentials
     method: get
