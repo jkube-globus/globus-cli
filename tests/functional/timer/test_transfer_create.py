@@ -1,4 +1,5 @@
 import datetime
+import itertools
 import json
 import uuid
 
@@ -548,3 +549,43 @@ def test_timer_creation_delete_flag_requires_recursion(
     resp = run_line(f"{base_cmd} {options}", assert_exit_code=exit_code)
 
     assert expected_error in resp.stderr
+
+
+def test_timer_creation_supports_filter_rules(run_line, ep_for_timer):
+    """
+    Confirm that `--include/--exclude` ordering is preserved.
+    """
+    filter_opts = [
+        ("--exclude", "foo"),
+        ("--include", "bar"),
+        ("--include", "baz"),
+        ("--exclude", "qux"),
+    ]
+    expected_filter_rules = [
+        {
+            "DATA_TYPE": "filter_rule",
+            "method": opt[0].lstrip("-"),
+            "name": opt[1],
+            "type": "file",
+        }
+        for opt in filter_opts
+    ]
+
+    run_line(
+        [
+            "globus",
+            "timer",
+            "create",
+            "transfer",
+            "--stop-after-runs",
+            "1",
+            "--recursive",
+            f"{ep_for_timer}:/",
+            f"{ep_for_timer}:/",
+            *itertools.chain(*filter_opts),
+        ]
+    )
+
+    sent_data = json.loads(get_last_request().body)
+    transfer_body = sent_data["timer"]["body"]
+    assert transfer_body["filter_rules"] == expected_filter_rules

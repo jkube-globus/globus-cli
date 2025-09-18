@@ -125,3 +125,46 @@ def encrypt_data_option(*, aliases: tuple[str, ...] = ()) -> t.Callable[[C], C]:
         )(f)
 
     return decorator
+
+
+def filter_rule_options(f: C) -> C:
+    """
+    Use of this decorator must be used with
+
+        opts_to_combine={
+            "include": "filter_rules",
+            "exclude": "filter_rules",
+        }
+
+    in order to produce correct `filter_rules` list.
+
+    The order of `--include` and `--exclude` determines behavior, and we have to
+    modify parsing to get that ordering information.
+    """
+    f = click.option(
+        "--include",
+        multiple=True,
+        show_default=True,
+        expose_value=False,  # this is combined into the filter_rules parameter
+        help=(
+            "Include files found with names that match the given pattern in "
+            'recursive transfers. Pattern may include "*", "?", or "[]" for Unix-style '
+            "globbing. This option can be given multiple times along with "
+            "--exclude to control which files are transferred, with earlier "
+            "options having priority."
+        ),
+    )(f)
+    f = click.option(
+        "--exclude",
+        multiple=True,
+        show_default=True,
+        expose_value=False,  # this is combined into the filter_rules parameter
+        help=(
+            "Exclude files found with names that match the given pattern in "
+            'recursive transfers. Pattern may include "*", "?", or "[]" for Unix-style '
+            "globbing. This option can be given multiple times along with "
+            "--include to control which files are transferred, with earlier "
+            "options having priority."
+        ),
+    )(f)
+    return f
