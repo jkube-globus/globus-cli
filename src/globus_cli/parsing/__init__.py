@@ -38,6 +38,7 @@ from .shared_options.id_args import (
 from .shared_options.transfer_task_options import (
     encrypt_data_option,
     fail_on_quota_errors_option,
+    filter_rule_options,
     preserve_timestamp_option,
     skip_source_errors_option,
     sync_level_option,
@@ -84,6 +85,7 @@ __all__ = [
     "sync_level_option",
     "task_notify_option",
     "fail_on_quota_errors_option",
+    "filter_rule_options",
     "encrypt_data_option",
     "preserve_timestamp_option",
     "skip_source_errors_option",

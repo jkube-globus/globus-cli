@@ -16,6 +16,7 @@ from globus_cli.parsing import (
     command,
     encrypt_data_option,
     fail_on_quota_errors_option,
+    filter_rule_options,
     mutex_option_group,
     preserve_timestamp_option,
     skip_source_errors_option,
@@ -54,7 +55,14 @@ e.g. '1h30m', '500s', '10d'
 """
 
 
-@command("transfer", short_help="Create a recurring transfer timer.")
+@command(
+    "transfer",
+    opts_to_combine={  # see 'filter_rule_options' for why this is needed
+        "include": "filter_rules",
+        "exclude": "filter_rules",
+    },
+    short_help="Create a recurring transfer timer.",
+)
 @click.argument(
     "source", metavar="SOURCE_ENDPOINT_ID[:SOURCE_PATH]", type=ENDPOINT_PLUS_OPTPATH
 )
@@ -70,6 +78,7 @@ e.g. '1h30m', '500s', '10d'
 @skip_source_errors_option
 @fail_on_quota_errors_option
 @task_notify_option
+@filter_rule_options
 @click.option(
     "--start",
     type=click.DateTime(formats=DATETIME_FORMATS),
@@ -139,6 +148,7 @@ def transfer_command(
     preserve_timestamp: bool,
     skip_source_errors: bool,
     fail_on_quota_errors: bool,
+    filter_rules: list[tuple[t.Literal["include", "exclude"], str]],
     notify: dict[str, bool],
 ) -> None:
     """
@@ -304,6 +314,10 @@ def transfer_command(
         # mypy can't understand kwargs expansion very well
         **notify,  # type: ignore[arg-type]
     )
+
+    for rule in filter_rules:
+        method, name = rule
+        transfer_data.add_filter_rule(method=method, name=name, type="file")
 
     if batch:
         add_batch_to_transfer_data(
