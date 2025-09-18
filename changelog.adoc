@@ -2,6 +2,18 @@
 
 // scriv-insert-here
 
+== 3.37.0 (2025-09-18)
+
+Bugfixes:
+
+* Fix incorrect bounds on the version of the `click` library. The upper bound
+  is now declared to exclude the next "feature release" of `click`.
+
+Enhancements:
+
+* Add a new command for interacting with collection roles,
+  `globus gcs collection role delete`
+
 == 3.36.0 (2025-08-29)
 
 Enhancements:
