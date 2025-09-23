@@ -12,6 +12,7 @@ from globus_cli.parsing import (
     command,
     encrypt_data_option,
     fail_on_quota_errors_option,
+    filter_rule_options,
     mutex_option_group,
     preserve_timestamp_option,
     skip_source_errors_option,
@@ -136,6 +137,7 @@ fi
 @encrypt_data_option(aliases=("--encrypt",))
 @skip_source_errors_option
 @fail_on_quota_errors_option
+@filter_rule_options
 @click.option(
     "--delete",
     is_flag=True,
@@ -169,32 +171,6 @@ fi
     default=None,
     show_default=True,
     help="Specify an algorithm for --external-checksum or --verify-checksum",
-)
-@click.option(
-    "--include",
-    multiple=True,
-    show_default=True,
-    expose_value=False,  # this is combined into the filter_rules parameter
-    help=(
-        "Include files found with names that match the given pattern in "
-        'recursive transfers. Pattern may include "*", "?", or "[]" for Unix-style '
-        "globbing. This option can be given multiple times along with "
-        "--exclude to control which files are transferred, with earlier "
-        "options having priority."
-    ),
-)
-@click.option(
-    "--exclude",
-    multiple=True,
-    show_default=True,
-    expose_value=False,  # this is combined into the filter_rules parameter
-    help=(
-        "Exclude files found with names that match the given pattern in "
-        'recursive transfers. Pattern may include "*", "?", or "[]" for Unix-style '
-        "globbing. This option can be given multiple times along with "
-        "--include to control which files are transferred, with earlier "
-        "options having priority."
-    ),
 )
 @click.option(
     "--source-local-user",
