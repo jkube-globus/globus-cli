@@ -94,7 +94,6 @@ class _CLIScopeRequirements(t.Dict[ServiceNameLiteral, _ServiceRequirement]):
             "scopes": [
                 FlowsScopes.manage_flows,
                 FlowsScopes.view_flows,
-                FlowsScopes.run,
                 FlowsScopes.run_status,
                 FlowsScopes.run_manage,
             ],
