@@ -2,6 +2,24 @@
 
 // scriv-insert-here
 
+== 3.38.0 (2025-09-24)
+
+Enhancements:
+
+* Added a new command to set/unset a group's `subscription_admin_verified_id`:
+  `globus group set-subscription-admin-verified`.
+
+* Added a new option to `group update` command for group admins to unset a
+  group's `subscription_admin_verified_id`: `--subscription-admin-verified-id`.
+
+* Added support for `--include` and `--exclude` to the `globus timer create
+  transfer` command.
+
+Other:
+
+* Remove the deprecated Flows service scope `run` from the default list of
+  scopes requested when logging into the CLI.
+
 == 3.37.0 (2025-09-18)
 
 Bugfixes:
