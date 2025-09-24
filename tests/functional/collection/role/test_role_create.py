@@ -8,16 +8,18 @@ def test_successful_gcs_collection_role_creation(
     # setup data for the collection_id -> endpoint_id lookup
     # and create dummy credentials for the test to run against that GCS
     meta = load_response_set("cli.collection_operations").metadata
+
+    collection_id = meta["mapped_collection_id"]
     endpoint_id = meta["endpoint_id"]
-    user_id = meta["role_identity_id"]
     role = meta["role"]
     role_id = meta["role_id"]
-    collection_id = meta["mapped_collection_id"]
+    user_id = meta["role_identity_id"]
+    #    username = meta["username"]
     add_gcs_login(endpoint_id)
 
     role = "activity_monitor"
 
-    # mock the responses for the Delete Role API (GCS)
+    # mock the responses for the Role API creation (GCS)
     RegisteredResponse(
         service="gcs",
         path="/roles/",
@@ -30,10 +32,13 @@ def test_successful_gcs_collection_role_creation(
         },
     ).add()
 
+    # ("Role", "activity_monitor"),
+    # ("ID", role_id),
+    # ("Principal", username),
     # now test the command and confirm that a successful role creation is reported
     run_line(
         ["globus", "collection", "role", "create", collection_id, role, user_id],
         search_stdout=[
-            "success",
+            "activity_monitor",
         ],
     )
