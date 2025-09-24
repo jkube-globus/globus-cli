@@ -34,13 +34,14 @@ def create_command(
     principal_type: t.Literal["identity", "group"] | None,
 ) -> None:
     """
-    Create a role on a Collection.
+    Create a role assignment on a Collection.
 
     ROLE must be one of:
-        "administrator",
-        "access_manager",
-        "activity_manager",
-        "activity_monitor"
+
+    "administrator",
+    "access_manager",
+    "activity_manager",
+    "activity_monitor"
 
     PRINCIPAL must be a username, UUID, or URN associated with a globus identity or
     group.
@@ -58,11 +59,13 @@ def create_command(
         principal=principal,
     )
 
-    data = globus_sdk.GCSRoleDocument(
-        DATA_TYPE="role#1.0.0",
-        collection=collection_id,
-        role=role,
-        principal=principal_urn,
+    res = gcs_client.create_role(
+        globus_sdk.GCSRoleDocument(
+            DATA_TYPE="role#1.0.0",
+            collection=collection_id,
+            role=role,
+            principal=principal_urn,
+        )
     )
-    res = gcs_client.create_role(data=data)
+
     display(res, text_mode=display.RECORD, fields=role_fields(auth_client))
