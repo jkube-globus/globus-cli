@@ -7,7 +7,6 @@ metadata:
   gcp_endpoint_id: "06e2c959-d311-4bab-b2ea-25ad77d9fc12"
   local_username: "recyclops"
   identity_id: "e926d510-cb98-11e5-a6ac-0b0216052512"
-  identity_username: "pytest@globus.org"
   gcs_hostname: "abc.xyz.data.globus.org"
   guest_display_name: "Happy Fun Guest Collection Name"
 
