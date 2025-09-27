@@ -47,7 +47,7 @@ def test_successful_gcs_collection_role_list(
     # now test the command and confirm that output shows the role name and the
     # username
     run_line(
-        ["globus", "gcs", "collection", "role", "list", collection_id],
+        ["globus", "collection", "role", "list", collection_id],
         search_stdout=[
             ("ID", user_id),
             ("Role", "administrator"),
