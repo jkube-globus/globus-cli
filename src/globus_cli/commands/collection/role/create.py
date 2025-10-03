@@ -28,7 +28,9 @@ def create_command(
     login_manager: LoginManager,
     *,
     collection_id: uuid.UUID,
-    role: str,
+    role: t.Literal[
+        "access_manager", "activity_manager", "activity_monitor", "administrator"
+    ],
     principal: str,
     principal_type: t.Literal["identity", "group"] | None,
 ) -> None:
