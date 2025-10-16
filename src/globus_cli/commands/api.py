@@ -7,6 +7,7 @@ from collections import defaultdict
 
 import click
 import globus_sdk
+from globus_sdk.scopes import ScopeParser
 
 from globus_cli import termio, version
 from globus_cli._click_compat import shim_get_metavar
@@ -137,7 +138,7 @@ def _get_resource_server(service_name: str) -> str:
         "groups": globus_sdk.GroupsClient.resource_server,
         "search": globus_sdk.SearchClient.resource_server,
         "transfer": globus_sdk.TransferClient.resource_server,
-        "timers": globus_sdk.TimerClient.resource_server,
+        "timers": globus_sdk.TimersClient.resource_server,
     }.get(service_name)
     if _resource_server is None:
         raise NotImplementedError(f"unrecognized service: {service_name}")
@@ -282,7 +283,7 @@ def _execute_service_command(
 
     client.app_name = version.app_name + " raw-api-command"
     if no_retry:
-        client.transport.max_retries = 0
+        client.retry_config.max_retries = 0
 
     # Prepare Query Params
     query_params_d = defaultdict(list)
@@ -316,9 +317,17 @@ def _execute_service_command(
     for header_name, header_value in header:
         headers_d[header_name] = header_value
 
-    # Strip `/v2` from Groups paths, which are auto-added by `GroupsClient`.
-    if isinstance(client, globus_sdk.GroupsClient) and path.startswith("/v2"):
-        path = path[3:]
+    # Legacy Behavior: add '/v2/' and '/v0.10/' base paths to Groups and Transfer
+    # this was inherited from globus-sdk v3
+    # removing it should be done in a controlled manner
+    if isinstance(client, globus_sdk.GroupsClient) and not path.startswith("/v2/"):
+        if path.startswith("/"):
+            path = path[1:]
+        path = f"/v2/{path}"
+    if isinstance(client, globus_sdk.TransferClient) and not path.startswith("/v0.10/"):
+        if path.startswith("/"):
+            path = path[1:]
+        path = f"/v0.10/{path}"
 
     # try sending and handle any error
     try:
@@ -342,14 +351,17 @@ def _execute_service_command(
 def _handle_scope_string(
     login_manager: LoginManager,
     resource_server: str,
-    scope_string: tuple[str, ...],
+    scope_strings: tuple[str, ...],
 ) -> None:
     if not is_client_login():
         raise click.UsageError(
             "Scope requirements (--scope-string) are currently only "
             "supported for confidential-client authorized calls."
         )
-    login_manager.add_requirement(resource_server, scope_string)
+    login_manager.add_requirement(
+        resource_server,
+        tuple(scope for s in scope_strings for scope in ScopeParser.parse(s)),
+    )
 
 
 @group("api")

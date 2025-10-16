@@ -3,7 +3,7 @@ import re
 import uuid
 
 import pytest
-from globus_sdk._testing import load_response, register_response_set
+from globus_sdk.testing import load_response, register_response_set
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -22,7 +22,7 @@ def _register_responses():
         {
             "default": {
                 "service": "groups",
-                "path": f"/subscription_info/{subscription_id}",
+                "path": f"/v2/subscription_info/{subscription_id}",
                 "json": {
                     "group_id": group_id,
                     "subscription_id": subscription_id,
@@ -40,7 +40,7 @@ def _register_responses():
             },
             "get_group": {
                 "service": "groups",
-                "path": f"/groups/{group_id}",
+                "path": f"/v2/groups/{group_id}",
                 "json": {
                     "id": group_id,
                     "subscription_id": subscription_id,
@@ -78,13 +78,13 @@ def _register_responses():
             },
             "get_group_not_visible": {
                 "service": "groups",
-                "path": f"/groups/{group_id}",
+                "path": f"/v2/groups/{group_id}",
                 "json": {"message": "forbidden!"},
                 "status": 403,
             },
             "get_group_fails": {
                 "service": "groups",
-                "path": f"/groups/{group_id}",
+                "path": f"/v2/groups/{group_id}",
                 "json": {"message": "boom!"},
                 "status": 409,
                 "metadata": {"message": "boom!"},

@@ -4,7 +4,9 @@ import textwrap
 import typing as t
 
 import click
+import globus_sdk
 
+from globus_cli.parsing import OmittableChoice
 from globus_cli.types import AnyCommand
 
 C = t.TypeVar("C", bound=AnyCommand)
@@ -15,9 +17,9 @@ def sync_level_option(*, aliases: tuple[str, ...] = ()) -> t.Callable[[C], C]:
         return click.option(
             "--sync-level",
             *aliases,
-            default=None,
+            default=globus_sdk.MISSING,
             show_default=True,
-            type=click.Choice(
+            type=OmittableChoice(
                 ("exists", "size", "mtime", "checksum"), case_sensitive=False
             ),
             help=(
@@ -30,11 +32,17 @@ def sync_level_option(*, aliases: tuple[str, ...] = ()) -> t.Callable[[C], C]:
 
 
 def transfer_recursive_option(f: C) -> C:
+    def none_to_missing(
+        ctx: click.Context, param: click.Parameter, value: bool | None
+    ) -> bool | globus_sdk.MissingType:
+        if value is None:
+            return globus_sdk.MISSING
+        return value
+
     return click.option(
         "--recursive/--no-recursive",
         "-r",
-        is_flag=True,
-        default=None,
+        flag_value=True,
         help=(
             "Use --recursive to flag that the paths are directories "
             "and should be transferred recursively. "
@@ -42,6 +50,8 @@ def transfer_recursive_option(f: C) -> C:
             "that must not be transferred recursively. "
             "Omit these options to use path type auto-detection."
         ),
+        default=None,
+        callback=none_to_missing,
     )(f)
 
 

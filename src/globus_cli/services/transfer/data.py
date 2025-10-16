@@ -6,7 +6,11 @@ import click
 import globus_sdk
 
 from globus_cli.constants import ExplicitNullType
-from globus_cli.parsing import TaskPath, mutex_option_group
+from globus_cli.parsing import (
+    OMITTABLE_STRING,
+    TaskPath,
+    mutex_option_group,
+)
 from globus_cli.types import JsonValue
 from globus_cli.utils import shlex_process_stream
 
@@ -14,21 +18,29 @@ from globus_cli.utils import shlex_process_stream
 def add_batch_to_transfer_data(
     source_base_path: str | None,
     dest_base_path: str | None,
-    checksum_algorithm: str | None,
+    checksum_algorithm: str | globus_sdk.MissingType,
     transfer_data: globus_sdk.TransferData,
     batch: t.TextIO,
 ) -> None:
     @click.command()
-    @click.option("--external-checksum")
-    @click.option("--recursive/--no-recursive", "-r", default=None, is_flag=True)
+    @click.option(
+        "--external-checksum", default=globus_sdk.MISSING, type=OMITTABLE_STRING
+    )
+    @click.option(
+        "--recursive/--no-recursive",
+        "-r",
+        is_flag=True,
+        default=None,
+        callback=_none_to_missing,
+    )
     @click.argument("source_path", type=TaskPath(base_dir=source_base_path))
     @click.argument("dest_path", type=TaskPath(base_dir=dest_base_path))
     @mutex_option_group("--recursive", "--external-checksum")
     def process_batch_line(
         dest_path: TaskPath,
         source_path: TaskPath,
-        recursive: bool | None,
-        external_checksum: str | None,
+        recursive: bool | globus_sdk.MissingType,
+        external_checksum: str | globus_sdk.MissingType,
     ) -> None:
         """
         Parse a line of batch input and turn it into a transfer submission
@@ -43,6 +55,14 @@ def add_batch_to_transfer_data(
         )
 
     shlex_process_stream(process_batch_line, batch, "--batch")
+
+
+def _none_to_missing(
+    ctx: click.Context, param: click.Parameter, value: bool | None
+) -> bool | globus_sdk.MissingType:
+    if value is None:
+        return globus_sdk.MISSING
+    return value
 
 
 def display_name_or_cname(

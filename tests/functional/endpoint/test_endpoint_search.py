@@ -7,7 +7,7 @@ import urllib.parse
 import uuid
 
 import pytest
-from globus_sdk._testing import RegisteredResponse, get_last_request
+from globus_sdk.testing import RegisteredResponse, get_last_request
 
 
 def _make_mapped_collection_search_result(
@@ -125,7 +125,7 @@ def singular_search_response():
     owner_string = "globus@globus.org"
     return RegisteredResponse(
         service="transfer",
-        path="/endpoint_search",
+        path="/v0.10/endpoint_search",
         metadata={
             "collection_id": collection_id,
             "endpoint_id": endpoint_id,

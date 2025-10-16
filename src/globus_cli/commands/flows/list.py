@@ -3,10 +3,11 @@ from __future__ import annotations
 import typing as t
 
 import click
+import globus_sdk
 from globus_sdk.paging import Paginator
 
 from globus_cli.login_manager import LoginManager
-from globus_cli.parsing import ColonDelimitedChoiceTuple, command
+from globus_cli.parsing import OMITTABLE_STRING, ColonDelimitedChoiceTuple, command
 from globus_cli.termio import Field, display, formatters
 from globus_cli.utils import PagingWrapper
 
@@ -43,15 +44,16 @@ ORDER_BY_FIELDS = (
 )
 @click.option(
     "--filter-fulltext",
-    type=str,
     help=(
         "Filter results based on pattern matching within a subset of fields: "
         "[id, title, subtitle, description, flow_owner, flow_administrators]"
     ),
+    type=OMITTABLE_STRING,
+    default=globus_sdk.MISSING,
 )
 @click.option(
     "--orderby",
-    default=["updated_at:DESC"],
+    default=("updated_at:DESC",),
     show_default=True,
     type=ColonDelimitedChoiceTuple(
         choices=tuple(
@@ -104,7 +106,7 @@ def list_command(
         ],
         ...,
     ],
-    filter_fulltext: str | None,
+    filter_fulltext: str | globus_sdk.MissingType,
     limit: int,
 ) -> None:
     """
@@ -116,7 +118,7 @@ def list_command(
         paginator(
             # `filter_roles=()` results in an API error
             # the query param sent by the SDK would be `filter_roles=` (empty string)
-            filter_roles=filter_roles or None,
+            filter_roles=filter_roles or globus_sdk.MISSING,
             filter_fulltext=filter_fulltext,
             orderby=",".join(f"{field} {order}" for field, order in orderby),
         ).items(),
