@@ -6,6 +6,7 @@ import textwrap
 import typing as t
 
 import click
+import globus_sdk
 
 from globus_cli.parsing.command_state import (
     debug_option,
@@ -16,8 +17,10 @@ from globus_cli.parsing.command_state import (
     verbose_option,
 )
 from globus_cli.parsing.param_types import (
+    OMITTABLE_STRING,
     GCSManagerGuestActivityNotificationParamType,
     NotificationParamType,
+    OmittableDateTime,
     TransferGuestActivityNotificationParamType,
 )
 from globus_cli.types import AnyCommand
@@ -88,10 +91,12 @@ def task_submission_options(f: C) -> C:
     """
 
     def format_deadline_callback(
-        ctx: click.Context, param: click.Parameter, value: datetime.datetime | None
-    ) -> str | None:
-        if not value:
-            return None
+        ctx: click.Context,
+        param: click.Parameter,
+        value: datetime.datetime | globus_sdk.MissingType,
+    ) -> str | globus_sdk.MissingType:
+        if value is globus_sdk.MISSING or not value:
+            return globus_sdk.MISSING
         return value.strftime("%Y-%m-%d %H:%M:%S")
 
     f = click.option(
@@ -107,12 +112,19 @@ def task_submission_options(f: C) -> C:
             "generate-submission-id`. Used for safe resubmission in the "
             "presence of network failures."
         ),
+        default=globus_sdk.MISSING,
+        type=OMITTABLE_STRING,
     )(f)
-    f = click.option("--label", default=None, help="Set a label for this task.")(f)
+    f = click.option(
+        "--label",
+        help="Set a label for this task.",
+        default=globus_sdk.MISSING,
+        type=OMITTABLE_STRING,
+    )(f)
     f = click.option(
         "--deadline",
-        default=None,
-        type=click.DateTime(),
+        default=globus_sdk.MISSING,
+        type=OmittableDateTime(),
         callback=format_deadline_callback,
         help="Set a deadline for this to be canceled if not completed by.",
     )(f)
@@ -132,9 +144,21 @@ def delete_and_rm_options(
     Options which apply both to `globus delete` and `globus rm`.
     """
 
+    def none_to_missing(
+        ctx: click.Context, param: click.Parameter, value: bool | None
+    ) -> bool | globus_sdk.MissingType:
+        if value is None:
+            return globus_sdk.MISSING
+        return value
+
     def decorator(f: C) -> C:
         f = click.option(
-            "--recursive", "-r", is_flag=True, help="Recursively delete dirs"
+            "--recursive",
+            "-r",
+            is_flag=True,
+            help="Recursively delete dirs",
+            default=None,
+            callback=none_to_missing,
         )(f)
         f = click.option(
             "--ignore-missing",
@@ -379,6 +403,8 @@ def local_user_option(f: C) -> C:
             "account to map to. Only usable with Globus Connect Server v5 mapped "
             "collections."
         ),
+        default=globus_sdk.MISSING,
+        type=OMITTABLE_STRING,
     )(f)
 
 

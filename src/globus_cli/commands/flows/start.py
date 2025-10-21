@@ -6,17 +6,20 @@ import typing as t
 import uuid
 
 import click
+import globus_sdk
 
 from globus_cli._click_compat import shim_get_metavar
+from globus_cli.commands.flows._fields import flow_run_format_fields
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import (
+    OMITTABLE_STRING,
     JSONStringOrFile,
     ParsedJSONData,
     command,
     flow_id_arg,
     flow_input_document_option,
 )
-from globus_cli.termio import Field, display, formatters
+from globus_cli.termio import display
 from globus_cli.types import JsonValue
 
 if t.TYPE_CHECKING:
@@ -147,8 +150,9 @@ class ActivityNotificationPolicyType(JSONStringOrFile):
 @flow_input_document_option
 @click.option(
     "--label",
-    type=str,
     help="A label to give the run.",
+    default=globus_sdk.MISSING,
+    type=OMITTABLE_STRING,
 )
 @click.option(
     "--manager",
@@ -203,7 +207,7 @@ def start_command(
     *,
     flow_id: uuid.UUID,
     input_document: ParsedJSONData | None,
-    label: str | None,
+    label: str | globus_sdk.MissingType,
     managers: tuple[str, ...],
     monitors: tuple[str, ...],
     tags: tuple[str, ...],
@@ -236,12 +240,17 @@ def start_command(
             raise click.UsageError("Flow input must be a JSON object")
         input_document_json = input_document.data
 
-    notify_policy: dict[str, t.Any] | None = None
+    notify_policy: dict[str, t.Any] | globus_sdk.MissingType = globus_sdk.MISSING
     if activity_notification_policy:
-        # type ignore as this is JSON data which we know is constrained to a dict
-        notify_policy = activity_notification_policy.data  # type: ignore[assignment]
+        if not isinstance(activity_notification_policy.data, dict):
+            raise click.UsageError(
+                "Activity Notification Policy must be a JSON object."
+            )
+        notify_policy = activity_notification_policy.data
 
     flow_client = login_manager.get_specific_flow_client(flow_id)
+    auth_client = login_manager.get_auth_client()
+
     response = flow_client.run_flow(
         body=input_document_json,
         label=label,
@@ -251,44 +260,6 @@ def start_command(
         activity_notification_policy=notify_policy,
     )
 
-    auth_client = login_manager.get_auth_client()
-    principal_formatter = formatters.auth.PrincipalURNFormatter(auth_client)
-    for principal_set_name in ("run_managers", "run_monitors"):
-        for value in response.get(principal_set_name, ()):
-            principal_formatter.add_item(value)
-    principal_formatter.add_item(response.get("run_owner"))
-
-    fields = [
-        Field("Flow ID", "flow_id"),
-        Field("Flow title", "flow_title"),
-        Field("Run ID", "run_id"),
-        Field("Run label", "label"),
-        Field(
-            "Run owner",
-            "run_owner",
-            formatter=principal_formatter,
-        ),
-        Field(
-            "Run managers",
-            "run_managers",
-            formatter=formatters.ArrayFormatter(
-                delimiter=", ",
-                element_formatter=principal_formatter,
-            ),
-        ),
-        Field(
-            "Run monitors",
-            "run_monitors",
-            formatter=formatters.ArrayFormatter(
-                delimiter=", ",
-                element_formatter=principal_formatter,
-            ),
-        ),
-        Field(
-            "Run tags",
-            "tags",
-            formatter=formatters.ArrayFormatter(delimiter=", "),
-        ),
-    ]
+    fields = flow_run_format_fields(auth_client, response.data)
 
     display(response, fields=fields, text_mode=display.RECORD)

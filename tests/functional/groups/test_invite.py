@@ -2,7 +2,7 @@ import json
 
 import pytest
 import responses
-from globus_sdk._testing import load_response, register_response_set
+from globus_sdk.testing import load_response, register_response_set
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -47,7 +47,7 @@ def _register_invitation_responses():
             identities += add_ids
         return {
             "service": "groups",
-            "path": f"/groups/{group_id}",
+            "path": f"/v2/groups/{group_id}",
             "method": "POST",
             "json": (
                 {
@@ -92,7 +92,7 @@ def _register_invitation_responses():
         {
             "default": {
                 "service": "groups",
-                "path": f"/groups/{group_id}",
+                "path": f"/v2/groups/{group_id}",
                 "json": {
                     "my_memberships": [
                         {
@@ -110,7 +110,7 @@ def _register_invitation_responses():
             },
             "multiple": {
                 "service": "groups",
-                "path": f"/groups/{group_id}",
+                "path": f"/v2/groups/{group_id}",
                 "json": {
                     "my_memberships": [
                         {
@@ -142,7 +142,7 @@ def _register_invitation_responses():
         {
             "default": {
                 "service": "groups",
-                "path": f"/groups/{group_id}",
+                "path": f"/v2/groups/{group_id}",
                 "json": {"my_memberships": [], **_group_common},
                 "metadata": _common_metadata,
             }
