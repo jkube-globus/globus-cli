@@ -9,6 +9,8 @@ import globus_sdk
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import (
     ENDPOINT_PLUS_OPTPATH,
+    OMITTABLE_INT,
+    OMITTABLE_STRING,
     command,
     encrypt_data_option,
     fail_on_quota_errors_option,
@@ -23,6 +25,7 @@ from globus_cli.parsing import (
     verify_checksum_option,
 )
 from globus_cli.termio import Field, display
+from globus_cli.utils import make_dict_json_serializable
 
 
 @command(
@@ -165,12 +168,14 @@ fi
         "transfer integrity. Assumed to be an MD5 checksum if "
         "--checksum-algorithm is not given."
     ),
+    default=globus_sdk.MISSING,
+    type=OMITTABLE_STRING,
 )
 @click.option(
     "--checksum-algorithm",
-    default=None,
-    show_default=True,
     help="Specify an algorithm for --external-checksum or --verify-checksum",
+    default=globus_sdk.MISSING,
+    type=OMITTABLE_STRING,
 )
 @click.option(
     "--source-local-user",
@@ -179,6 +184,8 @@ fi
         "user account to map to. Only usable with Globus Connect Server v5 mapped "
         "collections."
     ),
+    default=globus_sdk.MISSING,
+    type=OMITTABLE_STRING,
 )
 @click.option(
     "--destination-local-user",
@@ -187,43 +194,47 @@ fi
         "local user account to map to. Only usable with Globus Connect Server v5 "
         "mapped collections."
     ),
+    default=globus_sdk.MISSING,
+    type=OMITTABLE_STRING,
 )
-@click.option("--perf-cc", type=int, hidden=True)
-@click.option("--perf-p", type=int, hidden=True)
-@click.option("--perf-pp", type=int, hidden=True)
-@click.option("--perf-udt", is_flag=True, default=None, hidden=True)
+@click.option("--perf-cc", default=globus_sdk.MISSING, type=OMITTABLE_INT, hidden=True)
+@click.option("--perf-p", default=globus_sdk.MISSING, type=OMITTABLE_INT, hidden=True)
+@click.option("--perf-pp", default=globus_sdk.MISSING, type=OMITTABLE_INT, hidden=True)
+@click.option("--perf-udt", is_flag=True, hidden=True)
 @mutex_option_group("--recursive", "--external-checksum")
 @LoginManager.requires_login("transfer")
 def transfer_command(
     login_manager: LoginManager,
     *,
     batch: t.TextIO | None,
-    sync_level: t.Literal["exists", "size", "mtime", "checksum"] | None,
-    recursive: bool | None,
+    sync_level: (
+        t.Literal["exists", "size", "mtime", "checksum"] | globus_sdk.MissingType
+    ),
+    recursive: bool | globus_sdk.MissingType,
     source: tuple[uuid.UUID, str | None],
     destination: tuple[uuid.UUID, str | None],
-    checksum_algorithm: str | None,
-    external_checksum: str | None,
+    checksum_algorithm: str | globus_sdk.MissingType,
+    external_checksum: str | globus_sdk.MissingType,
     skip_source_errors: bool,
     fail_on_quota_errors: bool,
     filter_rules: list[tuple[t.Literal["include", "exclude"], str]],
-    label: str | None,
+    label: str | globus_sdk.MissingType,
     preserve_timestamp: bool,
     verify_checksum: bool,
     encrypt_data: bool,
-    submission_id: str | None,
+    submission_id: str | globus_sdk.MissingType,
     dry_run: bool,
     delete: bool,
     delete_destination_extra: bool,
-    deadline: str | None,
+    deadline: str | globus_sdk.MissingType,
     skip_activation_check: bool,
     notify: dict[str, bool],
-    perf_cc: int | None,
-    perf_p: int | None,
-    perf_pp: int | None,
-    perf_udt: bool | None,
-    source_local_user: str | None,
-    destination_local_user: str | None,
+    perf_cc: int | globus_sdk.MissingType,
+    perf_p: int | globus_sdk.MissingType,
+    perf_pp: int | globus_sdk.MissingType,
+    perf_udt: bool,
+    source_local_user: str | globus_sdk.MissingType,
+    destination_local_user: str | globus_sdk.MissingType,
 ) -> None:
     """
     Copy a file or directory from one endpoint to another as an asynchronous
@@ -322,7 +333,7 @@ def transfer_command(
         click.echo(click.style(msg, fg="yellow"), err=True)
 
     # avoid 'mutex_option_group', emit a custom error message
-    if recursive is not None and batch:
+    if recursive is not globus_sdk.MISSING and batch:
         option_name = "--recursive" if recursive else "--no-recursive"
         raise click.UsageError(
             f"You cannot use `{option_name}` in addition to `--batch`. "
@@ -351,7 +362,7 @@ def transfer_command(
             ("perf_cc", perf_cc),
             ("perf_p", perf_p),
             ("perf_pp", perf_pp),
-            ("perf_udt", perf_udt),
+            ("perf_udt", True if perf_udt else globus_sdk.MISSING),
         )
         if v is not None
     }
@@ -409,7 +420,7 @@ def transfer_command(
 
     if dry_run:
         display(
-            transfer_data.data,
+            make_dict_json_serializable(transfer_data),
             response_key="DATA",
             fields=[
                 Field("Source Path", "source_path"),

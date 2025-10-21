@@ -1,7 +1,9 @@
 import typing as t
 
 import click
+import globus_sdk
 
+from globus_cli.parsing import OMITTABLE_STRING
 from globus_cli.types import AnyCommand
 
 C = t.TypeVar("C", bound=AnyCommand)
@@ -30,7 +32,12 @@ def user_credential_create_and_update_params(
             f = click.argument("globus-identity")(f)
             f = click.argument("storage-gateway", type=click.UUID)(f)
 
-        f = click.option("--display-name", help="Display name for the credential.")(f)
+        f = click.option(
+            "--display-name",
+            help="Display name for the credential.",
+            default=globus_sdk.MISSING,
+            type=OMITTABLE_STRING,
+        )(f)
 
         return f
 

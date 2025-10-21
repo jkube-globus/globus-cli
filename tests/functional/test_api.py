@@ -3,7 +3,7 @@ import uuid
 
 import pytest
 import responses
-from globus_sdk._testing import (
+from globus_sdk.testing import (
     RegisteredResponse,
     get_last_request,
     load_response,
@@ -19,7 +19,7 @@ def _register_stub_transfer_response():
             "default": {
                 "service": "transfer",
                 "status": 200,
-                "path": "/foo",
+                "path": "/v0.10/foo",
                 "json": {"foo": "bar"},
             }
         },
@@ -33,11 +33,17 @@ def _register_stub_transfer_response():
 @pytest.mark.parametrize("is_error_response", (False, True))
 def test_api_command_get(run_line, service_name, add_gcs_login, is_error_response):
     sdk_service_name = "timer" if service_name == "timers" else service_name
+    path_prefix = ""
+    if service_name == "groups":
+        path_prefix = "/v2"
+    if service_name == "transfer":
+        path_prefix = "/v0.10"
+
     load_response(
         RegisteredResponse(
             service=sdk_service_name,
             status=500 if is_error_response else 200,
-            path="/foo",
+            path=f"{path_prefix}/foo",
             json={"foo": "bar"},
         )
     )
@@ -48,9 +54,9 @@ def test_api_command_get(run_line, service_name, add_gcs_login, is_error_respons
         load_response(
             RegisteredResponse(
                 service="transfer",
-                path=f"/endpoint/{endpoint_id}",
+                path=f"/v0.10/endpoint/{endpoint_id}",
                 # this data contains the GCS server hostname which is baked into
-                # globus_sdk._testing, so there's some "magical" data coordination at
+                # globus_sdk.testing, so there's some "magical" data coordination at
                 # play here
                 json={
                     "DATA": [
@@ -76,7 +82,7 @@ def test_api_groups_v2_path_stripping(run_line):
         RegisteredResponse(
             service="groups",
             status=200,
-            path="/foo",
+            path="/v2/foo",
             json={"foo": "bar"},
         )
     )

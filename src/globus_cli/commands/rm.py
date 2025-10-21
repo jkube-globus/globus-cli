@@ -15,6 +15,7 @@ from globus_cli.parsing import (
     task_submission_options,
 )
 from globus_cli.termio import Field, display, err_is_terminal, term_is_interactive
+from globus_cli.utils import make_dict_json_serializable
 
 from ._common import transfer_task_wait_with_io
 
@@ -50,16 +51,16 @@ def rm_command(
     *,
     ignore_missing: bool,
     star_silent: bool,
-    recursive: bool,
+    recursive: bool | globus_sdk.MissingType,
     enable_globs: bool,
     endpoint_plus_path: tuple[uuid.UUID, str],
-    label: str | None,
-    submission_id: str | None,
+    label: str | globus_sdk.MissingType,
+    submission_id: str | globus_sdk.MissingType,
     dry_run: bool,
-    deadline: str | None,
+    deadline: str | globus_sdk.MissingType,
     skip_activation_check: bool,
     notify: dict[str, bool],
-    local_user: str | None,
+    local_user: str | globus_sdk.MissingType,
     meow: bool,
     heartbeat: bool,
     polling_interval: int,
@@ -79,7 +80,6 @@ def rm_command(
     transfer_client = login_manager.get_transfer_client()
 
     delete_data = globus_sdk.DeleteData(
-        transfer_client,
         endpoint_id,
         label=label,
         recursive=recursive,
@@ -110,7 +110,11 @@ def rm_command(
     delete_data.add_item(path)
 
     if dry_run:
-        display(delete_data.data, response_key="DATA", fields=[Field("Path", "path")])
+        display(
+            make_dict_json_serializable(delete_data),
+            response_key="DATA",
+            fields=[Field("Path", "path")],
+        )
         # exit safely
         return
 

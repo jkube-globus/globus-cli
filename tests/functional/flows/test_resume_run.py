@@ -2,7 +2,7 @@ import uuid
 
 import globus_sdk
 import pytest
-from globus_sdk._testing import (
+from globus_sdk.testing import (
     RegisteredResponse,
     load_response,
     load_response_set,
@@ -24,14 +24,19 @@ def test_resume_inactive_run_missing_consent(run_line, add_flow_login):
     assert f"globus session consent '{required_scope}'" in result.output
 
 
-def test_resume_inactive_run_consent_present(run_line, add_flow_login):
+def test_resume_inactive_run_consent_present(
+    run_line, add_flow_login, load_identities_for_flow_run
+):
     # setup the response scenario
-    meta = load_response_set("cli.resume_run.inactive_consents_present").metadata
-    flow_id = meta["flow_id"]
-    run_id = meta["run_id"]
+    response_set = load_response_set("cli.resume_run.inactive_consents_present")
+    run_response = response_set.lookup("get_run").json
+
+    flow_id = response_set.metadata["flow_id"]
+    run_id = response_set.metadata["run_id"]
 
     # setup the login mock for the flow_id as well
     add_flow_login(flow_id)
+    load_identities_for_flow_run(run_response)
 
     run_line(
         ["globus", "flows", "run", "resume", run_id],
@@ -39,14 +44,19 @@ def test_resume_inactive_run_consent_present(run_line, add_flow_login):
     )
 
 
-def test_resume_inactive_run_consent_missing_but_skip_check(run_line, add_flow_login):
+def test_resume_inactive_run_consent_missing_but_skip_check(
+    run_line, add_flow_login, load_identities_for_flow_run
+):
     # setup the response scenario
-    meta = load_response_set("cli.resume_run.inactive_consents_missing").metadata
-    flow_id = meta["flow_id"]
-    run_id = meta["run_id"]
+    response_set = load_response_set("cli.resume_run.inactive_consents_missing")
+    run_response = response_set.lookup("get_run").json
+
+    flow_id = response_set.metadata["flow_id"]
+    run_id = response_set.metadata["run_id"]
 
     # setup the login mock for the flow_id as well
     add_flow_login(flow_id)
+    load_identities_for_flow_run(run_response)
 
     run_line(
         ["globus", "flows", "run", "resume", run_id, "--skip-inactive-reason-check"],
@@ -54,15 +64,20 @@ def test_resume_inactive_run_consent_missing_but_skip_check(run_line, add_flow_l
     )
 
 
-def test_resume_inactive_run_session_identities(run_line, add_flow_login):
+def test_resume_inactive_run_session_identities(
+    run_line, add_flow_login, load_identities_for_flow_run
+):
     # setup the response scenario
-    meta = load_response_set("cli.resume_run.inactive_session_identities").metadata
-    flow_id = meta["flow_id"]
-    run_id = meta["run_id"]
-    username = meta["username"]
+    response_set = load_response_set("cli.resume_run.inactive_session_identities")
+    run_response = response_set.lookup("get_run").json
+
+    flow_id = response_set.metadata["flow_id"]
+    run_id = response_set.metadata["run_id"]
+    username = response_set.metadata["username"]
 
     # setup the login mock for the flow_id as well
     add_flow_login(flow_id)
+    load_identities_for_flow_run(run_response)
 
     run_line(
         ["globus", "flows", "run", "resume", run_id],
@@ -72,15 +87,18 @@ def test_resume_inactive_run_session_identities(run_line, add_flow_login):
 
 
 def test_resume_inactive_run_session_identities_but_skip_check(
-    run_line, add_flow_login
+    run_line, add_flow_login, load_identities_for_flow_run
 ):
     # setup the response scenario
-    meta = load_response_set("cli.resume_run.inactive_session_identities").metadata
-    flow_id = meta["flow_id"]
-    run_id = meta["run_id"]
+    response_set = load_response_set("cli.resume_run.inactive_session_identities")
+    run_response = response_set.lookup("get_run").json
+
+    flow_id = response_set.metadata["flow_id"]
+    run_id = response_set.metadata["run_id"]
 
     # setup the login mock for the flow_id as well
     add_flow_login(flow_id)
+    load_identities_for_flow_run(run_response)
 
     run_line(
         ["globus", "flows", "run", "resume", run_id, "--skip-inactive-reason-check"],
@@ -100,8 +118,10 @@ def _register_responses(mock_user_data):
     transfer_scope = globus_sdk.TransferClient.scopes.all
     flow_scope = _urlscope(flow_id, f"flow_{flow_id.replace('-', '_')}_user")
     data_access_scope = _urlscope(collection_id, "data_access")
-    full_data_access_scope = f"{transfer_scope}[*{data_access_scope}]"
-    required_scope = f"{flow_scope}[{full_data_access_scope}]"
+    full_data_access_scope = transfer_scope.with_dependency(
+        data_access_scope.with_optional(True)
+    )
+    required_scope = flow_scope.with_dependency(full_data_access_scope)
     username = "shrek@fairytale"
 
     metadata = {
@@ -125,7 +145,7 @@ def _register_responses(mock_user_data):
                     "details": {
                         "code": "ConsentRequired",
                         "description": "Missing required data_access consent",
-                        "required_scope": full_data_access_scope,
+                        "required_scope": str(full_data_access_scope),
                         "resolution_url": None,
                     },
                     "display_status": "INACTIVE",
@@ -140,7 +160,7 @@ def _register_responses(mock_user_data):
             ],
             "code": "ConsentRequired",
             "description": "Go to Tosche Station to pick up some power converters.",
-            "required_scope": required_scope,
+            "required_scope": str(required_scope),
             "state_name": "GetPermissionFromUncleOwen",
         },
         "display_status": "INACTIVE",
@@ -259,7 +279,7 @@ def _register_responses(mock_user_data):
                 "json": {
                     "consents": [
                         {
-                            "scope_name": flow_scope,
+                            "scope_name": str(flow_scope),
                             "scope": str(uuid.uuid1()),
                             "dependency_path": [100],
                             "id": 100,
@@ -293,21 +313,21 @@ def _register_responses(mock_user_data):
                 "json": {
                     "consents": [
                         {
-                            "scope_name": flow_scope,
+                            "scope_name": str(flow_scope),
                             "scope": str(uuid.uuid1()),
                             "dependency_path": [100],
                             "id": 100,
                             **_dummy_consent_fields,
                         },
                         {
-                            "scope_name": transfer_scope,
+                            "scope_name": str(transfer_scope),
                             "scope": str(uuid.uuid1()),
                             "dependency_path": [100, 101],
                             "id": 101,
                             **_dummy_consent_fields,
                         },
                         {
-                            "scope_name": data_access_scope,
+                            "scope_name": str(data_access_scope),
                             "scope": str(uuid.uuid1()),
                             "dependency_path": [100, 101, 102],
                             "id": 102,
@@ -339,11 +359,12 @@ def _register_responses(mock_user_data):
     )
 
 
-def test_resume_run_text_output(run_line, add_flow_login):
+def test_resume_run_text_output(run_line, add_flow_login, load_identities_for_flow_run):
     # get fields for resume_run
     response = load_response("flows.resume_run")
     meta = response.metadata
     response_payload = response.json
+
     flow_id = meta["flow_id"]
     run_id = meta["run_id"]
     tags = response_payload["tags"]
@@ -359,9 +380,7 @@ def test_resume_run_text_output(run_line, add_flow_login):
             service="flows",
             method="get",
             path=f"/runs/{run_id}",
-            json={
-                "flow_id": flow_id,
-            },
+            json={"flow_id": flow_id},
         )
     )
 
@@ -369,12 +388,14 @@ def test_resume_run_text_output(run_line, add_flow_login):
     # get a SpecificFlowClient for this flow
     add_flow_login(flow_id)
 
+    load_identities_for_flow_run(response_payload)
+
     run_line(
         ["globus", "flows", "run", "resume", run_id],
         search_stdout=[
             ("Flow ID", flow_id),
             ("Run ID", run_id),
-            ("Run Tags", ",".join(tags)),
+            ("Run Tags", ", ".join(tags)),
             ("Run Label", label),
             ("Status", status),
             ("Flow Title", flow_title),
@@ -383,4 +404,4 @@ def test_resume_run_text_output(run_line, add_flow_login):
 
 
 def _urlscope(m: str, s: str) -> str:
-    return f"https://auth.globus.org/scopes/{m}/{s}"
+    return globus_sdk.Scope(f"https://auth.globus.org/scopes/{m}/{s}")

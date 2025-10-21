@@ -3,7 +3,7 @@ import uuid
 
 import pytest
 import responses
-from globus_sdk._testing import load_response, register_response_set
+from globus_sdk.testing import load_response, register_response_set
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -21,7 +21,7 @@ def _register_invitation_responses():
     def action_response(action: str, success, *, error_detail_present=True):
         return {
             "service": "groups",
-            "path": f"/groups/{group_id}",
+            "path": f"/v2/groups/{group_id}",
             "method": "POST",
             "json": (
                 {

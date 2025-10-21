@@ -2,7 +2,7 @@ import re
 import uuid
 
 import pytest
-from globus_sdk._testing import load_response, register_response_set
+from globus_sdk.testing import load_response, register_response_set
 
 
 @pytest.fixture(scope="session")
@@ -179,7 +179,7 @@ def _register_responses(identity_info):
         {
             "default": {
                 "service": "transfer",
-                "path": f"/endpoint/{endpoint_id}",
+                "path": f"/v0.10/endpoint/{endpoint_id}",
                 "method": "GET",
                 "json": {
                     "DATA": [
