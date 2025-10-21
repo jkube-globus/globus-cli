@@ -8,7 +8,7 @@ import globus_sdk
 
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import collection_id_arg, command
-from globus_cli.termio import display
+from globus_cli.termio import Field, display
 from globus_cli.utils import resolve_principal_urn
 
 _VALID_ROLES = t.Literal[
@@ -71,4 +71,10 @@ def create_command(
         )
     )
 
-    display(res, simple_text="ID: {}".format(res["id"]))
+    display(
+        res,
+        text_mode=display.RECORD,
+        fields=[
+            Field("Principal", "principal"),
+        ],
+    )
