@@ -6,6 +6,7 @@ import uuid
 import click
 from globus_sdk.paging import Paginator
 
+from globus_cli.commands.flows._common import FlowScopeInjector
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import command, run_id_arg
 from globus_cli.termio import Field, display, print_command_hint
@@ -49,15 +50,15 @@ def show_logs_command(
 
     flows_client = login_manager.get_flows_client()
 
-    # get the Flow, to check INACTIVE status below
-    run_doc = flows_client.get_run(run_id)
-
     paginator = Paginator.wrap(flows_client.get_run_logs)
-    entry_iterator = PagingWrapper(
-        paginator(run_id=run_id, reverse_order=reverse).items(),
-        limit=limit,
-        json_conversion_key="entries",
-    )
+    with FlowScopeInjector(login_manager).for_run(run_id):
+        # Note: `PagingWrapper.__init__` calls `_step` which is why we wrap this block
+        #   with the flow scope injector, not later usages of it.
+        entry_iterator = PagingWrapper(
+            paginator(run_id=run_id, reverse_order=reverse).items(),
+            limit=limit,
+            json_conversion_key="entries",
+        )
 
     fields = [
         Field("Time", "time"),
@@ -80,9 +81,14 @@ def show_logs_command(
         )
         # Display the log entries in a table.
         display(
-            entry_iterator, fields=fields, json_converter=entry_iterator.json_converter
+            entry_iterator,
+            fields=fields,
+            json_converter=entry_iterator.json_converter,
         )
 
+    # Fetch the run to check its status
+    with FlowScopeInjector(login_manager).for_run(run_id):
+        run_doc = flows_client.get_run(run_id)
     if run_doc["status"] == "INACTIVE":
         print_command_hint(
             (
