@@ -9,12 +9,12 @@ repos:
     - id: trailing-whitespace
     - id: end-of-file-fixer
 - repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: 0.34.0
+  rev: 0.34.1
   hooks:
     - id: check-github-workflows
     - id: check-dependabot
 - repo: https://github.com/asottile/pyupgrade
-  rev: v3.20.0
+  rev: v3.21.0
   hooks:
     - id: pyupgrade
       args: ["--py39-plus"]
@@ -31,7 +31,7 @@ repos:
         - 'flake8-comprehensions==3.17.0'
         - 'flake8-typing-as-t==1.0.0'
 - repo: https://github.com/PyCQA/isort
-  rev: 6.1.0
+  rev: 7.0.0
   hooks:
     - id: isort
 - repo: https://github.com/sirosen/slyp
