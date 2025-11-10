@@ -46,8 +46,11 @@ def create_command(
     "activity_manager",
     "activity_monitor"
 
-    PRINCIPAL must be a username, UUID, or URN associated with a globus identity or
-    group if specified, otherwise the users primary identity will be used.
+    If a PRINCIPAL value is not provided the primary identity of the logged in user will
+    be used.
+
+    If a PRINCIPAL value is provided, it must be a username, UUID, or URN associated
+    with a globus identity or group.
 
     If UUID, use `--principal-type` to specify the type (defaults to "identity").
     """
