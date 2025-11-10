@@ -19,7 +19,7 @@ _VALID_ROLES = t.Literal[
 @command("create")
 @collection_id_arg
 @click.argument("ROLE", type=click.Choice(t.get_args(_VALID_ROLES)), metavar="ROLE")
-@click.argument("PRINCIPAL", type=str)
+@click.argument("PRINCIPAL", type=str, required=False)
 @click.option(
     "--principal-type",
     type=click.Choice(["identity", "group"]),
@@ -33,7 +33,7 @@ def create_command(
     role: t.Literal[
         "access_manager", "activity_manager", "activity_monitor", "administrator"
     ],
-    principal: str,
+    principal: str | None,
     principal_type: t.Literal["identity", "group"] | None,
 ) -> None:
     """
@@ -47,13 +47,18 @@ def create_command(
     "activity_monitor"
 
     PRINCIPAL must be a username, UUID, or URN associated with a globus identity or
-    group.
+    group if specified, otherwise the users primary identity will be used.
 
     If UUID, use `--principal-type` to specify the type (defaults to "identity").
     """
 
     gcs_client = login_manager.get_gcs_client(collection_id=collection_id)
     auth_client = login_manager.get_auth_client()
+
+    # If Principal argument isn't provided, determine user's primary identity
+    if principal is None:
+        userinfo = auth_client.userinfo()
+        principal = userinfo["sub"]
 
     # Format the principal into a URN
     principal_urn = resolve_principal_urn(
