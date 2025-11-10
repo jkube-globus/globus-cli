@@ -7,6 +7,7 @@ import click
 import globus_sdk
 
 from globus_cli.commands.flows._common import (
+    FlowScopeInjector,
     description_option,
     input_schema_option_with_default,
     subscription_id_option,
@@ -16,6 +17,7 @@ from globus_cli.commands.flows._fields import flow_format_fields
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import (
     OMITTABLE_STRING,
+    OMITTABLE_UUID,
     CommaDelimitedList,
     JSONStringOrFile,
     ParsedJSONData,
@@ -143,8 +145,25 @@ ROLE_TYPES = ("flow_viewer", "flow_starter", "flow_administrator", "flow_owner")
     """,
     default=globus_sdk.MISSING,
 )
+@click.option(
+    "--authentication-policy-id",
+    help="""
+        A Globus Auth authentication policy ID.
+        The provided policy must require high-assurance.
+        Assigning an authentication policy enforces additional
+        authentication requirements, e.g., requiring an MFA or recent login,
+        on most API interactions with a flow and its runs.
+
+        Flow policies are only semi-mutable.
+        Attempting to either remove a policy or add one when previously unset
+        will fail. Replacing an existing authentication policy with a new one,
+        however, is allowed.
+    """,
+    type=OMITTABLE_UUID,
+    default=globus_sdk.MISSING,
+)
 @subscription_id_option
-@LoginManager.requires_login("flows")
+@LoginManager.requires_login("auth", "flows", "search")
 def update_command(
     login_manager: LoginManager,
     *,
@@ -162,6 +181,7 @@ def update_command(
     run_monitors: list[str] | globus_sdk.MissingType,
     keywords: list[str] | globus_sdk.MissingType,
     subscription_id: uuid.UUID | t.Literal["DEFAULT"] | globus_sdk.MissingType,
+    authentication_policy_id: uuid.UUID | globus_sdk.MissingType,
 ) -> None:
     """
     Update a flow.
@@ -185,22 +205,24 @@ def update_command(
     flows_client = login_manager.get_flows_client()
     auth_client = login_manager.get_auth_client()
 
-    res = flows_client.update_flow(
-        flow_id,
-        title=title,
-        definition=definition_doc,
-        input_schema=input_schema_doc,
-        subtitle=subtitle,
-        description=description,
-        flow_owner=owner,
-        flow_administrators=administrators,
-        flow_starters=starters,
-        flow_viewers=viewers,
-        run_managers=run_managers,
-        run_monitors=run_monitors,
-        keywords=keywords,
-        subscription_id=subscription_id or globus_sdk.MISSING,
-    )
+    with FlowScopeInjector(login_manager).for_flow(flow_id):
+        res = flows_client.update_flow(
+            flow_id,
+            title=title,
+            definition=definition_doc,
+            input_schema=input_schema_doc,
+            subtitle=subtitle,
+            description=description,
+            flow_owner=owner,
+            flow_administrators=administrators,
+            flow_starters=starters,
+            flow_viewers=viewers,
+            run_managers=run_managers,
+            run_monitors=run_monitors,
+            keywords=keywords,
+            subscription_id=subscription_id or globus_sdk.MISSING,
+            authentication_policy_id=authentication_policy_id,
+        )
 
     fields = flow_format_fields(auth_client, res.data)
 

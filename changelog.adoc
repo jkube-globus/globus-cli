@@ -2,6 +2,39 @@
 
 // scriv-insert-here
 
+== 3.40.0 (2025-11-05)
+
+Bugfixes:
+
+*  Fixed a bug that would cause JSON-requested (`-F json`) GAREs from Flows to not be
+   presented correctly as JSON.
+
+Enhancements:
+
+* Better standardized the rendering logic for flow & run type resources resulting from
+  calls to Flows APIs.
+
+* Added a new keyword `authentication-policy-id` to the `globus flows create ...` and
+  `globus flows update ...` commands to allow creation of high assurance flows.
+
+    * Note that a policy must be set at flow creation time in order to create a high
+      assurance flow.
+      A policy cannot be added to an existing standard flow.
+      A policy can, however, be replaced with a different high assurance policy if one
+      was already associated with the flow.
+
+* Added the parameter `globus session update --scope` to specify additional scopes
+  to request when updating session tokens.
+
+* Raise flow scopes more frequently in `globus session update` remediation instructions.
+   * Doing so helps ensure that resource-specific scopes are properly updated when
+     users are put through session remediation logins to mitigate double-logins.
+   * Impacted commands:
+     * `globus flows ...`: `delete`, `show`, `start`, and `update`
+     * `globus flows run ...`: `delete`, `resume`, `show`, `show-definition`,
+       `show-logs`, and `update`
+        * In these, a flow ID isn't provided, so it's queried from Globus Search.
+
 == 3.39.0 (2025-10-15)
 
 Enhancements:

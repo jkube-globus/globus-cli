@@ -9,6 +9,7 @@ import click
 import globus_sdk
 
 from globus_cli._click_compat import shim_get_metavar
+from globus_cli.commands.flows._common import FlowScopeInjector
 from globus_cli.commands.flows._fields import flow_run_format_fields
 from globus_cli.login_manager import LoginManager
 from globus_cli.parsing import (
@@ -201,7 +202,7 @@ class ActivityNotificationPolicyType(JSONStringOrFile):
         JSON file--containing a full notification policy document.
     """,
 )
-@LoginManager.requires_login("flows")
+@LoginManager.requires_login("auth", "flows", "search")
 def start_command(
     login_manager: LoginManager,
     *,
@@ -251,14 +252,15 @@ def start_command(
     flow_client = login_manager.get_specific_flow_client(flow_id)
     auth_client = login_manager.get_auth_client()
 
-    response = flow_client.run_flow(
-        body=input_document_json,
-        label=label,
-        tags=list(tags),
-        run_managers=list(managers),
-        run_monitors=list(monitors),
-        activity_notification_policy=notify_policy,
-    )
+    with FlowScopeInjector(login_manager).for_flow(flow_id):
+        response = flow_client.run_flow(
+            body=input_document_json,
+            label=label,
+            tags=list(tags),
+            run_managers=list(managers),
+            run_monitors=list(monitors),
+            activity_notification_policy=notify_policy,
+        )
 
     fields = flow_run_format_fields(auth_client, response.data)
 
