@@ -1,4 +1,4 @@
-from globus_sdk.testing import RegisteredResponse, load_response_set
+from globus_sdk._testing import RegisteredResponse, load_response_set
 
 
 def test_successful_gcs_collection_role_delete(
@@ -30,7 +30,7 @@ def test_successful_gcs_collection_role_delete(
 
     # now test the command and confirm that a successful role deletion is reported
     run_line(
-        ["globus", "collection", "role", "delete", collection_id, role_id],
+        ["globus", "gcs", "collection", "role", "delete", collection_id, role_id],
         search_stdout=[
             "success",
         ],

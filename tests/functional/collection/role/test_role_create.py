@@ -43,7 +43,7 @@ def test_successful_gcs_collection_role_creation(
 
     # now test the command and confirm that a successful role creation is reported
     run_line(
-        ["globus", "collection", "role", "create", collection_id, role, user_id],
+        ["globus", "gcs", "collection", "role", "create", collection_id, role, user_id],
         search_stdout=[
             ("ID", role_id),
         ],

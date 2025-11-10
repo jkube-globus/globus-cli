@@ -75,6 +75,6 @@ def create_command(
         res,
         text_mode=display.RECORD,
         fields=[
-            Field("Principal", "principal"),
+            Field("ID", "id"),
         ],
     )
