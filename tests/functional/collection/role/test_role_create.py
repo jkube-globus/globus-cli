@@ -1,4 +1,4 @@
-from globus_sdk._testing import RegisteredResponse, load_response_set
+from globus_sdk.testing import load_response_set
 
 
 def test_successful_gcs_collection_role_creation(
@@ -17,29 +17,6 @@ def test_successful_gcs_collection_role_creation(
     add_gcs_login(endpoint_id)
 
     role = "activity_monitor"
-
-    # mock the responses for the [post] Role API (GCS)
-    RegisteredResponse(
-        service="gcs",
-        path="/roles",
-        json={
-            "DATA_TYPE": "result#1.1.0",
-            "code": "success",
-            "data": [
-                {
-                    "DATA_TYPE": "role#1.0.0",
-                    "collection": f"{collection_id}",
-                    "id": f"{role_id}",
-                    "principal": f"urn:globus:auth:identity:{user_id}",
-                    "role": "activity_monitor",
-                }
-            ],
-            "detail": "success",
-            "has_next_page": False,
-            "http_response_code": 200,
-            "message": f"Created new role {role_id}",
-        },
-    ).add()
 
     # now test the command and confirm that a successful role creation is reported
     run_line(
