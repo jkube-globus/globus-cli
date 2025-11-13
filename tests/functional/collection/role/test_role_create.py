@@ -14,6 +14,7 @@ def test_successful_gcs_collection_role_creation(
     role = meta["role"]
     role_id = meta["role_id"]
     user_id = meta["identity_id"]
+    username = meta["username"]
     add_gcs_login(endpoint_id)
 
     role = "activity_monitor"
@@ -23,5 +24,7 @@ def test_successful_gcs_collection_role_creation(
         ["globus", "gcs", "collection", "role", "create", collection_id, role, user_id],
         search_stdout=[
             ("ID", role_id),
+            ("Role", role),
+            ("Principal", username),
         ],
     )
