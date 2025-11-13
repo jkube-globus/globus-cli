@@ -7,7 +7,6 @@ metadata:
   gcp_endpoint_id: "06e2c959-d311-4bab-b2ea-25ad77d9fc12"
   local_username: "recyclops"
   identity_id: "e926d510-cb98-11e5-a6ac-0b0216052512"
-  username: "testidentity@globus.org"
   gcs_hostname: "abc.xyz.data.globus.org"
   guest_display_name: "Happy Fun Guest Collection Name"
 
@@ -203,14 +202,14 @@ auth:
       {
         "identities": [
           {
-            "email": "testidentity@globus.org",
+            "email": "shrek@globus.org",
             "id": "e926d510-cb98-11e5-a6ac-0b0216052512",
             "identity_provider": "927d7238-f917-4eb2-9ace-c523fa9ba34e",
             "identity_type": "login",
             "name": "Test User",
             "organization": "Globus",
             "status": "used",
-            "username": "testidentity@globus.org"
+            "username": "shrek@globus.org"
           }
         ]
       }
@@ -486,6 +485,25 @@ gcs:
         "has_next_page": False,
         "http_response_code" : 200,
         "message": "Created new role 0174edd0-998c-4147-a123-99ea38068145"
+      }
+  - path: /roles/0174edd0-998c-4147-a123-99ea38068145
+    method: get
+    json:
+      {
+        "DATA_TYPE": "result#1.1.0",
+        "code": "success",
+        "data": [
+          {
+            "DATA_TYPE": "role#1.0.0",
+            "collection": "1405823f-0597-4a16-b296-46d4f0ae4b15",
+            "id": "0174edd0-998c-4147-a123-99ea38068145",
+            "principal": "urn:globus:auth:identity:e926d510-cb98-11e5-a6ac-0b0216052512",
+            "role": "activity_monitor"
+          }
+        ],
+        "detail": "success",
+        "has_next_page": False,
+        "http_response_code": 200,
       }
   - path: /roles/0174edd0-998c-4147-a123-99ea38068145
     method: delete

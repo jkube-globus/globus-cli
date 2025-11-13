@@ -11,10 +11,15 @@ def test_successful_gcs_collection_role_list(
     meta = load_response_set("cli.collection_operations").metadata
     endpoint_id = meta["endpoint_id"]
     collection_id = meta["mapped_collection_id"]
-    add_gcs_login(endpoint_id)
     role = meta["role"]
     role_id = meta["role_id"]
-    username = meta["username"]
+    user_id = meta["identity_id"]
+    add_gcs_login(endpoint_id)
+
+    # Mock the Get Identities API (Auth)
+    # so that CLI output rendering can show a username
+    user_meta = get_identities_mocker.configure_one(id=user_id).metadata
+    username = user_meta["username"]
 
     # now test the command and confirm that output shows the role name and the
     # username
