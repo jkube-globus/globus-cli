@@ -31,10 +31,3 @@ def show_command(
         text_mode=display.RECORD,
         fields=fields,
     )
-    # fields=[
-    #    Field("ID", "id"),
-    #    Field("Role", "role"),
-    #    Field(
-    #        "Principal", "principal", formatter=PrincipalURNFormatter(auth_client)
-    #    ),
-    # ],
